@@ -33,18 +33,23 @@
                         </button>
                     </div>
                     <div class="modal-body text-center">
-                        <input type="text" name="username" class="form-control"
-                               id="name" th:value="${username}" required placeholder="username">
-                        <br>
-                        <input type="text" name="email" class="form-control"
-                               id="email" th:value="${email}" required placeholder="email">
-                        <br>
-                        <input type="text" name="pass" class="form-control"
-                               id="pass" th:value="${pass}" required placeholder="passward">
-                        <br>
-                        <input type="text" name="phone" class="form-control"
-                               id="phone" th:value="${phone}" required placeholder="phone">
-                        <br>
+                        <div class="form-check mt-3">
+                            <input type="text" name="username" class="form-control" id="name"  required placeholder="username">
+                        </div>
+                        <div class="form-check mt-3">
+                            <input type="text" name="email" class="form-control" id="email"  required placeholder="email">
+                        </div>
+                        <div class="form-check mt-3">
+                            <input class="form-check-input" id="administrator" name="administrator" type="checkbox">
+                            <label class="form-check-label" for="administrator">I need an ambulance</label>
+                        </div>
+                        <div class="form-check mt-3">
+                            <input type="text" name="pass" class="form-control" id="pass" required placeholder="passward">
+                        </div>
+                        <div class="form-check mt-3">
+
+                        <input type="text" name="phone" class="form-control" id="phone" required placeholder="phone">
+                        </div>
                         <div th:each="statusOption : ${T(com.dgpad.thyme.model.enums.Role).values()}">
                             <div th:unless="${statusOption.name() == 'PATIENT'}">
                                 <input type="radio" class="form-check-input"

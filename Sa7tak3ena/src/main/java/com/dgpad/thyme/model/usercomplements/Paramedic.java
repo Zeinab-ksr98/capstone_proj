@@ -1,7 +1,6 @@
 package com.dgpad.thyme.model.usercomplements;
 
 import com.dgpad.thyme.model.users.Ambulance;
-import com.dgpad.thyme.model.users.Hospital;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,9 +10,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class AStaff {
+public class Paramedic {
     @Id
-    @Column(name = "staff_id")
+    @Column(name = "Paramedic_id")
     @GeneratedValue(strategy= GenerationType.AUTO)
     private int id;
     private String name;

@@ -3,6 +3,8 @@ package com.dgpad.thyme.model.requests;
 import com.dgpad.thyme.model.enums.AmbulanceRequestStatus;
 import com.dgpad.thyme.model.enums.Ambulanceservice;
 import com.dgpad.thyme.model.enums.Ambulancetypes;
+import com.dgpad.thyme.model.usercomplements.Address;
+import com.dgpad.thyme.model.usercomplements.Paramedic;
 import com.dgpad.thyme.model.users.Ambulance;
 import com.dgpad.thyme.model.users.Hospital;
 import com.dgpad.thyme.model.users.User;
@@ -26,14 +28,21 @@ public class AmbulanceRequest {
 //    in case of transfer it is called from in case of house service it is location
     @Column(name = "transport_from")
     public String from;
+    @ManyToOne
+    public Address pickupaddress;
+
     //    in case of transfer
     @Column(name = "transport_to")
     public String to;
+    @ManyToOne
+    @JoinColumn(name = "staff_id")
+    public Paramedic staff;
     public AmbulanceRequestStatus status;
     @Column(name = "service_type")
     public Ambulanceservice service;
     @Column(name = "details")
     public String description;
+    public String equipments;
     @Column(name = "car_used")
     public Ambulancetypes car_type;
     @ManyToOne
@@ -41,6 +50,8 @@ public class AmbulanceRequest {
     private Ambulance ambulance;
     @OneToOne
     private Hospital hospital;
+
+    private boolean from_hospital;
 //    sender can be either a hospital or a patient
     @ManyToOne
     @JoinColumn(name = "sender_id")

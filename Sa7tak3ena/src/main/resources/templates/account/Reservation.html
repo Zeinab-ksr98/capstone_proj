@@ -23,10 +23,6 @@
             <th>Reservation Type</th>
             <th th:if="${userrole.toString() == 'HOSPITAL'}">Patient Name</th>
             <th th:if="${userrole.toString() == 'HOSPITAL'}">Medical Record</th>
-            <th>Bed Number</th>
-            <th>Floor Number</th>
-            <th th:if="${userrole.toString() == 'HOSPITAL'}">Need Ambulance</th>
-            <th th:if="${userrole.toString() == 'HOSPITAL'}">Ambulance Type</th>
             <th>Date</th>
         </tr>
         </thead>
@@ -35,51 +31,57 @@
             <td th:text="${reservation.id}" th:if="${userrole.toString() == 'HOSPITAL'}"></td>
             <td th:text="${reservation.hospital.publicName}" th:if="${userrole.toString() == 'PATIENT'}"></td>
             <td th:text="${reservation.reservationType}"></td>
-            <td th:text="${reservation.patient.name}" th:if="${userrole.toString() == 'HOSPITAL'}"></td>
-            <td th:text="${reservation.medicalRecord}" th:if="${userrole.toString() == 'HOSPITAL'}"></td>
-            <td th:text="${reservation.bednum}"></td>
-            <td th:text="${reservation.floornum}"></td>
-            <td th:text="${reservation.needAmbulance}" th:if="${userrole.toString() == 'HOSPITAL'}"></td>
-            <td th:text="${reservation.getAmbulanceCar.type}" th:if="${userrole.toString() == 'HOSPITAL'}"></td>
-            <td th:text="${reservation.createdAt}" ></td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-<div class="container mt-3">
-    <h5>Reservations History</h5>
-    <table class="table mb-0">
-        <thead class="small text-uppercase bg-body text-muted">
-        <tr>
-            <th th:if="${userrole.toString() == 'HOSPITAL'}">Reservation ID</th>
-            <th th:if="${userrole.toString() == 'PATIENT'}">Hospital Name</th>
-            <th>Reservation Type</th>
-            <th th:if="${userrole.toString() == 'HOSPITAL'}">Patient Name</th>
-            <th th:if="${userrole.toString() == 'HOSPITAL'}">Medical Record</th>
-            <th>Bed Number</th>
-            <th>Floor Number</th>
-            <th th:if="${userrole.toString() == 'HOSPITAL'}">Need Ambulance</th>
-            <th th:if="${userrole.toString() == 'HOSPITAL'}">Ambulance Type</th>
-            <th>Date</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr class="align-middle" th:each="reservation : ${reservations}" >
-            <td th:text="${reservation.id}" th:if="${userrole.toString() == 'HOSPITAL'}"></td>
-            <td th:text="${reservation.hospital.publicName}" th:if="${userrole.toString() == 'PATIENT'}"></td>
-            <td th:text="${reservation.reservationType}"></td>
-            <td th:text="${reservation.patient.name}" th:if="${userrole.toString() == 'HOSPITAL'}"></td>
-            <td th:text="${reservation.medicalRecord}" th:if="${userrole.toString() == 'HOSPITAL'}"></td>
-            <td th:text="${reservation.bednum}"></td>
-            <td th:text="${reservation.floornum}"></td>
-            <td th:text="${reservation.needAmbulance}" th:if="${userrole.toString() == 'HOSPITAL'}"></td>
-            <td th:text="${reservation.getAmbulanceCar.type}" th:if="${userrole.toString() == 'HOSPITAL'}"></td>
-            <td th:text="${reservation.createdAt}" ></td>
+            <td th:if="${reservation.patient.username == null and userrole.toString() == 'HOSPITAL'}">reserved by ambulance</td>
+            <td th:text="${reservation.patient.username}" th:if="${userrole == 'HOSPITAL'}"></td>
 
+            <td>
+                <span th:each="request : ${reservation.ambulanceRequests}">
+                    <span th:text="${request.status}"></span>
+                    <span th:if="${not #lists.isEmpty(reservation.ambulanceRequests) and request.status == 'Pending'}">waiting acceptance</span>
+                    <span th:if="${request.status == 'Accepted'}">accepted</span>
+                    <span th:if="${request.status == 'Rejected'}">rejected</span>
+                </span>
+            </td>
+            <td th:text="${reservation.medicalRecord}" th:if="${userrole.toString() == 'HOSPITAL'}"></td>
+            <td th:text="${reservation.createdAt}" ></td>
         </tr>
         </tbody>
     </table>
 </div>
+<!--<div class="container mt-3">-->
+<!--    <h5>Reservations History</h5>-->
+<!--    <table class="table mb-0">-->
+<!--        <thead class="small text-uppercase bg-body text-muted">-->
+<!--        <tr>-->
+<!--            <th th:if="${userrole.toString() == 'HOSPITAL'}">Reservation ID</th>-->
+<!--            <th th:if="${userrole.toString() == 'PATIENT'}">Hospital Name</th>-->
+<!--            <th>Reservation Type</th>-->
+<!--            <th th:if="${userrole.toString() == 'HOSPITAL'}">Patient Name</th>-->
+<!--            <th th:if="${userrole.toString() == 'HOSPITAL'}">Medical Record</th>-->
+<!--            <th>Bed Number</th>-->
+<!--            <th>Floor Number</th>-->
+<!--            <th th:if="${userrole.toString() == 'HOSPITAL'}">Need Ambulance</th>-->
+<!--            <th th:if="${userrole.toString() == 'HOSPITAL'}">Ambulance Type</th>-->
+<!--            <th>Date</th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--        <tr class="align-middle" th:each="reservation : ${reservations}" >-->
+<!--            <td th:text="${reservation.id}" th:if="${userrole.toString() == 'HOSPITAL'}"></td>-->
+<!--            <td th:text="${reservation.hospital.publicName}" th:if="${userrole.toString() == 'PATIENT'}"></td>-->
+<!--            <td th:text="${reservation.reservationType}"></td>-->
+<!--            <td th:text="${reservation.patient.name}" th:if="${userrole.toString() == 'HOSPITAL'}"></td>-->
+<!--            <td th:text="${reservation.medicalRecord}" th:if="${userrole.toString() == 'HOSPITAL'}"></td>-->
+<!--            <td th:text="${reservation.bednum}"></td>-->
+<!--            <td th:text="${reservation.floornum}"></td>-->
+<!--            <td th:text="${reservation.needAmbulance}" th:if="${userrole.toString() == 'HOSPITAL'}"></td>-->
+<!--            <td th:text="${reservation.getAmbulanceCar.type}" th:if="${userrole.toString() == 'HOSPITAL'}"></td>-->
+<!--            <td th:text="${reservation.createdAt}" ></td>-->
+
+<!--        </tr>-->
+<!--        </tbody>-->
+<!--    </table>-->
+<!--</div>-->
 
 <!-- Include Bootstrap JavaScript and jQuery -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

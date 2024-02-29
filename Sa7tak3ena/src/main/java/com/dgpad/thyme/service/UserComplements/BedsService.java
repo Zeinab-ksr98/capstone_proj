@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 
 @Service
@@ -25,9 +27,12 @@ public class BedsService {
     public List<Beds> getAllBeds(){
         return bedsRepository.findAll();
     }
-
-//    public void deleteBed(int id) {
-//        bedsRepository.deleteById(id);
-//    }
+    public Beds findemergencybedidbyhospital(UUID hid){
+        for (Beds bed:getAllBeds()) {
+            if (bed.getCategory().getName().equals("طوارئ"))
+                    return bed;
+        }
+        return null;
+    }
 }
 

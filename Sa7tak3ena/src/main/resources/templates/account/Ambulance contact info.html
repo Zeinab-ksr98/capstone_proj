@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -7,10 +7,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,700;1,300&display=swap"/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"/>
     <style>
-        body {
-            margin: 0;
-            line-height: normal;
-        }
+
 
         :root {
             /* Colors */
@@ -65,17 +62,14 @@
         }
         .component-4 {
             position: absolute;
-            /*top: 727px;*/
             left: 1142px;
             width: 183px;
             height: 185px;
-            /*font-size: var(--font-size-xl);*/
             color: var(--color-silver-100);
         }
 
         .component-6 {
             position: absolute;
-            /*top: 10px;*/
             left: 139px;
             width: 968px;
             height: 185px;
@@ -96,7 +90,19 @@
     </style>
 </head>
 <body>
-<div >
+<div th:if="${role == 'PATIENT'}">
+    <div th:replace="fragments/Pheader :: header"></div>
+</div>
+<div th:if="${role == 'AMBULANCE'}">
+    <div th:replace="fragments/Aheader :: header"></div>
+</div>
+<div th:if="${role == 'HOSPITAL'}">
+    <div th:replace="fragments/hheader :: header"></div>
+</div>
+<div th:if="${role == 'ADMIN'}">
+    <div th:replace="fragments/Adimnheader :: header"></div>
+</div>
+
     <div class="after-booking">
         <div class="container">
             <div class="component-6 mt-3">
@@ -104,14 +110,28 @@
                     <iframe src="https://www.google.com/maps/d/embed?mid=1BZxJcUFEX3U3tZp4tx43YZAbvtA&ehbc=2E312F" width="640" height="480"></iframe>
                 </div>
             </div>
-            <div class="component-4 mt-4" onclick="alert('phone number:'+'911')">
-                <div class="component-4-child">
+            <div class="container">
+                <div th:each="ambulance: ${ambulances}" class="ambulance-container">
+                    <div class="component-4 mt-4" th:data-phone="${ambulance.phone}">
+                        <div class="component-4-child">
+                            <!-- Your content for component-4-child goes here -->
+                        </div>
+                        <div class="call-ambulance" onclick="callAmbulance(this)" th:text="Call+${ambulance.publicName}"></div>
+                        <img class="screenshot-2023-04-12-141018-1" alt="Agency Screenshot" th:src="@{assits/screenshot-20230412-141018-1@2x.png}" />
+                    </div>
                 </div>
-                <div class="call-ambulance" >Call Red Cross</div>
-                <img class="screenshot-2023-04-12-141018-1" alt="" th:src="@{assits/screenshot-20230412-141018-1@2x.png}"/>
             </div>
+
+            <script>
+                function callAmbulance(element) {
+                    var phoneNumber = element.getAttribute('data-phone');
+                    alert('Phone number: ' + phoneNumber);
+                }
+            </script>
+
+
         </div>
     </div>
-</div>
+
 </body>
 </html>

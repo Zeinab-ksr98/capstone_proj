@@ -11,13 +11,15 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 
-public class  Address {
+public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String street;
-    private String city;
-    @Enumerated(EnumType.STRING)
-    private Distracts distract;
+    private double latitude;
+    private double longitude;
+//    private String street;
+//    private String city;
+//    @Enumerated(EnumType.STRING)
+//    private Distracts distract;
 
 }

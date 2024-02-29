@@ -48,8 +48,9 @@ public class User {
 
     public boolean deleted;
     private boolean enabled;
-
-    public User(String username, String email, String password,String phone,Role role) {
+//    mainly used for knowing the responsible one
+    private boolean administrator;
+    public User(String username, String email, String password,String phone,Role role, boolean administrator) {
         this.username = username;
         this.email = email;
         this.password = password;
@@ -57,6 +58,7 @@ public class User {
         this.role = role;
         this.enabled = true;
         this.deleted = false;
+        this.administrator=administrator;
     }
 }
 //admin is a role that does not have table, but he can do any task he has an authority for it

@@ -1,4 +1,4 @@
-package com.dgpad.thyme.service.UserComplements;
+package com.dgpad.thyme.Location;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -15,12 +15,12 @@ public class GoogleMapsGeocodingService {
         this.restTemplate = restTemplate;
     }
 
-    public GeocodeResponse geocode(String address) {
+    public geocodeResponse geocode(String address) {
         String apiUrl = "https://maps.googleapis.com/maps/api/geocode/json"
                 + "?address=" + address
                 + "&key=" + apiKey;
 
-        return restTemplate.getForObject(apiUrl, GeocodeResponse.class);
+        return restTemplate.getForObject(apiUrl, geocodeResponse.class);
     }
 }
 

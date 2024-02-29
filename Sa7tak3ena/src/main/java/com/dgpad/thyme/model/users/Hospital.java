@@ -46,8 +46,9 @@ public class Hospital extends User {
     private List<Request> requests;
     @OneToMany
     private List<Beds> availableBeds;
-    public Hospital(String username,String publicName, String email, String password, String phone) {
-        super(username, email, password, phone, Role.HOSPITAL);
+
+    public Hospital(String username,String publicName, String email, String password, String phone,boolean administrator) {
+        super(username, email, password, phone, Role.HOSPITAL,administrator);
         this.address= null;
         this.hospitalSections=new ArrayList<>();
         this.publicName=publicName;

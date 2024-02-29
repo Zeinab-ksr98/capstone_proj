@@ -29,7 +29,7 @@ public class Patient extends User {
     private String selfie;
     private int age;
     private boolean verified;
-    private boolean verifiedPhone;
+    private Boolean verifiedPhone;
     @Enumerated(EnumType.STRING)
     private Gender gender;
 // can enums be added by user as others?
@@ -45,8 +45,9 @@ public class Patient extends User {
     public List<Request> requests;
 
     public Patient(String username,String firstName,String Lastname, String email, String password, String phone,Gender gender) {
-        super(username, email, password, phone,Role.PATIENT);
+        super(username, email, password, phone,Role.PATIENT,false);
         setVerified(false);
+        setVerifiedPhone(true);
         this.FirstName=firstName;
         this.LastName=Lastname;
         this.identityCardImage=null;

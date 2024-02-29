@@ -32,7 +32,7 @@ public class UserController {
 
     @GetMapping(value = "/create-initial-admin")
     public String createInitialAdmin(){
-        User user = new User("Admin","zeinabksr98@gmail.com","123","03010106",Role.ADMIN);
+        User user = new User("Admin","zeinabksr98@gmail.com","123","03010106",Role.ADMIN,true);
         userService.createAdmin(user);
         return "patient Successfully Created";
 
@@ -48,7 +48,7 @@ public class UserController {
     }
     @GetMapping(value = "/create-initial-hospital")
     public String createInitialHospital(){
-        Hospital user = new Hospital("ZHUMC","Al Zahraa Hospital University Medical Center ","zksr@gmail.com","123","03010101");
+        Hospital user = new Hospital("ZHUMC","Al Zahraa Hospital University Medical Center ","zksr@gmail.com","123","03010101",true);
         Hospital hospital = hospitalService.createUser(user);
         System.out.println("done");
         return "hospital Successfully Created";
@@ -100,18 +100,25 @@ public class UserController {
 
     }
     @GetMapping(value = "/deactivate/{id}",  produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN','HOSPITAL','AMBULANCE')")
     public String deActivateUser(@PathVariable("id") String id){
         userService.save(userService.deActivateUser(UUID.fromString(id)));
-        return "redirect:/manage-users";
+        if (userService.getCurrentUser().getRole()==Role.ADMIN)
+            return "redirect:/manage-users";
+        else
+            return "redirect:/home";
 
     }
 
     @GetMapping(value = "/activate/{id}",  produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN','HOSPITAL','AMBULANCE')")
     public String activateUser(@PathVariable("id") String id){
         userService.save(userService.activate(UUID.fromString(id)));
-        return "redirect:/manage-users";
+        if (userService.getCurrentUser().getRole()== Role.ADMIN)
+            return "redirect:/manage-users";
+        else
+            return "redirect:/home";
+
     }
 
 }

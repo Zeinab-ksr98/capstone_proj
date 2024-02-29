@@ -2,6 +2,7 @@ package com.dgpad.thyme.service.UserComplements;
 
 
 import com.dgpad.thyme.model.Reservation;
+import com.dgpad.thyme.model.enums.Ambulancetypes;
 import com.dgpad.thyme.model.enums.ReservationStatus;
 import com.dgpad.thyme.model.requests.Request;
 import com.dgpad.thyme.model.users.Patient;
@@ -31,9 +32,19 @@ public class RequestService {
     public List<Request> getAllRequestsForUser(UUID userId){
         return requestRepository.findAllRequestsForUser(userId);
     }
+    public  List<Request> findAllRequestsForUserByStatus(UUID userId,ReservationStatus status){
+        return requestRepository.findAllRequestsForUserByStatus(userId,status);
+    }
+
     public void statusRequest(long id,ReservationStatus status) {
         Request r =getRequestById(id);
         r.setStatus(status);
+        save(r);
+    }
+    public void acceptRequest(long id, Ambulancetypes type) {
+        Request r =getRequestById(id);
+        r.setStatus(ReservationStatus.ACCEPTED);
+        r.setCarType( type);
         save(r);
     }
 }

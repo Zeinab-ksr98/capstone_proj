@@ -3,9 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Home</title>
-    <link rel="stylesheet" th:href="@{/home.css}">
-
-
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
     <!-- Include Bootstrap JavaScript and jQuery -->
@@ -13,14 +10,171 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
+    <style>
+        .radius-10 {
+            border-radius: 10px !important;
+        }
 
+        .border-info {
+            border-left: 5px solid #0dcaf0 !important;
+        }
+
+        .border-danger {
+            border-left: 5px solid red !important;
+        }
+
+        .border-success {
+            border-left: 5px solid darkgrey !important;
+        }
+
+        .border-warning {
+            border-left: 5px solid #ffc107 !important;
+        }
+
+
+        .card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            word-wrap: break-word;
+            background-color: #fff;
+            background-clip: border-box;
+            border: 0px solid rgba(0, 0, 0, 0);
+            border-radius: .25rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 6px 0 rgb(218 218 253 / 65%), 0 2px 6px 0 rgb(206 206 238 / 54%);
+        }
+
+        .bg-gradient-scooter {
+            background: #17ead9;
+            background: -webkit-linear-gradient(
+                    45deg, #17ead9, #6078ea) !important;
+            background: linear-gradient(
+                    45deg, #17ead9, #6078ea) !important;
+        }
+
+        .widgets-icons-2 {
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ededed;
+            font-size: 27px;
+            border-radius: 10px;
+            z-index: 2;
+        }
+
+        .rounded-circle {
+            border-radius: 50% !important;
+        }
+
+        .text-white {
+            color: #fff !important;
+        }
+
+        .ms-auto {
+            margin-left: auto !important;
+        }
+
+        .bg-gradient-bloody {
+            background: red;
+            background: -webkit-linear-gradient(
+                    45deg, red, #ff7676) !important;
+            background: linear-gradient(
+                    45deg, red, #ff7676) !important;
+        }
+
+        .bg-gradient-ohhappiness {
+            background: silver;
+            background: -webkit-linear-gradient(
+                    45deg, silver, dimgrey) !important;
+            background: linear-gradient(
+                    45deg, silver, dimgrey) !important;
+        }
+
+        .bg-gradient-blooker {
+            background: #ffdf40;
+            background: -webkit-linear-gradient(
+                    45deg, #ffdf40, #ff8359) !important;
+            background: linear-gradient(
+                    45deg, #ffdf40, #ff8359) !important;
+        }
+    </style>
 </head>
 <body>
 <div th:replace="fragments/hheader :: header"></div>
-<button type="button" style="margin: 20px 0" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+
+<div class="container mt-4">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4">
+        <div class="col">
+            <div class="card radius-10 border-start border-0 border-3 border-info">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <p class="mb-0 text-secondary">Total Requests</p>
+                            <h4 class="my-1 text-info" th:text="${analytics.get(0)}"></h4>
+                        </div>
+                        <div class="widgets-icons-2 rounded-circle bg-gradient-scooter text-white ms-auto">
+                            <img width="24" height="24" src="https://img.icons8.com/external-tal-revivo-solid-tal-revivo/24/external-patient-with-heart-condition-isolated-on-a-white-background-hospital-solid-tal-revivo.png" alt="external-patient-with-heart-condition-isolated-on-a-white-background-hospital-solid-tal-revivo"/>                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card radius-10 border-start border-0 border-3 border-danger">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <p class="mb-0 text-secondary">Available Cars</p>
+                            <h4 class="my-1 text-danger" th:text="${analytics.get(1)}"></h4>
+                        </div>
+                        <div class="widgets-icons-2 rounded-circle bg-gradient-bloody text-white ms-auto">
+                            <img width="34" height="34" src="https://img.icons8.com/pastel-glyph/64/ambulance--v3.png" alt="ambulance--v3"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card radius-10 border-start border-0 border-3 border-warning">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <p class="mb-0 text-secondary">Total Paramedic</p>
+                            <h4 class="my-1 text-warning" th:text="${analytics.get(2)}"></h4>
+                        </div>
+                        <div class="widgets-icons-2 rounded-circle bg-gradient-blooker text-white ms-auto">
+                            <img width="64" height="64" src="https://img.icons8.com/external-victoruler-linear-colour-victoruler/64/external-paramedic-medical-staff-characters-victoruler-linear-colour-victoruler-1.png" alt="external-paramedic-medical-staff-characters-victoruler-linear-colour-victoruler-1"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card radius-10 border-start border-0 border-3 border-success">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <p class="mb-0 text-secondary">Top Paramedic</p>
+                            <h4 class="my-1 text-success">Ali Reda</h4>
+                        </div>
+                        <div class="widgets-icons-2 rounded-circle bg-gradient-ohhappiness text-white ms-auto">
+                            <img width="50" height="50" src="https://img.icons8.com/bubbles/50/medal2-1.png" alt="medal2-1"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+<button type="button" th:if="${admin == true}" style="margin: 20px 0" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
     Create Hospital Branch
 </button>
-<div class="modal fade" id="exampleModalCenter" tabindex="-1"
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" th:if="${admin == true}"
      role="dialog" aria-labelledby="exampleModalCenterTitle"
      aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -46,7 +200,7 @@
                     <input type="text" name="phone" class="form-control"
                            id="phone" th:value="${phone}" required placeholder="phone">
                     <br>
-                    <p>this ambulance account will be a sub of your agency <br> default passward :123 </p>
+                    <p>this hospital account will be a sub of your agency <br> default passward :123 </p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary"
@@ -56,8 +210,41 @@
             </form>
         </div>
     </div>
-</div><br>
+</div>
 
+    <table class="table" th:if="${admin == true}">
+        <thead class="thead-light">
+        <tr>
+            <th scope="col">user name</th>
+            <th scope="col">email</th>
+            <th scope="col">Status</th>
+            <th scope="col">phone number</th>
+            <th scope="col">total Requests</th>
+            <th scope="col">total Reservations</th>
+            <th scope="col">actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="ambulance, categoryIndex : ${hospitals}">
+            <td th:text="${ambulance.publicName}"></td>
+            <td th:text="${ambulance.email}"></td>
+            <td th:text="${ambulance.enabled ? 'Active' : 'Not Active'}"></td>
+            <td th:text="${ambulance.phone}"></td>
+            <td th:text="${ambulance.getReservations().size()}"></td>
+            <td th:text="${ambulance.getRequests().size()}"></td>
+            <td>
+                <a class="btn btn-secondary" th:href="@{users/deactivate/{id}(id=${ambulance.id.toString()})}">
+                    Deactivate
+                </a>
+
+                <a class="btn btn-info" th:href="@{users/activate/{id}(id=${ambulance.id.toString()})}">
+                    Activate
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.1/js/bootstrap.min.js"></script>

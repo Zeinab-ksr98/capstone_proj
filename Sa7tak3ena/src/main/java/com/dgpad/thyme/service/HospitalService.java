@@ -1,6 +1,7 @@
 package com.dgpad.thyme.service;
 
 
+import com.dgpad.thyme.model.usercomplements.BedCategory;
 import com.dgpad.thyme.model.usercomplements.Beds;
 import com.dgpad.thyme.model.users.Ambulance;
 import com.dgpad.thyme.model.users.Hospital;
@@ -10,6 +11,7 @@ import com.dgpad.thyme.repository.HospitalRepository;
 import com.dgpad.thyme.repository.PatientRepository;
 import com.dgpad.thyme.repository.UserRepository;
 import com.dgpad.thyme.security.UserInfoDetails;
+import com.dgpad.thyme.service.UserComplements.BedsService;
 import jdk.jfr.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -29,15 +31,21 @@ public class HospitalService {
     private HospitalRepository hospitalRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private BedsService bedsService;
+
     public Hospital save(Hospital user){
         return hospitalRepository.save(user);
     }
     public Hospital createUser(Hospital user){
-        Hospital newUser = new Hospital(user.getUsername(),user.getPublicName(), user.getEmail(),passwordEncoder.encode(user.getPassword()), user.getPhone());
+        Hospital newUser = new Hospital(user.getUsername(),user.getPublicName(), user.getEmail(),passwordEncoder.encode(user.getPassword()), user.getPhone(), user.isAdministrator());
         return save(newUser);
     }
     public List<Hospital> getAllHospitals(){
         return hospitalRepository.findAll();
+    }
+    public List<Hospital> getAllEnabledHospitals(){
+        return hospitalRepository.getAllEnabledHospitals();
     }
 
     public Hospital getHospitalById(UUID id){
@@ -55,7 +63,9 @@ public class HospitalService {
         }
         return null;
     }
-
+    public List<Hospital> findHospitalsWithAvailableEmergencyBeds(String categoryName) {
+        return hospitalRepository.findHospitalsWithAvailableEmergencyBeds(categoryName);
+    }
 
     public Hospital update(Hospital currentuser,Hospital user){
         if (user.getPublicName()!=null)

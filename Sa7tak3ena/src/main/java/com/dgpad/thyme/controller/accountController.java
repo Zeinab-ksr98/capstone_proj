@@ -1,6 +1,10 @@
 package com.dgpad.thyme.controller;
 
+import com.dgpad.thyme.model.enums.AmbulanceRequestStatus;
+import com.dgpad.thyme.model.enums.AmbulanceStatus;
+import com.dgpad.thyme.model.enums.ReservationStatus;
 import com.dgpad.thyme.model.enums.Role;
+import com.dgpad.thyme.model.requests.AmbulanceRequest;
 import com.dgpad.thyme.model.requests.RequestBedCategory;
 import com.dgpad.thyme.model.usercomplements.AccountRequest;
 import com.dgpad.thyme.model.usercomplements.Address;
@@ -9,10 +13,7 @@ import com.dgpad.thyme.model.users.Hospital;
 import com.dgpad.thyme.model.users.Patient;
 import com.dgpad.thyme.model.users.User;
 import com.dgpad.thyme.service.*;
-import com.dgpad.thyme.service.UserComplements.AccountRequestService;
-import com.dgpad.thyme.service.UserComplements.AddressService;
-import com.dgpad.thyme.service.UserComplements.RequestService;
-import com.dgpad.thyme.service.UserComplements.ReservationService;
+import com.dgpad.thyme.service.UserComplements.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -24,12 +25,20 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
+import java.util.List;
+
 //the following controller group out the common functions that are accessed by all the users
 @Controller
 public class accountController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private HSectionsService hSectionsService;
+
+    @Autowired
+    private AmbulanceRequestService ambulancerequestService;
     @Autowired
     private HospitalService hospitalService;
     @Autowired
@@ -40,6 +49,12 @@ public class accountController {
     private AddressService addressService;
     @Autowired
     private AccountRequestService accountRequestService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private AmbulanceAgencyService ambulanceAgencyService;
     @GetMapping(value = "/Main")
     public String home(Model model) {
         model.addAttribute("account", new AccountRequest());
@@ -47,7 +62,6 @@ public class accountController {
     }
     @PostMapping("/Request-Account")
     public String requestAccount(@ModelAttribute("account") AccountRequest accountRequest) {
-        System.out.println(accountRequest.getCompanyName());
         accountRequestService.save(accountRequest);
         return "redirect:/Main";
     }
@@ -70,9 +84,22 @@ public class accountController {
 
         if (userService.getCurrentUser().getRole()== Role.ADMIN)
             return "redirect:/Requests";
-        else if (userService.getCurrentUser().getRole()== Role.PATIENT)
+        else if (userService.getCurrentUser().getRole()== Role.PATIENT){
+            List<AmbulanceRequest> requests = ambulancerequestService.findAllAmbulanceRequestsForUserByStatus(userService.getCurrentUser().id, AmbulanceRequestStatus.PENDING);
+            model.addAttribute("requests_size",requests.size());
+
             return "patient/Home";
+        }
         else if (userService.getCurrentUser().getRole()== Role.HOSPITAL) {
+            Hospital cu =hospitalService.getHospitalById(userService.getCurrentUser().getId());
+            List<Integer> analytics = new ArrayList<>();
+            analytics.add(cu.getReservations().size());
+            analytics.add(cu.getRequests().size());
+            analytics.add(0);
+            model.addAttribute("analytics",analytics);
+            model.addAttribute("hospitals", hospitalService.getAllHospitals());
+
+            model.addAttribute("admin", userService.getCurrentUser().isAdministrator());
             return "hospital/Home";
         }
         else if (userService.getCurrentUser().getRole()== Role.AMBULANCE) {
@@ -87,28 +114,30 @@ public class accountController {
     public String userProfile(Model model) {
         // Get the current user
         User user = userService.getCurrentUser();
-
-        // Get the user data based on the user's role
-        Object userData;
-
         switch (user.getRole()) {
-            case ADMIN:
-                userData = userService.getUserById(user.id);
+            case ADMIN:{
+                model.addAttribute("newuser", new User());
+                model.addAttribute("user", userService.getUserById(userService.getCurrentUser().id));
                 break;
-            case PATIENT:
-                userData = patientService.getPatientById(user.id);
+            }
+            case PATIENT:{
+                model.addAttribute("newuser", new Patient());
+                model.addAttribute("user", patientService.getPatientById(user.id));
                 break;
-            case HOSPITAL:
-                userData = hospitalService.getHospitalById(user.id);
+            }
+            case HOSPITAL:{
+                model.addAttribute("newuser", new Hospital());
+                model.addAttribute("user", hospitalService.getHospitalById(user.id));
                 break;
-            default:
-                userData = ambulanceService.getAmbulanceById(user.id);
+            }
+            default:{
+                model.addAttribute("newuser", new Ambulance());
+                model.addAttribute("user",ambulanceService.getAmbulanceById(user.id));
                 break;
+            }
         }
-
         // Add the "role" and "user" attributes to the model
         model.addAttribute("role", user.getRole().toString());
-        model.addAttribute("user", userData);
 
         return "account/Profile";
     }
@@ -121,13 +150,14 @@ public class accountController {
     @PostMapping("/profile-edit-hospital")
     @PreAuthorize("hasAnyAuthority('HOSPITAL')")
     public String editUserProfile(@ModelAttribute("newuser") Hospital user) {
-        hospitalService.save(user);
+        hospitalService.update(hospitalService.getHospitalById(userService.getCurrentUser().getId()),user);
         return "redirect:/profile";
     }
     @PostMapping("/profile-edit-patient")
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     public String editUserProfile(@ModelAttribute("newuser") Patient user) {
-        patientService.save(user);
+
+        patientService.update(patientService.getPatientById(userService.getCurrentUser().getId()),user);
         return "redirect:/profile";
     }
 //    edit admin details
@@ -218,8 +248,6 @@ public class accountController {
         return "redirect:/profile#";
     }
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @PostMapping("/profile-resetPassword")
     public String resetPassword(@RequestParam String newPassword) {
@@ -246,7 +274,18 @@ public class accountController {
     }
     @GetMapping(value = "/ambulance-contactInfo")
     public String displayAmbulance(Model model) {
+        User user = userService.getCurrentUser();
+        model.addAttribute("role", user.getRole().toString());
+        model.addAttribute("ambulances",ambulanceService.getAllAmbulances());
         return "account/Ambulance contact info";
-
     }
+    @GetMapping(value = "/hospitals")
+    public String hospitals(Model model) {
+        User user = userService.getCurrentUser();
+        model.addAttribute("role", user.getRole().toString());
+        model.addAttribute("hospitalList",hospitalService.getAllHospitals() );
+        model.addAttribute("hospitalSections",hSectionsService.getAllHSections() );
+        return "patient/display hospitals";
+    }
+
 }

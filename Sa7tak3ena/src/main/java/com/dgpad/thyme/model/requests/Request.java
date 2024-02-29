@@ -1,7 +1,9 @@
 package com.dgpad.thyme.model.requests;
 
+import com.dgpad.thyme.model.enums.Ambulancetypes;
 import com.dgpad.thyme.model.enums.ReservationStatus;
 import com.dgpad.thyme.model.enums.ReservationType;
+import com.dgpad.thyme.model.usercomplements.Address;
 import com.dgpad.thyme.model.usercomplements.AmbulanceAgency;
 import com.dgpad.thyme.model.usercomplements.AmbulanceCar;
 import com.dgpad.thyme.model.users.Hospital;
@@ -30,6 +32,8 @@ public class Request {
     @Enumerated(EnumType.STRING)
     private ReservationStatus status;
     private String MedicalRecord;
+    @ManyToOne
+    private Address pickupAddress;
 
     @Enumerated(EnumType.STRING)
     private ReservationType reservationType;
@@ -46,6 +50,9 @@ public class Request {
 
     @ManyToMany
     private List<AmbulanceAgency> preferedAmbulance;
+
+    private Ambulancetypes carType;
+
     // entered by hospital
     @ManyToOne
     @JoinColumn(name = "car_id")

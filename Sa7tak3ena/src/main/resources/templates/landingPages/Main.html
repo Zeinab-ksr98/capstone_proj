@@ -49,9 +49,6 @@
 
 </div>
 <div class="products-cont" id="ourproducts">
-<!--    <div class="supportedBy">-->
-
-<!--    </div>-->
 
 </div>
 <div class="hero-cont" id="Services">
@@ -214,7 +211,18 @@
         </div>
     </div>
 </footer>
+<script src="https://unpkg.com/scrollreveal"></script>
 
+<script>
+    // Initialize ScrollReveal
+    ScrollReveal().reveal('.service-card', {
+        delay: 200,
+        distance: '50px',
+        origin: 'bottom',
+        easing: 'ease-in-out',
+        duration: 1000
+    });
+</script>
 </body>
 <!-- Include Bootstrap JS (optional) -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

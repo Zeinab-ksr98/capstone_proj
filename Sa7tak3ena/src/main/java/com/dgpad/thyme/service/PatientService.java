@@ -5,6 +5,7 @@ import com.dgpad.thyme.Whatsapp.PatientDTO;
 import com.dgpad.thyme.Whatsapp.VerificationCodeRepository;
 import com.dgpad.thyme.Whatsapp.VerificationCodes;
 import com.dgpad.thyme.Whatsapp.VerificationSender;
+import com.dgpad.thyme.model.enums.Ambulancetypes;
 import com.dgpad.thyme.model.enums.Gender;
 import com.dgpad.thyme.model.enums.ReservationStatus;
 import com.dgpad.thyme.model.requests.Request;
@@ -50,7 +51,7 @@ public class PatientService {
         Patient user = new Patient(number, password, false);
         user = patientRepository.save(user);
 
-        return new PatientDTO(user.getId().toString(), user.getPhone(), user.isVerifiedPhone());
+        return new PatientDTO(user.getId().toString(), user.getPhone(), user.getVerifiedPhone());
     }
     public PatientDTO verifyUser(String number, String code) throws Exception {
         Patient user = patientRepository.findPatientByNumber(number).orElse(null);
@@ -64,13 +65,13 @@ public class PatientService {
             throw new Exception("Failed to verify the number the code is incorrect");
         user.setVerifiedPhone(true);
         user = patientRepository.save(user);
-        return new PatientDTO(user.getId().toString(), user.getPhone(), user.isVerifiedPhone());
+        return new PatientDTO(user.getId().toString(), user.getPhone(), user.getVerifiedPhone());
     }
     public List<PatientDTO> getUsers(){
         List<Patient> users = patientRepository.findAll();
         List<PatientDTO> userDTOS = new ArrayList<>();
         for(Patient user : users)
-            userDTOS.add(new PatientDTO(user.getId().toString(),user.getPhone(), user.isVerifiedPhone()));
+            userDTOS.add(new PatientDTO(user.getId().toString(),user.getPhone(), user.getVerifiedPhone()));
         return userDTOS;
     }
     public static String generateRandomString(int length) {
@@ -136,6 +137,18 @@ public class PatientService {
             // Check if the id of the request matches the provided id
             if (request.getId() == id) {
                 request.setStatus(status);
+                break;
+            }
+        }
+        save(patient);
+    }
+    public void acceptRequest(long id, UUID userId, Ambulancetypes type) {
+        Patient patient = getPatientById(userId);
+        for (Request request : patient.getRequests()) {
+            // Check if the id of the request matches the provided id
+            if (request.getId() == id) {
+                request.setStatus(ReservationStatus.ACCEPTED);
+                request.setCarType(type);
                 break;
             }
         }

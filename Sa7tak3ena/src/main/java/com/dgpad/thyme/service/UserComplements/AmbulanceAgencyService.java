@@ -18,12 +18,8 @@ public class AmbulanceAgencyService {
     public List<AmbulanceAgency> getAllAgencies(){
         return ambulanceAgencyRepository.findAll();
     }
-
     public AmbulanceAgency getAmbulanceAgencyId(int id) {
         return ambulanceAgencyRepository.findById(id).orElse(null);
     }
-    public void deleteAmbulanceAgency(int id) {
 
-        ambulanceAgencyRepository.delete(getAmbulanceAgencyId(id));
-    }
 }

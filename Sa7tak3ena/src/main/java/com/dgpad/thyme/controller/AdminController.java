@@ -1,6 +1,7 @@
 package com.dgpad.thyme.controller;
 
 import com.dgpad.thyme.model.enums.Role;
+import com.dgpad.thyme.model.usercomplements.Address;
 import com.dgpad.thyme.model.usercomplements.AmbulanceAgency;
 import com.dgpad.thyme.model.usercomplements.BedCategory;
 import com.dgpad.thyme.model.users.Ambulance;
@@ -9,6 +10,7 @@ import com.dgpad.thyme.model.users.User;
 import com.dgpad.thyme.repository.AccountRequestRepository;
 import com.dgpad.thyme.service.AmbulanceService;
 import com.dgpad.thyme.service.HospitalService;
+import com.dgpad.thyme.service.PatientService;
 import com.dgpad.thyme.service.UserComplements.*;
 import com.dgpad.thyme.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,43 +48,60 @@ public class AdminController {
 
         return "Admin/manage-users";
     }
-    @GetMapping("/location")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public String location() {
-
-        return "account/test_location";
-    }
-
     @PostMapping(value = "/admin-create-withRole")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String createAdmin(@RequestParam("username") String userName,
                               @RequestParam(value = "publicname", required = false) String publicName,
                               @RequestParam("pass") String pass,
+                              @RequestParam("administrator") boolean administrator,
                               @RequestParam("email") String email,
                               @RequestParam("phone") String phone,
                               @RequestParam("role") Role role,
                               @RequestParam(value = "agency", required = false) AmbulanceAgency agency ,Model model) {
         if (role == Role.AMBULANCE && (publicName == null || agency == null)) {
             model.addAttribute("error", "Public Name and Agency are required for Ambulance role.");
-            return "error-page";  // You need to create an error-page Thymeleaf template
+            return "error-page";
         }
         Role selectedRole = Role.valueOf(role.name());
     if (selectedRole == Role.HOSPITAL) {
-        Hospital hospital = new Hospital(userName, publicName, email, passwordEncoder.encode(pass), phone);
+        Hospital hospital = new Hospital(userName, publicName, email, passwordEncoder.encode(pass), phone,administrator);
         hospitalService.save(hospital);
     }
     else if (selectedRole == Role.ADMIN) {
-        User admin = new User(userName, email, passwordEncoder.encode(pass), phone,Role.ADMIN);
+        User admin = new User(userName, email, passwordEncoder.encode(pass), phone,Role.ADMIN,administrator);
         userService.save(admin);
     }
     else if (selectedRole == Role.AMBULANCE) {
-        Ambulance ambulance = new Ambulance(userName, publicName, email, passwordEncoder.encode(pass), phone);
+        Ambulance ambulance = new Ambulance(userName, publicName, email, passwordEncoder.encode(pass), phone,administrator);
         ambulance.setAgency(agency);
         ambulanceService.save(ambulance);
     }
     return "redirect:/manage-users";
 }
+    @GetMapping("/location")
+    public String location() {
+        return "account/test_location";
+    }
+    @Autowired
+    private AddressService addressService;
+    @PostMapping("/gps_location")
+    public String receiveLocation(@RequestParam("latitude") double latitude, @RequestParam("longitude") double longitude) {
+        Hospital h = hospitalService.getHospitalById(userService.getCurrentUser().getId());
+        Address address = new Address();
+        address.setLongitude(longitude);
+        address.setLatitude(latitude);
 
+        if (h.getAddress() != null && h.getAddress().getId() != null) {
+            address = addressService.updateAddress(h.getAddress().getId(), address);
+        } else {
+            address = addressService.save(address);
+        }
+
+        h.setAddress(address);
+        hospitalService.save(h);
+        return "redirect:/home";
+
+    }
 
 //@PostMapping(value = "/admin-create-withRole")
 //@PreAuthorize("hasAnyAuthority('ADMIN')")

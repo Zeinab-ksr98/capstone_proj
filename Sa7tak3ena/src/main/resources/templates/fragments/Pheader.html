@@ -65,7 +65,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-light" th:href="@{/get-all-requests}">Requests</a>
+                        <a class="nav-link text-light"  th:href="@{/get-all-requests}">Requests</a>
                     </li>
 
                     <li class="nav-item">
@@ -73,20 +73,19 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link text-light" th:href="@{/request-form2}"> Bed Request</a>
+                        <a id="RequestBtn" class="nav-link text-light" href="#">Request Location</a>
                     </li>
 
                     <li class="nav-item">
                         <a class="nav-link text-light" th:href="@{/hospitals}">Hospitals</a>
                     </li>
 
-                </ul>
-                <div class="nav-item">
-                    <a class="nav-link text-light" th:href="@{/ambulance-contactInfo}">
-                        <img width="40" height="40" src="https://img.icons8.com/clouds/100/ambulance.png" alt="ambulance"/>
+                    <li class="nav-item">
+                        <a class="nav-link text-light" th:href="@{/ambulance-contactInfo}">Ambulances</a>
+                    </li>
 
-                    </a>
-                </div>
+                </ul>
+
                 <ul class="navbar-nav">
                     <li class="nav-item active">
                         <a class="nav-link text-light" th:href="@{/logout}"><h6>Logout</h6></a>
@@ -95,12 +94,44 @@
             </div>
         </div>
     </nav>
+
+    <script th:inline="javascript">
+        document.getElementById("RequestBtn").addEventListener("click", function(event) {
+            event.preventDefault(); // Prevent the default behavior of the anchor tag
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var lat = position.coords.latitude;
+                    var lon = position.coords.longitude;
+                    // Modify the href attribute to include latitude and longitude
+                    var url = '/request-form2?lat=' + lat + '&lon=' + lon;
+                    window.location.href = url;
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        });
+    </script>
+
+<!--    <script th:inline="javascript">-->
+<!--            $('#RequestBtn').onclick(function(event) {-->
+<!--                if (navigator.geolocation) {-->
+<!--                    navigator.geolocation.getCurrentPosition(function(position) {-->
+<!--                        var lat = position.coords.latitude;-->
+<!--                        var lon = position.coords.longitude;-->
+<!--                        // Modify the href attribute to include latitude and longitude-->
+<!--                        var url = '/request-form2?lat=' + lat + '&lon=' + lon;-->
+<!--                        window.location.href = url;-->
+<!--                    });-->
+<!--                } else {-->
+<!--                    alert("Geolocation is not supported by this browser.");-->
+<!--                }-->
+<!--            });-->
+<!--    </script>-->
+
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.1/js/bootstrap.min.js"></script>
 </header>
-
-
-
 </body>
 </html>

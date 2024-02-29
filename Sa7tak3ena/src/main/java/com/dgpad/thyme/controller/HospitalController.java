@@ -134,7 +134,7 @@ public class HospitalController {
     @PostMapping(value = "/create-hospital")
     @PreAuthorize("hasAnyAuthority('HOSPITAL')")
     public String CreateBranch(@RequestParam("username") String userName, @RequestParam("publicname") String publicName, @RequestParam("email") String email, @RequestParam("phone") String phone) {
-        Hospital hospital = new Hospital(userName, publicName, email, passwordEncoder.encode("123"), phone);
+        Hospital hospital = new Hospital(userName, publicName, email, passwordEncoder.encode("123"), phone,false);
         hospitalService.save(hospital);
         return "redirect:/home";
     }

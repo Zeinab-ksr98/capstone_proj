@@ -4,94 +4,283 @@
     <meta charset="UTF-8">
     <title>Title</title>
 
+    <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Include Bootstrap JavaScript and jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        .radius-10 {
+            border-radius: 10px !important;
+        }
 
+        .border-info {
+            border-left: 5px solid #0dcaf0 !important;
+        }
+
+        .border-danger {
+            border-left: 5px solid red !important;
+        }
+
+        .border-success {
+            border-left: 5px solid darkgrey !important;
+        }
+
+        .border-warning {
+            border-left: 5px solid #ffc107 !important;
+        }
+
+
+        .card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            word-wrap: break-word;
+            background-color: #fff;
+            background-clip: border-box;
+            border: 0px solid rgba(0, 0, 0, 0);
+            border-radius: .25rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 6px 0 rgb(218 218 253 / 65%), 0 2px 6px 0 rgb(206 206 238 / 54%);
+        }
+
+        .bg-gradient-scooter {
+            background: #17ead9;
+            background: -webkit-linear-gradient(
+                    45deg, #17ead9, #6078ea) !important;
+            background: linear-gradient(
+                    45deg, #17ead9, #6078ea) !important;
+        }
+
+        .widgets-icons-2 {
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ededed;
+            font-size: 27px;
+            border-radius: 10px;
+            z-index: 2;
+        }
+
+        .rounded-circle {
+            border-radius: 50% !important;
+        }
+
+        .text-white {
+            color: #fff !important;
+        }
+
+        .ms-auto {
+            margin-left: auto !important;
+        }
+
+        .bg-gradient-bloody {
+            background: red;
+            background: -webkit-linear-gradient(
+                    45deg, red, #ff7676) !important;
+            background: linear-gradient(
+                    45deg, red, #ff7676) !important;
+        }
+
+        .bg-gradient-ohhappiness {
+            background: silver;
+            background: -webkit-linear-gradient(
+                    45deg, silver, dimgrey) !important;
+            background: linear-gradient(
+                    45deg, silver, dimgrey) !important;
+        }
+
+        .bg-gradient-blooker {
+            background: #ffdf40;
+            background: -webkit-linear-gradient(
+                    45deg, #ffdf40, #ff8359) !important;
+            background: linear-gradient(
+                    45deg, #ffdf40, #ff8359) !important;
+        }
+    </style>
 </head>
 <body>
 <div th:replace="fragments/Aheader :: header"></div>
-<img th:src="@{/assits/home-ambulance.png}" style="max-width: 100%" alt=" ">
-
-<button type="button" style="margin: 20px 0" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-    new branch account
-</button>
-
-<div class="modal fade" id="exampleModalCenter" tabindex="-1"
-     role="dialog" aria-labelledby="exampleModalCenterTitle"
-     aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <form th:action="@{/create-ambulance}" method="Post">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">establish a new branch account</h5>
-                    <button type="button" class="close" data-dismiss="modal"
-                            aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+<div class="container mt-4">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4">
+        <div class="col">
+            <div class="card radius-10 border-start border-0 border-3 border-info">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <p class="mb-0 text-secondary">Total Requests</p>
+                            <h4 class="my-1 text-info" th:text="${analytics.get(0)}"></h4>
+                        </div>
+                        <div class="widgets-icons-2 rounded-circle  text-white ms-auto">
+                            <img width="100" height="100" src="https://img.icons8.com/bubbles/100/patient-care.png" alt="patient-care"/>                        </div>
+                    </div>
                 </div>
-                <div class="modal-body text-center">
-                    <input type="text" name="username" class="form-control"
-                           id="name" th:value="${username}" required placeholder="username">
-                    <br>
-                    <input type="text" name="publicname" class="form-control"
-                           id="publicname" th:value="${publicname}" required placeholder="as it shull apear to other users">
-                    <br>
-                    <input type="text" name="email" class="form-control"
-                           id="email" th:value="${email}" required placeholder="email">
-                    <br>
-                    <input type="text" name="phone" class="form-control"
-                           id="phone" th:value="${phone}" required placeholder="phone">
-                    <br>
-                    <p>this ambulance account will be a sub of your agency <br> default passward :123 </p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary"
-                            data-dismiss="modal">Close</button>
-                    <input type="submit" value="Save Changes" class="btn btn-primary">
-                </div>
-            </form>
+            </div>
         </div>
+        <div class="col">
+            <div class="card radius-10 border-start border-0 border-3 border-danger">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <p class="mb-0 text-secondary">Available Cars</p>
+                            <h4 class="my-1 text-danger" th:text="${analytics.get(1)}"></h4>
+                        </div>
+                        <div class="widgets-icons-2 rounded-circle  text-white ms-auto">
+                            <img width="100" height="100" src="https://img.icons8.com/bubbles/100/ambulance.png" alt="ambulance"/>                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card radius-10 border-start border-0 border-3 border-warning">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <p class="mb-0 text-secondary">Total Paramedic</p>
+                            <h4 class="my-1 text-warning" th:text="${analytics.get(2)}"></h4>
+                        </div>
+                        <div class="widgets-icons-2 rounded-circle bg-gradient-blooker text-white ms-auto">
+                            <img width="64" height="64" src="https://img.icons8.com/external-victoruler-linear-colour-victoruler/64/external-paramedic-medical-staff-characters-victoruler-linear-colour-victoruler-1.png" alt="external-paramedic-medical-staff-characters-victoruler-linear-colour-victoruler-1"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card radius-10 border-start border-0 border-3 border-success">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <p class="mb-0 text-secondary">Top Paramedic</p>
+                            <h4 class="my-1 text-success">Ali Reda</h4>
+                        </div>
+                        <div class="widgets-icons-2 rounded-circle  text-white ms-auto">
+                            <img width="100" height="100" src="https://img.icons8.com/bubbles/100/medal2-1.png" alt="medal2-1"/>                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
-</div><br>
-
-
- <div class="container mt-5" th:if="${requests != null and not #lists.isEmpty(requests)}">
+    <div th:if="${ requests != null and not #lists.isEmpty(requests)}">
         <table class="table">
             <thead class="thead-light">
             <tr>
                 <th scope="col">Request type</th>
-                <th scope="col">sender Name</th>
-                <th scope="col">sender Phone</th>
-                <th scope="col">from</th>
+                <th scope="col">Sender Name</th>
+                <th scope="col">Sender Phone</th>
+                <th scope="col">From</th>
                 <th scope="col">To</th>
-                <th scope="col">created at</th>
-                <th scope="col">accept</th>
+                <th scope="col">Created At</th>
+                <th scope="col">Accept</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="request : ${requests}" th:if="${request.status== request.status.PENDING}" >
+            <tr th:each="request : ${requests}" th:if="${request.status == request.status.PENDING}">
                 <td th:text="${request.service}"></td>
                 <td th:text="${request.getSender().username}"></td>
                 <td th:text="${request.getSender().phone}"></td>
                 <td th:text="${request.from}"></td>
                 <td th:text="${request.to}"></td>
                 <td th:text="${request.createdAt}"></td>
-
                 <td>
-                    <a class="btn btn-danger" th:href="@{/updatestatus(id=${request.id})}">
-                        accept
+                    <a class="btn btn-primary" th:href="@{/acceptRequest(id=${request.id})}">
+                        Accept
+                    </a>
+                    <a class="btn btn-warning" th:href="@{/rejectRequest(id=${request.id})}">
+                        Reject
                     </a>
                 </td>
             </tr>
-
             </tbody>
         </table>
     </div>
 
-</body>
 
+    <button th:if="${admin == true}" class="btn btn-primary" data-target="#exampleModalCenter" data-toggle="modal" style="margin: 20px 0"
+            type="button">
+        new branch account
+    </button>
+
+    <div th:if="${admin == true}" aria-hidden="true" aria-labelledby="exampleModalCenterTitle" class="modal fade"
+         id="exampleModalCenter" role="dialog"
+         tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form method="Post" th:action="@{/create-ambulance}">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">establish a new branch account</h5>
+                        <button aria-label="Close" class="close" data-dismiss="modal"
+                                type="button">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <input class="form-control" id="name" name="username"
+                               placeholder="username" required th:value="${username}" type="text">
+                        <br>
+                        <input class="form-control" id="publicname" name="publicname"
+                               placeholder="as it shall appear to other users" required th:value="${publicname}"
+                               type="text">
+                        <br>
+                        <input class="form-control" id="email" name="email"
+                               placeholder="email" required th:value="${email}" type="text">
+                        <br>
+                        <input class="form-control" id="phone" name="phone"
+                               placeholder="phone" required th:value="${phone}" type="text">
+                        <br>
+                        <p>this ambulance account will be a sub of your agency <br> default password: 123 </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-dismiss="modal"
+                                type="button">Close
+                        </button>
+                        <input class="btn btn-primary" type="submit" value="Save Changes">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <br>
+    <table class="table" th:if="${admin == true}">
+        <thead class="thead-light">
+        <tr>
+            <th scope="col">user name</th>
+            <th scope="col">email</th>
+            <th scope="col">Status</th>
+            <th scope="col">phone number</th>
+            <th scope="col">Staff</th>
+            <th scope="col">Total Cars</th>
+            <th scope="col">Total Requests</th>
+            <th scope="col">actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="ambulance, categoryIndex : ${ambulances}">
+            <td th:text="${ambulance.publicName}"></td>
+            <td th:text="${ambulance.email}"></td>
+            <td th:text="${ambulance.enabled ? 'Active' : 'Not Active'}"></td>
+            <td th:text="${ambulance.phone}"></td>
+            <td th:text="${ambulance.getParamedicList().size()}"></td>
+            <td th:text="${ambulance.ambulanceCars.size()}"></td>
+            <td th:text="${ambulance.getAmbulanceRequests().size()}"></td>
+            <td>
+                <a class="btn btn-secondary" th:href="@{users/deactivate/{id}(id=${ambulance.id.toString()})}">
+                    Deactivate
+                </a>
+
+                <a class="btn btn-info" th:href="@{users/activate/{id}(id=${ambulance.id.toString()})}">
+                    Activate
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
 </html>

@@ -16,7 +16,7 @@
          aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
-                <form th:action="@{/add-request}" th:object="${newrequest}" method="post">
+                <form action="/add-request" th:object="${newrequest}" method="post">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLongTitle">Add request</h5>
                         <button type="button" class="close" data-dismiss="modal"
@@ -26,16 +26,25 @@
                     </div>
                     <div class="modal-body text-center">
                             <div class="modal-body text-center">
-                                <select name="service" class="form-control" id="type" required>
-                                    <option th:each="service : ${T(com.dgpad.thyme.model.enums.Ambulanceservice).values()}"
-                                            th:value="${service}" th:field="*{service}" th:text="${service.name()}">
-                                    </option>
-                                </select>
+                                <div class="form-group">
+                                    <select name="service" class="form-control" id="type" required>
+                                        <option th:each="service : ${T(com.dgpad.thyme.model.enums.Ambulanceservice).values()}"
+                                                th:value="${service}" th:field="*{service}" th:text="${service.name()}">
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="staff">Select Staff:</label>
+                                    <select id="staff" name="staff-id" class="form-control" required>
+                                        <option th:each="staff : ${stafflist}" th:value="${staff.id}" th:text="${staff.name}"></option>
+                                    </select>
+                                </div>
 
                                 <input type="text" class="form-control" name="description" id="description" th:field="*{description}" placeholder="Description" required>
                                 <input type="text" class="form-control" name="phone" id="phone" placeholder="Phone Number" required>
                                 <input type="text" class="form-control" name="equipment" id="equipment" placeholder="Equipment">
-                                <input type="text" class="form-control" name="name" id="name" placeholder="Name">
+                                <input type="text" class="form-control" name="name" id="name" placeholder="Name" required>
 
                                 <script>
                                     document.getElementById('type').addEventListener('change', function () {
@@ -74,14 +83,95 @@
                                 <script>
                                     document.getElementById('type').addEventListener('change', function () {
                                         var selectedService = this.value;
-
                                         document.getElementById('homeServiceFields').style.display = (selectedService === 'homeService') ? 'block' : 'none';
                                         document.getElementById('transferFields').style.display = (selectedService === 'transfer') ? 'block' : 'none';
                                         document.getElementById('inDoorServiceFields').style.display = (selectedService === 'inDoorService') ? 'block' : 'none';
                                     });
                                 </script>
                             </div>
+                    </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary"
+                                    data-dismiss="modal">Close</button>
+                            <input type="submit" value="Save Changes" class="btn btn-primary">
                         </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="container mt-3" >
+        <h5>Hospital Requests</h5>
+        <table class="table">
+            <thead class="thead-light">
+            <tr>
+                <th scope="col">Request type</th>
+                <th scope="col">sender Name</th>
+                <th scope="col">sender Phone</th>
+                <th scope="col">from</th>
+                <th scope="col">To</th>
+                <th scope="col">Car Type</th>
+                <th scope="col">status</th>
+                <th scope="col">staff</th>
+                <th scope="col">created at</th>
+                <th scope="col"> description</th>
+                <th scope="col"></th>
+
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="request : ${requests}" th:if="${request.isFrom_hospital() && request.status != request.status.PENDING}" >
+                <td th:text="${request.service}"></td>
+                <td th:text="${request.getSender().username}"></td>
+                <td th:text="${request.getSender().phone}"></td>
+                <td th:text="${request.from}"></td>
+                <td th:text="${request.to}"></td>
+                <td th:text="${request.car_type}"></td>
+
+                <td th:text="${request.status}"></td>
+                <td th:text="${request.staff != null ? request.staff.name : 'N/A'}"></td>
+                <td th:text="${request.createdAt}"></td>
+                <td th:text="${request.description}"></td>
+
+                <td>
+                    <button class="btn btn-primary" data-toggle="modal" th:attr="data-target='#updateHModal'+${request.id}">
+                        modify details
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div th:each="request : ${requests}" th:id="'updateHModal'+${request.id}" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog " role="document">
+            <div class="modal-content">
+                <form th:action="@{/update-hrequestdetails}" method="get">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="detailsHModalLongTitle">Add details</h5>
+                        <button type="button" class="close" data-dismiss="modal"
+                                aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <input type="hidden" name="id"  th:value="${request.id}" />
+                        <input readonly  th:value="${request.car_type}" />
+                        <div class="form-group">
+                            <label for="ucar">Select Car number:</label>
+                            <select  name="car" class="form-control">
+                                <option th:each="c : ${cars}" th:value="${c.id}" th:text="${c.type}+' _ '+${c.id}"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="nstaff">Select Paramedic:</label>
+                            <select  name="nstaff" class="form-control" required>
+                                <option th:each="staff : ${stafflist}" th:value="${staff.id}" th:text="${staff.name}"></option>
+                            </select>
+                        </div>
+                        <input type="text" class="form-control" name="equipment" placeholder="Equipment">
+                    </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary"
                                 data-dismiss="modal">Close</button>
@@ -90,44 +180,144 @@
                 </form>
             </div>
         </div>
-    </div><br>
-<div class="container mt-3">
-    <h5>To day Requests</h5>
-    <table class="table">
-        <thead class="thead-light">
-        <tr>
-            <th scope="col">Request type</th>
-            <th scope="col">sender Name</th>
-            <th scope="col">sender Phone</th>
-            <th scope="col">from</th>
-            <th scope="col">To</th>
-            <th scope="col">created at</th>
-            <th scope="col">status</th>
-            <th scope="col"></th>
+    </div>
+    <div class="container mt-3">
+        <h5>To day Requests</h5>
+        <table class="table">
+            <thead class="thead-light">
+            <tr>
+                <th scope="col">Request type</th>
+                <th scope="col">sender Name</th>
+                <th scope="col">sender Phone</th>
+                <th scope="col">from</th>
+                <th scope="col">To</th>
+                <th scope="col">status</th>
+                <th scope="col">staff</th>
+                <th scope="col">created at</th>
+                <th scope="col"> description</th>
+                <th scope="col"></th>
 
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="request : ${requests}" >
-            <td th:text="${request.service}"></td>
-            <td th:text="${request.getSender().username}"></td>
-            <td th:text="${request.getSender().phone}"></td>
-            <td th:text="${request.from}"></td>
-            <td th:text="${request.to}"></td>
-            <td th:text="${request.status}"></td>
-            <td th:text="${request.createdAt}"></td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="request : ${requests}" th:if="${!request.isFrom_hospital() && request.status != request.status.PENDING}">
+                <td th:text="${request.service}"></td>
+                <td th:text="${request.getSender().username}"></td>
+                <td th:text="${request.getSender().phone}"></td>
+                <td th:text="${request.from}"></td>
+                <td th:text="${request.to}"></td>
+                <td th:text="${request.status}"></td>
+                <td th:text="${request.staff != null ? request.staff.name : 'N/A'}"></td>
+                <td th:text="${request.createdAt}"></td>
+                <td th:text="${request.description}"></td>
 
-            <td>
-                <a class="btn btn-danger" th:href="@{/update-requestdetails(id=${request.id})}">
-                    modify details
-                </a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+                <td>
+                    <button class="btn btn-danger" th:if="${request.service != request.service.transfer }" data-toggle="modal" th:attr="data-target='#emergencyModal'+${request.id}">
+                        request hospital
+                    </button>
+                    <button class="btn btn-primary" data-toggle="modal" th:attr="data-target='#updateModal'+${request.id}">
+                        modify details
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div th:each="request : ${requests}" th:id="'updateModal'+${request.id}" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog " role="document">
+                <div class="modal-content">
+                    <form th:action="@{/update-requestdetails}" method="get">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="detailsModalLongTitle">Add details</h5>
+                            <button type="button" class="close" data-dismiss="modal"
+                                    aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <input type="hidden" name="id" id="id" th:value="${request.id}" />
+                            <div class="form-group">
+                                <label for="stype">Select Survice Type:</label>
+                                <select name="stype" class="form-control" id="stype" required>
+                                    <option th:each="service : ${T(com.dgpad.thyme.model.enums.Ambulanceservice).values()}"
+                                            th:value="${service}" th:text="${service.name()}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="ucar">Select Car number:</label>
+                                <select id="ucar" name="car" class="form-control">
+                                    <option th:each="c : ${cars}" th:value="${c.id}" th:text="${c.type}+' _ '+${c.id}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="nstaff">Select Paramedic:</label>
+                                <select id="nstaff" name="nstaff" class="form-control" required>
+                                    <option th:each="staff : ${stafflist}" th:value="${staff.id}" th:text="${staff.name}"></option>
+                                </select>
+                            </div>
 
+                            <input type="text" class="form-control" name="newdescription" id="newdescription"  placeholder="Description" required>
+                            <input type="text" class="form-control" name="equipment" id="nequipment" placeholder="Equipment">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary"
+                                    data-dismiss="modal">Close</button>
+                            <input type="submit" value="Save Changes" class="btn btn-primary">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <div th:each="request : ${requests}" th:id="'emergencyModal'+${request.id}" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog " role="document">
+                <div class="modal-content">
+                    <form th:action="@{/emergency-reservation}" method="post">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="emergencyModalLongTitle">Reserve Emergency bed</h5>
+                            <button type="button" class="close" data-dismiss="modal"
+                                    aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <input type="hidden" name="rid" id="rid" th:value="${request.id}" />
+
+                        <div class="modal-body text-center" >
+                            <div class="form-group">
+                                <label for="hospital">Select Hospital:</label>
+                                <select id="hospital" name="hospital" class="form-control" required>
+                                    <option th:each="hospital : ${hospitals}" th:value="${hospital.id}" th:text="${hospital.publicName}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="car">Select Car number:</label>
+                                <select id="car" name="car" class="form-control">
+                                    <option th:each="c : ${cars}" th:value="${c.id}" th:text="${c.type}+' _ '+${c.id}"></option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="emergencystaff">Select Paramedic:</label>
+                                <select id="emergencystaff" name="emergencystaff" class="form-control" required>
+                                    <option th:each="staff : ${stafflist}" th:value="${staff.id}" th:text="${staff.name}"></option>
+                                </select>
+                            </div>
+                            <input type="text" class="form-control" name="emergencydescription" id="emergencydescription"  placeholder="Description">
+                            <input type="text" class="form-control" name="emergencyequipment" id="emergencyequipment" placeholder="Equipment">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary"
+                                    data-dismiss="modal">Close</button>
+                            <input type="submit" value="Save Changes" class="btn btn-primary">
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
 <!-- Include Bootstrap JavaScript and jQuery -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>

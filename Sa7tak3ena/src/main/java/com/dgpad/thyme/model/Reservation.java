@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,25 +34,20 @@ public class Reservation {
     @ManyToOne
     private Hospital hospital;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "patient_id")
     private Patient patient;
 
     private String MedicalRecord;
-    //entered by the hospital
+    //entered by the hospital after reservation
     private int bednum;
     private int floornum;
 
-//    for storing
-    private boolean needAmbulance;
+    @ManyToMany
+    private List<AmbulanceRequest> ambulanceRequests=new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "request_id")
-    private ArrayList<AmbulanceAgency> preferedAmbulance;
+//    filled when ambulance accept the request
     @OneToOne
     private AmbulanceCar ambulanceCar;
-    @OneToMany
-    private List<AmbulanceRequest> ambulanceRequests;
-
-    private Date CreatedAt;
+    private LocalDateTime CreatedAt;
 }
