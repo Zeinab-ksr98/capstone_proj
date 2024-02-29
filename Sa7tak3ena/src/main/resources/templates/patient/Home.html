@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" th:href="@{/home.css}">
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.1/css/bootstrap.min.css}"/>
+</head>
+<body>
+<div th:replace="fragments/Pheader :: header"></div>
+
+<a th:href="@{/ambulance_request}">
+    <img width="150" th:src="@{/assits/call%20buton.png}" alt="external-call-medical-filled-outline-satawat-anukul"/>
+</a>
+
+<script th:if="${alertMessage}" th:inline="javascript">
+    /*<![CDATA[*/
+    // Display an alert with the message
+    alert([[${alertMessage}]]);
+    window.location.href = '/home';
+    /*]]>*/
+</script>
+</body>
+</html>

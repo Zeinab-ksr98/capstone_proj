@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Include Bootstrap JavaScript and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</head>
+<body>
+<div th:replace="fragments/Aheader :: header"></div>
+<img th:src="@{/assits/home-ambulance.png}" style="max-width: 100%" alt=" ">
+
+<button type="button" style="margin: 20px 0" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+    new branch account
+</button>
+
+<div class="modal fade" id="exampleModalCenter" tabindex="-1"
+     role="dialog" aria-labelledby="exampleModalCenterTitle"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <form th:action="@{/create-ambulance}" method="Post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">establish a new branch account</h5>
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <input type="text" name="username" class="form-control"
+                           id="name" th:value="${username}" required placeholder="username">
+                    <br>
+                    <input type="text" name="publicname" class="form-control"
+                           id="publicname" th:value="${publicname}" required placeholder="as it shull apear to other users">
+                    <br>
+                    <input type="text" name="email" class="form-control"
+                           id="email" th:value="${email}" required placeholder="email">
+                    <br>
+                    <input type="text" name="phone" class="form-control"
+                           id="phone" th:value="${phone}" required placeholder="phone">
+                    <br>
+                    <p>this ambulance account will be a sub of your agency <br> default passward :123 </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                            data-dismiss="modal">Close</button>
+                    <input type="submit" value="Save Changes" class="btn btn-primary">
+                </div>
+            </form>
+        </div>
+    </div>
+</div><br>
+
+
+ <div class="container mt-5" th:if="${requests != null and not #lists.isEmpty(requests)}">
+        <table class="table">
+            <thead class="thead-light">
+            <tr>
+                <th scope="col">Request type</th>
+                <th scope="col">sender Name</th>
+                <th scope="col">sender Phone</th>
+                <th scope="col">from</th>
+                <th scope="col">To</th>
+                <th scope="col">created at</th>
+                <th scope="col">accept</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="request : ${requests}" th:if="${request.status== request.status.PENDING}" >
+                <td th:text="${request.service}"></td>
+                <td th:text="${request.getSender().username}"></td>
+                <td th:text="${request.getSender().phone}"></td>
+                <td th:text="${request.from}"></td>
+                <td th:text="${request.to}"></td>
+                <td th:text="${request.createdAt}"></td>
+
+                <td>
+                    <a class="btn btn-danger" th:href="@{/updatestatus(id=${request.id})}">
+                        accept
+                    </a>
+                </td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+</body>
+
+</html>

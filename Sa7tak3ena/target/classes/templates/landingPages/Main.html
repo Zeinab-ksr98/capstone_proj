@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1, minimum-scale=0" name="viewport">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <title>Sa7tak3ena</title>
+    <link rel="stylesheet" th:href="@{css/home.css}">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+<header id="top">
+    <!--    nav-->
+    <div class="cont-nav pMain" >
+        <a href="#top">
+            <h1 class="tittle">Sa7tak3ena </h1>
+        </a>
+        <div class="nav-main">
+            <nav>
+                <ul class="nav-cont ">
+                    <div class="ul-cont ul2">
+                        <li><a href="#Services">Our Services</a></li>
+                    </div>
+
+                    <div class="ul-cont ul2">
+                        <li><a href="#aboutus">about us</a></li>
+                    </div>
+                    <div class="ul-cont ul2">
+                        <li><a href="#hero">join us</a></li>
+                    </div>
+                    <div class="ul-cont ul4">
+                        <li><a th:href="@{/SignIn}">Login |signup</a></li>
+                    </div>
+
+                </ul>
+            </nav>
+        </div>
+
+    </div>
+</header>
+
+<div class="appointments">
+    <img alt=" " style="max-width: 100%" th:src="@{/assits/landing2.png}">
+
+</div>
+<div class="products-cont" id="ourproducts">
+<!--    <div class="supportedBy">-->
+
+<!--    </div>-->
+
+</div>
+<div class="hero-cont" id="Services">
+    <div class="container">
+        <div class="text-center mt-2 mb-5">
+            <h1>Our Services</h1>
+            <img alt="" th:src="@{/assits/underline1.png}">
+        </div>
+
+        <!-- First Card -->
+        <div class="card mb-3 service-card" style="background: honeydew ;border-color: honeydew ">
+            <div class="row g-0">
+                <div class="col-md-6">
+                    <div class="card-body ">
+                        <h2 class="card-title">Healthcare Accessibility</h2>
+                        <h3 class="card-subtitle mb-2 text-muted">Improving Access to Care</h3>
+                        <h4 class="card-text">We are reshaping healthcare accessibility in Lebanon by providing
+                            real-time updates on ICU and NICU bed availability. We ensure all contact information is
+                            consolidated in one place, and we help allocate the nearest available hospital and ambulance
+                            to those in need. Our platform connects hospitals, patients, and ambulance services
+                            efficiently.</h4>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <img alt="Image 1" class="img-fluid transparent-image" th:src="@{/assits/home.png}">
+                </div>
+            </div>
+        </div>
+
+        <!-- Second Card -->
+        <div class="card mb-3 service-card" style="background: honeydew ;border-color: honeydew ">
+            <div class="row g-0">
+                <div class="col-md-6">
+                    <img alt="Image 2" class="img-fluid transparent-image" th:src="@{/assits/NICU.png}">
+                </div>
+                <div class="col-md-6">
+                    <div class="card-body">
+                        <h2 class="card-title">Hospital Management System</h2>
+                        <h4 class="card-text">Our Hospital Management System simplifies the process of managing
+                            reservations and requests. Hospitals can efficiently allocate resources by identifying the
+                            nearest available hospital for incoming patients. With our system, hospitals can streamline
+                            their operations and improve patient care.</h4>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Third Card -->
+        <div class="card mb-3 service-card" style="background: honeydew ;border-color: honeydew ">
+            <div class="row g-0">
+                <div class="col-md-6">
+                    <div class="card-body">
+                        <h2 class="card-title">Ambulance Management System</h2>
+                        <h4 class="card-text">Our Ambulance Management System provides a seamless way to manage
+                            ambulance vehicles and requests. Dispatchers can easily assign and track ambulances,
+                            ensuring timely responses to emergencies. With real-time monitoring, dispatchers can
+                            efficiently allocate resources and improve emergency response times.</h4>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <img alt="Image 3" class="img-fluid transparent-image" th:src="@{/assits/ambulance3.webp}">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="aboutUs-cont " id="aboutus">
+    <div class="aboutUs">
+        <div class="us-cont " id="a1">
+            <h2>About us</h2>
+            <div class="aboutUs-bar"></div>
+            <h4>
+                Sa7tak3ena is a dedicated initiative committed to reshaping healthcare accessibility in Lebanon.
+                Our mission is rooted in enhancing the well-being of our community.
+                With a vision to address critical healthcare challenges,
+                we aim to revolutionize the way medical resources are accessed,
+                ensuring a rapid and coordinated response during emergencies.
+            </h4>
+        </div>
+
+        <div class="us-cont" id="a3">
+            <h2>our mission</h2>
+            <div class="aboutUs-bar"></div>
+            <h4>Sa7tak3ena offers a life-saving application designed to simplify healthcare processes.
+                Our services include real-time updates on ICU and NICU bed availability,
+                seamlessly connecting hospitals, patients, and ambulance services. Beyond being an app,
+                Sa7tak3ena is a comprehensive solution that fosters rapid response, coordination, and, most importantly,
+                saves lives in the critical moments where every second matters.
+                Your health is our top priority! </h4>
+        </div>
+    </div>
+
+</div>
+<div class="f-cont" id="hero">
+    <img alt=" " class="background-image" style="max-width: 100%" th:src="@{/assits/home-a.png}">
+    <div class="row">
+        <div class="col-md-6 offset-md-6">
+            <div class="text-center">
+                <h2>Join us As Hospital OR Ambulance</h2>
+                <img alt="" th:src="@{/assits/underline1.png}">
+            </div>
+            <form action="/Request-Account" method="post" th:object="${account}">
+                <div class="row">
+
+                    <div class="col-md-8 offset-md-2">
+                        <h5>
+                            <div class="mb-4">
+                                <label>Account Type:</label>
+                                <div class="form-check" th:each="role : ${T(com.dgpad.thyme.model.enums.Role).values()}"
+                                     th:unless="${role == T(com.dgpad.thyme.model.enums.Role).ADMIN or role == T(com.dgpad.thyme.model.enums.Role).PATIENT}">
+                                    <input class="form-check-input" required th:field="*{type}" th:id="${'type-' + role}"
+                                           th:name="type" th:value="${role}" type="radio">
+                                    <label class="form-check-label" th:for="${'type-' + role}" th:text="${role}"></label>
+                                </div>
+                                <div class="invalid-feedback">Please select the account type.</div>
+                            </div>
+                        </h5>
+                        <h5>
+                            <div class="mb-4">
+                                <label class="form-label fw-bold" for="companyName">Company Name:</label>
+                                <input class="form-control" id="companyName" name="companyName" required
+                                       th:field="*{companyName}" type="text">
+                                <div class="invalid-feedback">Please enter the company name.</div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold" for="publicName">Public Name:</label>
+                                <input class="form-control" id="publicName" name="publicName" required
+                                       th:field="*{publicName}" type="text">
+                                <div class="invalid-feedback">Please enter the public name.</div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold" for="email">Email:</label>
+                                <input class="form-control" id="email" name="email" required th:field="*{email}"
+                                       type="email">
+                                <div class="invalid-feedback">Please enter a valid email address.</div>
+                            </div>
+                            <div class="offset-md-9"> <!-- Aligning button to the right -->
+                                <button class="btn btn-primary btn-lg" type="submit">Submit Request</button> <!-- Making button bigger -->
+                            </div>
+                        </h5>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="foot-cont">
+        <div class="footck">
+            <h3 class="v1">
+            </h3>
+            <h2 class="v2">
+                <img alt="" th:src="@{/assits/logo1.png}" width="185"></h2>
+        </div>
+    </div>
+</footer>
+
+</body>
+<!-- Include Bootstrap JS (optional) -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+</html>

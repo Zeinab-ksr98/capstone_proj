@@ -1,0 +1,145 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Include Bootstrap JavaScript and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div th:replace="fragments/Adimnheader :: header"></div>
+
+<div class="container">
+    <button type="button" style="margin: 20px 0" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+        Create Hospital/Ambulance
+    </button>
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1"
+         role="dialog" aria-labelledby="exampleModalCenterTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form th:action="@{/admin-create-withRole}" method="Post">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Create</h5>
+                        <button type="button" class="close" data-dismiss="modal"
+                                aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <input type="text" name="username" class="form-control"
+                               id="name" th:value="${username}" required placeholder="username">
+                        <br>
+                        <input type="text" name="email" class="form-control"
+                               id="email" th:value="${email}" required placeholder="email">
+                        <br>
+                        <input type="text" name="pass" class="form-control"
+                               id="pass" th:value="${pass}" required placeholder="passward">
+                        <br>
+                        <input type="text" name="phone" class="form-control"
+                               id="phone" th:value="${phone}" required placeholder="phone">
+                        <br>
+                        <div th:each="statusOption : ${T(com.dgpad.thyme.model.enums.Role).values()}">
+                            <div th:unless="${statusOption.name() == 'PATIENT'}">
+                                <input type="radio" class="form-check-input"
+                                       th:id="${'status_' + statusOption}"
+                                       name="role"
+                                       th:value="${statusOption.name()}"
+                                       checked="${role == statusOption}"
+                                       th:attr="data-role=${statusOption}" />
+                                <label th:for="${'status_' + statusOption}" th:text="${statusOption}"></label>
+                                <br>
+                            </div>
+                        </div>
+                        <input type="text" name="publicname" class="form-control" id="publicname" required placeholder="publicname" style="display: none">
+                        <select id="agency" name="agency" class="form-control"  required style="display: none">
+                            <option value="">Select Category</option>
+                            <option th:each="agency : ${agencies}" th:value="${agency.id}" th:text="${agency.name}"></option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                                data-dismiss="modal">Close</button>
+                        <input type="submit" value="Save Changes" class="btn btn-primary">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div><br>
+
+    <table class="table">
+        <thead class="thead-light">
+        <tr>
+            <th scope="col">SN</th>
+            <th scope="col">user name</th>
+            <th scope="col">email</th>
+            <th scope="col">Status</th>
+            <th scope="col">Role</th>
+            <th scope="col">phone number</th>
+            <th scope="col">actions</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr th:each="user, categoryIndex : ${users}" >
+                <td th:text="${categoryIndex.index + 1}"></td>
+                <td th:text="${user.username}" ></td>
+                <td th:text="${user.email}" ></td>
+                <td th:text="${user.enabled ? 'Active' : 'Not Active'}"></td>
+                <td th:text="${user.role.name}"></td>
+                <td th:text="${user.phone}" ></td>
+                <td>
+                    <a class="btn btn-danger" th:href="@{users/block/{id}(id=${user.id.toString()})}"
+                       th:unless="${#strings.contains(user.role, 'ADMIN')}">
+                        Block
+                    </a>
+                    <a class="btn btn-secondary" th:href="@{users/deactivate/{id}(id=${user.id.toString()})}">
+                        Deactivate
+                    </a>
+                    <a class="btn btn-info" th:href="@{users/activate/{id}(id=${user.id.toString()})}">
+                        Activate
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('input[type=radio][name=role]').change(function () {
+            var publicNameInput = $('#publicname');
+            var agencySelect = $('#agency');
+
+            if (this.getAttribute('data-role') === 'AMBULANCE') {
+                publicNameInput.show();
+                agencySelect.show();
+            } else if (this.getAttribute('data-role') === 'HOSPITAL') {
+                publicNameInput.show();
+                agencySelect.hide();
+            } else {
+                publicNameInput.hide();
+                agencySelect.hide();
+            }
+
+            // Set values to null when hidden
+            if (!publicNameInput.is(':visible')) {
+                publicNameInput.val(null);
+            }
+            if (!agencySelect.is(':visible')) {
+                agencySelect.val(null);
+            }
+            $('#createForm :input').prop('disabled', !publicNameInput.is(':visible'));
+
+        });
+    });
+</script>
+
+</body>
+
+</html>

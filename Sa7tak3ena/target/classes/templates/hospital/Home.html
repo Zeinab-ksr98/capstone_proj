@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" th:href="@{/home.css}">
+
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Include Bootstrap JavaScript and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+</head>
+<body>
+<div th:replace="fragments/hheader :: header"></div>
+<button type="button" style="margin: 20px 0" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+    Create Hospital Branch
+</button>
+<div class="modal fade" id="exampleModalCenter" tabindex="-1"
+     role="dialog" aria-labelledby="exampleModalCenterTitle"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <form th:action="@{/create-hospital}" method="Post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">establish a new branch account</h5>
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <input type="text" name="username" class="form-control"
+                           id="name" th:value="${username}" required placeholder="username">
+                    <br>
+                    <input type="text" name="publicname" class="form-control"
+                           id="publicname" th:value="${publicname}" required placeholder="as it shull apear to other users">
+                    <br>
+                    <input type="text" name="email" class="form-control"
+                           id="email" th:value="${email}" required placeholder="email">
+                    <br>
+                    <input type="text" name="phone" class="form-control"
+                           id="phone" th:value="${phone}" required placeholder="phone">
+                    <br>
+                    <p>this ambulance account will be a sub of your agency <br> default passward :123 </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                            data-dismiss="modal">Close</button>
+                    <input type="submit" value="Save Changes" class="btn btn-primary">
+                </div>
+            </form>
+        </div>
+    </div>
+</div><br>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.1/js/bootstrap.min.js"></script>
+</body>
+
+</html>

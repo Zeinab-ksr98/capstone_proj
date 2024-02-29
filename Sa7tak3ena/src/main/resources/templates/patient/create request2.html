@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Request Form</title>
+    <!-- Add Bootstrap CSS link -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div th:replace="fragments/Pheader :: header"></div>
+
+<div class="container mt-3">
+    <h3>Request Form</h3>
+    <form th:action="@{/submit2}" th:object="${grequest}" method="post">
+
+        <div class="form-check mt-3">
+            <label class="form-check-label">Reserve bed:</label>
+            <div th:each="type, status : ${T(com.dgpad.thyme.model.enums.ReservationType).values()}">
+                <input type="radio" class="form-check-input" id="${'bedtype_' + status.index}" th:field="*{request.reservationType}" th:value="${type}" />
+                <label th:for="${'bedtype_' + status.index}" th:text="${type}"></label>
+            </div>
+        </div>
+
+
+        <!--        <p>-->
+<!--            Convert the medical record into a real record (not text)-->
+<!--            and pickup address in case of needed ambulance-->
+<!--        </p>-->
+
+        <div class="form-check mt-3">
+            <input type="checkbox" class="form-check-input" id="needAmbulance" th:field="*{request.needAmbulance}" name="needAmbulance">
+            <label class="form-check-label" for="needAmbulance">I need an ambulance</label>
+        </div>
+
+         Modify the Thymeleaf section for ambulance agencies
+        <div id="ambulanceAgencies" style="display: none;">
+            <label for="ambulance">Select Hospital:</label>
+            <select id="ambulance" name="ambulance.ID" th:field="${grequest.preferedagencies}" multiple>
+                <option th:each="agency : ${availableagencies}" th:value="${agency.id}" th:text="${agency.name}"></option></select><br>
+
+        </div>
+
+        <div id="hospitals">
+            <label for="hospital">Select Hospital:</label>
+            <select id="hospital" name="hospital.ID" th:field="${grequest.preferedhospitals}" multiple>
+            <option th:each="hospital : ${availablehospitals}" th:value="${hospital.id}" th:text="${hospital.publicName}"></option></select><br>
+        </div>
+
+        <div class="form-group mt-3">
+            <label for="medicalRecord">Medical Record:</label>
+            <textarea class="form-control" id="medicalRecord" name="medicalRecord" th:field="*{request.medicalRecord}" rows="3"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Submit Request</button>
+    </form>
+</div>
+
+<!-- Include Bootstrap JavaScript and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    // Add an event listener to show/hide ambulance agencies select based on checkbox
+    document.getElementById("needAmbulance").addEventListener("change", function() {
+        var ambulanceAgencies = document.getElementById("ambulanceAgencies");
+        ambulanceAgencies.style.display = this.checked ? "block" : "none";
+    });
+</script>
+</body>
+</html>

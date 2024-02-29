@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <meta charset="UTF-8">
+    <title>Header</title>
+    <link th:href="@{/webjars/bootstrap/5.3.1/css/bootstrap.min.css}" th:rel="stylesheet"/>
+
+    <style>
+
+        .admin-logo img {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+        }
+
+        .admin-logo h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .admin-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .admin-nav li {
+            display: inline;
+            margin-right: 20px;
+        }
+
+        .admin-nav a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .admin-profile img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .admin-profile p {
+            font-size: 16px;
+            margin: 0;
+        }
+
+    </style>
+</head>
+<body>
+<header th:fragment="header" class=" text-emphasis-primary"  >
+    <nav class="navbar navbar-expand-lg "  style="background-color: #155FA9">
+        <div class="container-fluid">
+            <a class="navbar-brand text-light" th:href="@{/home}">
+                Sa7tak3ena
+            </a>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/profile}">
+                            <img width="30" height="30" src="https://img.icons8.com/pulsar-line/48/FFFFFF/user.png" alt="user"/>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light" th:href="@{/get-all-requests}">Requests</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-light" th:href="@{/get-all-reservations}">Reservations</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-light" th:href="@{/request-form2}"> Bed Request</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-light" th:href="@{/hospitals}">Hospitals</a>
+                    </li>
+
+                </ul>
+                <div class="nav-item">
+                    <a class="nav-link text-light" th:href="@{/ambulance-contactInfo}">
+                        <img width="40" height="40" src="https://img.icons8.com/clouds/100/ambulance.png" alt="ambulance"/>
+
+                    </a>
+                </div>
+                <ul class="navbar-nav">
+                    <li class="nav-item active">
+                        <a class="nav-link text-light" th:href="@{/logout}"><h6>Logout</h6></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.1/js/bootstrap.min.js"></script>
+</header>
+
+
+
+</body>
+</html>

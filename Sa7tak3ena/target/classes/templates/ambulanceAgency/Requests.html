@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Requests</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div th:replace="fragments/Aheader :: header"></div>
+
+<div class="container">
+    <button type="button" style="margin: 20px 0" class="btn btn-primary"
+            data-toggle="modal" data-target="#exampleModalCenter">Create Request</button>
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1"
+         role="dialog" aria-labelledby="exampleModalCenterTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form th:action="@{/add-request}" th:object="${newrequest}" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Add request</h5>
+                        <button type="button" class="close" data-dismiss="modal"
+                                aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body text-center">
+                            <div class="modal-body text-center">
+                                <select name="service" class="form-control" id="type" required>
+                                    <option th:each="service : ${T(com.dgpad.thyme.model.enums.Ambulanceservice).values()}"
+                                            th:value="${service}" th:field="*{service}" th:text="${service.name()}">
+                                    </option>
+                                </select>
+
+                                <input type="text" class="form-control" name="description" id="description" th:field="*{description}" placeholder="Description" required>
+                                <input type="text" class="form-control" name="phone" id="phone" placeholder="Phone Number" required>
+                                <input type="text" class="form-control" name="equipment" id="equipment" placeholder="Equipment">
+                                <input type="text" class="form-control" name="name" id="name" placeholder="Name">
+
+                                <script>
+                                    document.getElementById('type').addEventListener('change', function () {
+                                        var selectedService = this.value;
+                                        var descriptionField = document.getElementById('description');
+                                        var phoneField = document.getElementById('phone');
+                                        var equipmentField = document.getElementById('equipment');
+                                        var nameField = document.getElementById('name');
+
+                                        document.getElementById('homeServiceFields').style.display = (selectedService === 'homeService') ? 'block' : 'none';
+                                        document.getElementById('transferFields').style.display = (selectedService === 'transfer') ? 'block' : 'none';
+                                        document.getElementById('inDoorServiceFields').style.display = (selectedService === 'inDoorService') ? 'block' : 'none';
+
+                                        // Append phone, equipment, and name to the description before submitting
+                                        descriptionField.value = descriptionField.value + '\nPhone: ' + phoneField.value + '\nEquipment: ' + equipmentField.value + '\nName: ' + nameField.value;
+                                    });
+                                </script>
+
+                                <!-- Additional fields for different service types -->
+                                <div id="homeServiceFields" style="display: none;">
+                                    <input type="text" class="form-control" name="from" th:field="*{from}" placeholder="Patient address" required>
+                                </div>
+
+                                <div id="transferFields" style="display: none;">
+                                    <input type="text" class="form-control" name="from" th:field="*{from}" placeholder="From" required>
+                                    <input type="text" class="form-control" name="to" th:field="*{to}" placeholder="To" required>
+                                    <label for="car_type">Select Ambulance Type:</label>
+                                    <select name="car_type" id="car_type" class="form-control" required>
+                                        <option th:each="type : ${T(com.dgpad.thyme.model.enums.Ambulancetypes).values()}"
+                                                th:value="${type}" th:text="${type}">
+                                        </option>
+                                    </select>
+                                </div>
+
+
+                                <script>
+                                    document.getElementById('type').addEventListener('change', function () {
+                                        var selectedService = this.value;
+
+                                        document.getElementById('homeServiceFields').style.display = (selectedService === 'homeService') ? 'block' : 'none';
+                                        document.getElementById('transferFields').style.display = (selectedService === 'transfer') ? 'block' : 'none';
+                                        document.getElementById('inDoorServiceFields').style.display = (selectedService === 'inDoorService') ? 'block' : 'none';
+                                    });
+                                </script>
+                            </div>
+                        </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                                data-dismiss="modal">Close</button>
+                        <input type="submit" value="Save Changes" class="btn btn-primary">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div><br>
+<div class="container mt-3">
+    <h5>To day Requests</h5>
+    <table class="table">
+        <thead class="thead-light">
+        <tr>
+            <th scope="col">Request type</th>
+            <th scope="col">sender Name</th>
+            <th scope="col">sender Phone</th>
+            <th scope="col">from</th>
+            <th scope="col">To</th>
+            <th scope="col">created at</th>
+            <th scope="col">status</th>
+            <th scope="col"></th>
+
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="request : ${requests}" >
+            <td th:text="${request.service}"></td>
+            <td th:text="${request.getSender().username}"></td>
+            <td th:text="${request.getSender().phone}"></td>
+            <td th:text="${request.from}"></td>
+            <td th:text="${request.to}"></td>
+            <td th:text="${request.status}"></td>
+            <td th:text="${request.createdAt}"></td>
+
+            <td>
+                <a class="btn btn-danger" th:href="@{/update-requestdetails(id=${request.id})}">
+                    modify details
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+
+<!-- Include Bootstrap JavaScript and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

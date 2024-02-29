@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Include Bootstrap JavaScript and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</head>
+<body>
+<div th:replace="fragments/Aheader :: header"></div>
+
+<div class="container">
+    <button type="button" style="margin: 20px 0" class="btn btn-primary"
+            data-toggle="modal" data-target="#exampleModalCenter">Add Car</button>
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1"
+         role="dialog" aria-labelledby="exampleModalCenterTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form th:action="@{/add-car}" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Add New Car</h5>
+                        <button type="button" class="close" data-dismiss="modal"
+                                aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <select name="cartype" class="form-control" id="type" required>
+                            <option th:each="type : ${T(com.dgpad.thyme.model.enums.Ambulancetypes).values()}"
+                                    th:value="${type}" th:text="${type.name()}">
+                            </option>
+                        </select>
+                        <label>Number of cars</label>
+                        <input type="number" name="num" class="form-control" id="num" th:value="${num}" required min="1" max="30" >
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                                data-dismiss="modal">Close</button>
+                        <input type="submit" value="Save Changes" class="btn btn-primary">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div><br>
+
+        <table class="table">
+            <thead class="thead-light">
+            <tr>
+                <th scope="col">SN</th>
+                <th scope="col">type</th>
+                <th scope="col">status</th>
+                <th scope="col">Delete</th>
+                <th scope="col">Update</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="car, carIndex : ${cars}">
+                <td th:text="${carIndex.index + 1}"></td>
+                <td th:text="${car.status}"></td>
+                <td th:text="${car.type}"></td>
+                <td>
+                    <a class="btn btn-danger" th:href="@{/delete/{id}(id=${car.id})}">
+                        Delete
+                    </a>
+
+                </td>
+                <td>
+                    <a th:each="status : ${T(com.dgpad.thyme.model.enums.AmbulanceStatus).values()}"
+                       class="btn btn-danger"
+                       th:href="@{/update-car(id=${car.id}, updatedStatus=${status})}">
+                        [[${status.name().substring(0,1)}]]
+                    </a>
+                </td>
+            </tbody>
+        </table>
+</div>
+</body>
+
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.1/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,700;1,300&display=swap"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"/>
+    <style>
+        body {
+            margin: 0;
+            line-height: normal;
+        }
+
+        :root {
+            /* Colors */
+            --color-ghostwhite: #f5f8ff;
+            --color-white: #fff;
+            --color-cornflowerblue-100: #8ab8ff;
+            --color-cornflowerblue-200: #18a0fb;
+            --color-silver-100: #c4c4c4;
+            --color-silver-200: #b5b5b5;
+            --color-darkslateblue: #1356af;
+            --color-dimgray-100: #6f6f6f;
+            --color-dimgray-200: #586160;
+            --color-dimgray-300: rgba(88, 97, 96, 0.7);
+            --color-black: #000;
+            --color-teal: #00666c;
+
+        }
+
+        .component-4-child {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 652px;
+        }
+        .component-4-child {
+            height: 100%;
+            width: 100%;
+            right: 0;
+            bottom: 0;
+            border-radius: var(--br-base);
+            background-color: var(--color-white);
+        }
+        .call-ambulance {
+            position: absolute;
+            top: 70.27%;
+            left: 14.21%;
+            -webkit-text-stroke: 1px #c4c4c4;
+        }
+        .screenshot-2023-04-12-141018-1 {
+            position: absolute;
+            height: 44.86%;
+            width: 87.98%;
+            top: 16.76%;
+            right: 4.37%;
+            bottom: 38.38%;
+            left: 7.65%;
+            max-width: 100%;
+            overflow: hidden;
+            max-height: 100%;
+            object-fit: cover;
+        }
+        .component-4 {
+            position: absolute;
+            /*top: 727px;*/
+            left: 1142px;
+            width: 183px;
+            height: 185px;
+            /*font-size: var(--font-size-xl);*/
+            color: var(--color-silver-100);
+        }
+
+        .component-6 {
+            position: absolute;
+            /*top: 10px;*/
+            left: 139px;
+            width: 968px;
+            height: 185px;
+            color: var(--color-cornflowerblue-100);
+        }
+        .after-booking {
+            position: relative;
+            background-color: var(--color-ghostwhite);
+            width: 100%;
+            height: 1024px;
+            overflow: hidden;
+            text-align: left;
+            font-size: var(--robot-size);
+            color: var(--color-ghostwhite);
+            font-family: var(--robot);
+        }
+
+    </style>
+</head>
+<body>
+<div >
+    <div class="after-booking">
+        <div class="container">
+            <div class="component-6 mt-3">
+                <div class="contact-map">
+                    <iframe src="https://www.google.com/maps/d/embed?mid=1BZxJcUFEX3U3tZp4tx43YZAbvtA&ehbc=2E312F" width="640" height="480"></iframe>
+                </div>
+            </div>
+            <div class="component-4 mt-4" onclick="alert('phone number:'+'911')">
+                <div class="component-4-child">
+                </div>
+                <div class="call-ambulance" >Call Red Cross</div>
+                <img class="screenshot-2023-04-12-141018-1" alt="" th:src="@{assits/screenshot-20230412-141018-1@2x.png}"/>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

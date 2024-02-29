@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Hospital Beds</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+
+</head>
+<body>
+<div th:replace="fragments/hheader :: header"></div>
+
+<div class="container">
+<!--    new bed-->
+    <button type="button" style="margin: 20px 0" class="btn btn-primary"
+            data-toggle="modal" data-target="#exampleModalCenter">Add Bed</button>
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1"
+         role="dialog" aria-labelledby="exampleModalCenterTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form th:action="@{/add-bed}" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Add New Bed</h5>
+                        <button type="button" class="close" data-dismiss="modal"
+                                aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <label for="bedcat">Bed Category:</label>
+                        <div th:each="category : ${bedCategories}">
+                            <input type="radio" th:name="bedcat" th:id="${'bedcat' + category.id}" th:value="${category.id}" required>
+                            <label th:for="${'bedcat' + category.id}" th:text="${category.name}"></label>
+                        </div>
+                    </div>
+                    <div class="modal-body text-center">
+                        <input type="number" name="nbbed" class="form-control"
+                               id="nbbed" th:value="${name}" required placeholder="nbbed">
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                                data-dismiss="modal">Close</button>
+                        <input type="submit" value="Save Changes" class="btn btn-primary">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <br>
+<!--    new category-->
+    <button type="button" style="margin: 20px 0" class="btn btn-primary"
+            data-toggle="modal" data-target="#RequestModal">Request new bed Category</button>
+    <div class="modal fade" id="RequestModal" tabindex="-1"
+         role="dialog" aria-labelledby="exampleModalCenterTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form th:action="@{/Request-bedCategory}" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="RequestModalLongTitle">a request for admin will be sent to create a new Bed Category</h5>
+                        <button type="button" class="close" data-dismiss="modal"
+                                aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <label for="bedCategory">Bed Category:</label>
+                        <input type="text" name="bedCategory" class="form-control"
+                               id="bedCategory" th:value="${name}" required placeholder="Category name">
+                        <p>Note that the name will be validated by the Admin first before being created</p>
+                    </div>
+
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                                data-dismiss="modal">Close</button>
+                        <input type="submit" value="Request" class="btn btn-primary">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <table class="table">
+        <thead class="thead-light">
+        <tr>
+            <th scope="col">SN</th>
+            <th scope="col">Bed Name
+            <th scope="col">available</th>
+            <th scope="col">Delete</th>
+            <th scope="col">Update</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="bed, bedIndex : ${hospitalbeds}">
+            <td th:text="${bedIndex.index + 1}"></td>
+
+            <td th:text="${bed.category.name}"></td>
+            <td th:text="${bed.nbBeds}"></td>
+
+            <td>
+                <a class="btn btn-danger" th:href="@{/delete-bed/{ID}(ID=${bed.id})}">
+                    Delete
+                </a>
+            </td>
+            <td>
+                <button class="btn btn-primary" data-toggle="modal" th:attr="data-target='#updateModal'+${bed.id}">
+                    Update
+                </button>
+            </td>
+        </tbody>
+    </table>
+    <!--    update modal-->
+    <div th:each="bed : ${hospitalbeds}" th:id="'updateModal'+${bed.id}" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Section</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <!-- Input fields for updating data -->
+                <form th:action="@{/update-bed}" method="post">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="id">bed id </label>
+                            <input class="form-control" type="text" name="id" id="id" th:value="${bed.id}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="cat">bed category </label>
+                            <input class="form-control" type="text" name="cat" id="cat" th:value="${bed.category.name}" readonly>
+
+                        </div>
+                        <div class="form-group">
+                            <label for="nbbed">number of beds available </label>
+                            <input type="number" class="form-control" id="nbbed" name="nbbed" th:value="${bed.nbBeds}" placeholder="Section Name" required>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Include Bootstrap JavaScript and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>

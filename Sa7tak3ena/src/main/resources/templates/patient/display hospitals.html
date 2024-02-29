@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Include Bootstrap JavaScript and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <style>
+        body{
+            background:#F8F8FF;
+            margin-top:20px;
+        }
+        /********************
+            EMPLOYERS LIST
+        *********************/
+        .employers-list-bg {
+            padding: 180px 0px 80px 0px;
+            background-size: cover;
+            position: relative;
+            background-position: center center;
+        }
+
+        .employers-list-img img {
+            max-width: 80px;
+            -webkit-box-shadow: 0 0 5px 0px #d7d7d7;
+            box-shadow: 0 0 5px 0px #d7d7d7;
+        }
+
+        .employers-icons li {
+            margin: 0px !important;
+        }
+
+        /********************
+           EMPLOYERS DETAILS
+        *********************/
+        .employers-details-bg {
+            padding: 180px 0px 80px 0px;
+
+            background-size: cover;
+            position: relative;
+            background-position: center center;
+        }
+
+        .employers-details {
+            border-top: 1px solid #eeeeee;
+            border-bottom: 1px solid #eeeeee;
+        }
+
+        .employers-share-job li a {
+            height: 40px;
+            width: 40px;
+            color: #777777;
+            text-align: center;
+            font-size: 19px;
+            display: inline-block;
+            line-height: 38px;
+            border-radius: 4px;
+            border: 1px solid #dddddd;
+            -webkit-transition: all 0.5s;
+            transition: all 0.5s;
+            margin: 6px 0;
+            transition: all 0.5s;
+        }
+
+        .employers-share-job li a:hover {
+            background-color: #ff4f6c;
+            color: #ffffff;
+            -webkit-transition: all 0.5s;
+            transition: all 0.5s;
+            border-color: #ff4f6c;
+            -webkit-transform: translateY(-3px);
+            transform: translateY(-3px);
+            -webkit-box-shadow: 0 3px 20px -8px #000000;
+            box-shadow: 0 3px 20px -8px #000000;
+        }
+
+        @media (min-width: 200px) and (max-width: 768px) {
+            .m-14 {
+                margin: 14px 0px;
+            }
+        }
+
+        @media (max-width: 425px) {
+            .employers-details-time h6 {
+                text-align: center !important;
+            }
+            .employers-details-item-border {
+                margin-bottom: 1rem !important;
+                margin-top: 1rem !important;
+            }
+        }
+
+        .list-grid-item {
+            border: 1px solid #ececec;
+            border-radius: 6px;
+            -webkit-transition: all 0.5s;
+            transition: all 0.5s;
+        }
+
+        .list-grid-item:hover {
+            -webkit-box-shadow: 0 0 20px 0px rgba(47, 47, 47, 0.09);
+            box-shadow: 0 0 20px 0px rgba(47, 47, 47, 0.09);
+            -webkit-transition: all 0.5s;
+            transition: all 0.5s;
+            border-color: transparent;
+        }
+
+        .left-sidebar .card-body {
+            border-bottom: 1px solid #ececec;
+        }
+
+        .custom-control {
+            margin: 11px 20px;
+        }
+
+        .card-header {
+            background-color: transparent;
+            margin-bottom: 0 !important;
+        }
+
+        .pagination.job-pagination .page-link {
+            border-radius: 50% !important;
+            margin: 0 4px;
+            height: 46px;
+            width: 45px;
+            line-height: 29px;
+            text-align: center;
+            color: #777777;
+        }
+
+        .page-item.active .page-link {
+            background-color: #ff4f6c;
+            border-color: #ff4f6c;
+            color: #ffffff !important;
+        }
+
+        .f-14 {
+            font-size: 14px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+</head>
+<body>
+<div th:replace="fragments/Pheader :: header"></div>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="left-sidebar">
+                <div class="accordion" id="accordionExample">
+                    <!-- HSection 1 -->
+                    <div class="card mt-4">
+                        <a data-toggle="collapse" href="#collapseOne" class="job-list" aria-expanded="true" aria-controls="collapseOne">
+                            <div class="card-header" id="headingOne">
+                                <h6 class="mb-0 text-dark f-18">Hospital Sections</h6>
+                            </div>
+                        </a>
+                        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne">
+                            <div class="card-body p-0" th:each="hSection, status : ${hospitalSections}">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" th:id="'customCheckboxHSection_' + ${status.index}" th:name="'customCheckboxHSection_' + ${status.index}" class="custom-control-input">
+                                    <label th:for="'customCheckboxHSection_' + ${status.index}" class="custom-control-label ml-1 text-muted f-15" th:text="${hSection.name}"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- HSection 2 -->
+                    <div class="card mt-4">
+                        <a data-toggle="collapse" href="#collapseTwo" class="job-list" aria-expanded="true" aria-controls="collapseTwo">
+                            <div class="card-header" id="headingTwo">
+                                <h6 class="mb-0 text-dark f-18">Distracts</h6>
+                            </div>
+                        </a>
+                        <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo">
+                            <div class="card-body p-0" th:each="district : ${T(com.dgpad.thyme.model.enums.Distracts).values()}">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" th:id="'customCheckboxDistrict_' + ${district}" th:name="'customCheckboxDistrict_' + ${district}" class="custom-control-input">
+                                    <label th:for="'customCheckboxDistrict_' + ${district}" class="custom-control-label ml-1 text-muted f-15" th:text="${district}"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <div class="row">
+                <div class="col-lg-4 col-md-6" th:each="hospital, status : ${hospitalList}">
+                    <div class="list-grid-item mt-4" data-district="${hospital.district}" data-section="${hospital.section}">
+                        <div class="grid-item-content p-2">
+                            <div class="grid-list-desc text-center mt-4">
+                                <h6 class="mb-1" th:text="${hospital.publicName}"></h6>
+<!--                                <h6 class="mb-1" th:text="${hospital.address.city.toString()}"></h6>-->
+                                <p class="mb-1" th:text="${hospital.phone}"></p>
+                                <p class="mb-1" th:text="${hospital.email}"></p>
+
+                                <span class="badge badge-warning text-white">4.9</span>
+                            </div>
+                        </div>
+                        <hr class="mt-0 mb-0">
+                        <div class="apply-button text-center mt-2 mb-2">
+                            <a href="#" class="btn btn-custom btn-sm" data-toggle="modal" th:attr="data-target='#detailsModal'+${hospital.id}">View more details</a>
+                        </div>
+
+                        <div  th:each="h : ${hospitalList}" th:id="'detailsModal'+${hospital.id}" class="modal fade" tabindex="-1" role="dialog">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" th:text="${h.username}+'Details'"></h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                        <div class="modal-body">
+
+                                            <div class="form-group">
+                                                <label>name</label>
+                                                <p th:text="${h.publicName}"></p>
+                                            </div>
+                                            <div class="form-group">
+                                                <p>phone:<span th:text="${h.phone}"></span></p>
+                                            </div>
+                                            <div class="form-group">
+                                                <p >email: <span th:text="${h.email}"></span></p>
+                                            </div>
+                                            <div class="form-group">
+                                                <p>Manager: <span th:text="${h.managerName}"></span></p>
+                                                <p><span th:text="${h.managerPhone}"></span></p>
+                                            </div>
+                                            <div class="form-group">
+                                                <p>Supervising Physician:<span th:text="${h.getSupervisingPhysicianName()}"></span></p>
+                                                <p > <span th:text="${h.getSupervisingPhysicianPhone()}"></span></p>
+                                            </div>
+                                            <div class="form-group">
+                                                <div th:each="section: ${h.getHospitalSections()}">
+                                                    <ul>
+                                                        <li th:text="section.name">
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        var districtCheckboxes = document.querySelectorAll('input[name^="customCheckboxDistrict_"]');
+        var sectionCheckboxes = document.querySelectorAll('input[name^="customCheckboxHSection_"]');
+
+        districtCheckboxes.forEach(function (checkbox) {
+            checkbox.addEventListener('change', filterHospitals);
+        });
+
+        sectionCheckboxes.forEach(function (checkbox) {
+            checkbox.addEventListener('change', filterHospitals);
+        });
+    });
+    function filterHospitals() {
+        var selectedDistracts = [];
+        var selectedSections = [];
+
+        /* Get selected Districts */
+        var districtCheckboxes = document.querySelectorAll('input[name^="customCheckboxDistrict_"]');
+        districtCheckboxes.forEach(function (checkbox) {
+            if (checkbox.checked) {
+                selectedDistracts.push(checkbox.value); // Get the value of the checkbox
+            }
+        });
+
+        /* Get selected Hospital Sections */
+        var sectionCheckboxes = document.querySelectorAll('input[name^="customCheckboxHSection_"]');
+        sectionCheckboxes.forEach(function (checkbox) {
+            if (checkbox.checked) {
+                selectedSections.push(checkbox.value); // Get the value of the checkbox
+            }
+        });
+
+        /* Show or hide hospital cards based on selections */
+        var hospitalCards = document.querySelectorAll('.list-grid-item');
+        hospitalCards.forEach(function (card) {
+            var district = card.getAttribute('data-district');
+            var section = card.getAttribute('data-section');
+
+            var districtMatch = selectedDistracts.length === 0 || selectedDistracts.includes(district);
+            var sectionMatch = selectedSections.length === 0 || selectedSections.includes(section);
+
+            if (districtMatch && sectionMatch) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+</script>
+</body>
+</html>
