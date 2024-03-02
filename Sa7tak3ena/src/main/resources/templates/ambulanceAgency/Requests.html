@@ -36,7 +36,7 @@
 
                                 <div class="form-group">
                                     <label for="staff">Select Staff:</label>
-                                    <select id="staff" name="staff-id" class="form-control" required>
+                                    <select id="staff" th:field="*{staff}" name="staff-id" class="form-control" required>
                                         <option th:each="staff : ${stafflist}" th:value="${staff.id}" th:text="${staff.name}"></option>
                                     </select>
                                 </div>
@@ -48,12 +48,12 @@
 
                                 <!-- Additional fields for different service types -->
                                 <div id="homeServiceFields" style="display: none;">
-                                    <input type="text" class="form-control" name="from.name" id="fromName" th:field="*{pickupaddress.name}" placeholder="Location Name">
+                                    <input type="text" class="form-control" name="from.name"  th:field="*{pickupaddress.name}" placeholder="Location Name">
                                 </div>
 
                                 <div id="transferFields" style="display: none;">
                                     <input type="text" class="form-control" name="from.name" id="fromName" th:field="*{pickupaddress.name}" placeholder="From Location Name">
-                                    <input type="text" class="form-control" name="to.name" id="toName" th:field="*{to.name}" placeholder="To Location Name">
+                                    <input type="text" class="form-control" name="to.name" id="toName" th:field="*{to.name}" th:value="*{to.name}" placeholder="To Location Name">
 
                                     <label for="car_type">Select Ambulance Type:</label>
                                     <select name="car_type" id="car_type" class="form-control" required>
@@ -179,11 +179,11 @@
                         </div>
                         <div class="form-group">
                             <label for="nstaff">Select Paramedic:</label>
-                            <select  name="nstaff" class="form-control" required>
+                            <select class="form-control" required>
                                 <option th:each="staff : ${stafflist}" th:value="${staff.id}" th:text="${staff.name}"></option>
                             </select>
                         </div>
-                        <input type="text" class="form-control" name="equipment" placeholder="Equipment">
+                        <input type="text" class="form-control" name="equipment" th:value="${request.equipments}" placeholder="Equipment">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary"
