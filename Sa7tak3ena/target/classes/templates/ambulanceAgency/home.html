@@ -185,7 +185,11 @@
                 <td th:text="${request.service}"></td>
                 <td th:text="${request.getSender().username}"></td>
                 <td th:text="${request.getSender().phone}"></td>
-                <td th:text="${request.from}"></td>
+                <td>
+                    <a th:href="'https://www.google.com/maps?q=' + ${request.pickupaddress.latitude} + ',' + ${request.pickupaddress.longitude}" target="_blank">
+                        View on Map
+                    </a>
+                </td>
                 <td th:text="${request.to}"></td>
                 <td th:text="${request.createdAt}"></td>
                 <td>

@@ -26,14 +26,12 @@ public class AmbulanceRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 //    in case of transfer it is called from in case of house service it is location
-    @Column(name = "transport_from")
-    public String from;
     @ManyToOne
     public Address pickupaddress;
 
     //    in case of transfer
-    @Column(name = "transport_to")
-    public String to;
+    @ManyToOne
+    public Address to;
     @ManyToOne
     @JoinColumn(name = "staff_id")
     public Paramedic staff;

@@ -169,6 +169,8 @@ public class AmbulanceController {
         model.addAttribute("requests", ambulanceRequestService.getAllRequestsForUser(userService.getCurrentUser().getId()));
         List<Hospital> hospitals = hospitalService.findHospitalsWithAvailableEmergencyBeds("طوارئ");
         model.addAttribute("hospitals", hospitals);
+        model.addAttribute("current_user",cu );
+
         model.addAttribute("cars", ambulanceCarService.findAllUserCarByStatus(AmbulanceStatus.Avilable,cu.id));
         return "ambulanceAgency/Requests";
     }
@@ -177,8 +179,14 @@ public class AmbulanceController {
     public String addRequest( @ModelAttribute("newrequest") AmbulanceRequest newrequest) {
         Ambulance cu = ambulanceService.getAmbulanceById(userService.getCurrentUser().getId());
         newrequest.setAmbulance(cu);
+        newrequest.setSender(cu);
         newrequest.setStatus(AmbulanceRequestStatus.ACCEPTED);
         newrequest.setCreatedAt(LocalDateTime.now());
+        if (newrequest.getService().equals(Ambulanceservice.inDoorService)) {
+            // Set the to and from fields to null
+            newrequest.setTo(null);
+            newrequest.setPickupaddress(null);
+        }
         ambulanceRequestService.save(newrequest);
         return "redirect:/manage-requests";
     }
@@ -194,6 +202,15 @@ public class AmbulanceController {
         ambulanceRequestService.update(id, survice, car.getType(), paramedic, description, equipment);
         ambulanceCarService.updateStatus(car.getId(), AmbulanceStatus.Reserved);
 
+        return "redirect:/manage-requests";
+    }
+    @GetMapping("/update-nonappedrequestdetails")
+    @PreAuthorize("hasAnyAuthority('AMBULANCE')")
+    public String updateRequestDetails(
+            @RequestParam("id") long id,
+            @RequestParam("newdescription") String description,
+            @RequestParam("equipment") String equipment) {
+        ambulanceRequestService.updateNonapped(id,description, equipment);
         return "redirect:/manage-requests";
     }
     @GetMapping("/update-hrequestdetails")
@@ -230,7 +247,7 @@ public class AmbulanceController {
     ) {
         //description is only changed by update details
         AmbulanceRequest r= ambulanceRequestService.update(id,Ambulanceservice.transfer,car.getType(),paramedic,ambulanceRequestService.getRequestById(id).getDescription(),equipment);
-        r.setTo(hospital.getPublicName());
+        r.setTo(hospital.getAddress());
         ambulanceRequestService.save(r);
         reservationService.reserveEmergency(hospital,car,description);
         ambulanceCarService.updateStatus(car.getId(), AmbulanceStatus.Reserved);

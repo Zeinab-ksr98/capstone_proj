@@ -42,7 +42,8 @@ public class PatientController {
         addressService.save(address);
 //        dispatch according to availablity (enabled ones) ordered according to distance
         List<Ambulance> filteredAmbulances= addressService.sortAmbulancesByDistance(address,ambulanceService.getAllAmbulances());
-        for (Ambulance A : filteredAmbulances) {
+        for (int i = 0; i < 2; i++) {
+            Ambulance A = filteredAmbulances.get(i);
             AmbulanceRequest AR =new AmbulanceRequest();
             AR.setAmbulance(A);
             AR.setService(Ambulanceservice.homeService);

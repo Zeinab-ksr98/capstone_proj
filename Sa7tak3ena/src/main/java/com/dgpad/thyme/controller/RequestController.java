@@ -169,10 +169,11 @@ public class RequestController {
                 List<Ambulance> filteredAmbulance =ambulanceService.getAmbulanceByAvailableCarTypeAndAgency(agency,request.getCarType());
 //                filtering by location
                 filteredAmbulance= addressService.sortAmbulancesByDistance(request.getPickupAddress(),filteredAmbulance);
-                for (Ambulance ambulance: filteredAmbulance) {
+                for (int i = 0; i < 2; i++) {
+                    Ambulance ambulance = filteredAmbulance.get(i);
                     AmbulanceRequest ambulanceRequest =new AmbulanceRequest();
 
-                    ambulanceRequest.setTo(request.getHospital().getPublicName());
+                    ambulanceRequest.setTo(request.getHospital().getAddress());
                     ambulanceRequest.setPickupaddress(request.getPickupAddress());
 
                     ambulanceRequest.setAmbulance(ambulance);

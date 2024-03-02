@@ -9,10 +9,8 @@ import com.dgpad.thyme.model.users.Hospital;
 import com.dgpad.thyme.repository.AddressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.util.*;
 
-import java.util.List;
-
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 @Service
@@ -85,20 +83,59 @@ public class AddressService {
         double distanceMt = SEMI_MINOR_AXIS_MT * A * (sigma - deltaSigma);
         return distanceMt / 1000;
     }
-    // Method to sort ambulances by distance from given address (after being filtered accourding to car status
-    public List<Ambulance> sortAmbulancesByDistance(Address pickupAddress, List<Ambulance> ambulances) {
-        return ambulances.stream()
-                .sorted(Comparator.comparingDouble(ambulance ->
-                        calculateDistance(pickupAddress.getLatitude(), pickupAddress.getLongitude(),
-                                ambulance.getAddress().getLatitude(), ambulance.getAddress().getLongitude())))
-                .collect(Collectors.toList());
-    }
     public List<Hospital> sortHospitalsByDistance(Address pickupAddress, List<Hospital> hospitals) {
-        return hospitals.stream()
-                .sorted(Comparator.comparingDouble(hospital ->
-                        calculateDistance(pickupAddress.getLatitude(), pickupAddress.getLongitude(),
-                                hospital.getAddress().getLatitude(), hospital.getAddress().getLongitude())))
-                .collect(Collectors.toList());
+        List<Hospital> sortedHospitals = new ArrayList<>(hospitals);
+
+        for (int i = 0; i < sortedHospitals.size() - 1; i++) {
+            for (int j = i + 1; j < sortedHospitals.size(); j++) {
+                Hospital hospital1 = sortedHospitals.get(i);
+                Hospital hospital2 = sortedHospitals.get(j);
+
+                double distance1 = calculateDistance(pickupAddress.getLatitude(), pickupAddress.getLongitude(),
+                        hospital1.getAddress().getLatitude(), hospital1.getAddress().getLongitude());
+
+                double distance2 = calculateDistance(pickupAddress.getLatitude(), pickupAddress.getLongitude(),
+                        hospital2.getAddress().getLatitude(), hospital2.getAddress().getLongitude());
+
+                if (distance1 > distance2) {
+                    // Swap hospitals
+                    Hospital temp = sortedHospitals.get(i);
+                    sortedHospitals.set(i, sortedHospitals.get(j));
+                    sortedHospitals.set(j, temp);
+                }
+            }
+        }
+
+        return sortedHospitals;
     }
+
+    // Method to sort ambulances by distance from given address (after being filtered accourding to car status
+    public List<Ambulance> sortAmbulancesByDistance(Address pickupAddress, List<Ambulance> Ambulances) {
+        List<Ambulance> sortedAmbulances = new ArrayList<>(Ambulances);
+
+        for (int i = 0; i < sortedAmbulances.size() - 1; i++) {
+            for (int j = i + 1; j < sortedAmbulances.size(); j++) {
+                Ambulance Ambulance1 = sortedAmbulances.get(i);
+                Ambulance Ambulance2 = sortedAmbulances.get(j);
+
+                double distance1 = calculateDistance(pickupAddress.getLatitude(), pickupAddress.getLongitude(),
+                        Ambulance1.getAddress().getLatitude(), Ambulance1.getAddress().getLongitude());
+
+                double distance2 = calculateDistance(pickupAddress.getLatitude(), pickupAddress.getLongitude(),
+                        Ambulance2.getAddress().getLatitude(), Ambulance2.getAddress().getLongitude());
+
+                if (distance1 > distance2) {
+                    // Swap hospitals
+                    Ambulance temp = sortedAmbulances.get(i);
+                    sortedAmbulances.set(i, sortedAmbulances.get(j));
+                    sortedAmbulances.set(j, temp);
+                }
+            }
+        }
+
+        return sortedAmbulances;
+    }
+
+
 }
 

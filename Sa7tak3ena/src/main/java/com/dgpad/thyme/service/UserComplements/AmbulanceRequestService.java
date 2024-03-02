@@ -63,6 +63,17 @@ public class AmbulanceRequestService {
         return save(existingRequest);
 
     }
+    public AmbulanceRequest updateNonapped(long id,String description, String equipment){
+        // Retrieve the existing request from the service
+        AmbulanceRequest existingRequest = getRequestById(id);
+
+        existingRequest.setDescription(description);
+        if (equipment!=null)
+            existingRequest.setEquipments(equipment);
+        // Save the modified request back to the database
+        return save(existingRequest);
+
+    }
     public AmbulanceRequest update(long id,Paramedic paramedic, String equipment){
         // Retrieve the existing request from the service
         AmbulanceRequest existingRequest = getRequestById(id);

@@ -86,19 +86,35 @@ public class AdminController {
     private AddressService addressService;
     @PostMapping("/gps_location")
     public String receiveLocation(@RequestParam("latitude") double latitude, @RequestParam("longitude") double longitude) {
-        Hospital h = hospitalService.getHospitalById(userService.getCurrentUser().getId());
-        Address address = new Address();
-        address.setLongitude(longitude);
-        address.setLatitude(latitude);
+        if (userService.getCurrentUser().getRole() ==Role.HOSPITAL){
+            Hospital h = hospitalService.getHospitalById(userService.getCurrentUser().getId());
+            Address address = new Address();
+            address.setLongitude(longitude);
+            address.setLatitude(latitude);
 
-        if (h.getAddress() != null && h.getAddress().getId() != null) {
-            address = addressService.updateAddress(h.getAddress().getId(), address);
-        } else {
-            address = addressService.save(address);
+            if (h.getAddress() != null && h.getAddress().getId() != null) {
+                address = addressService.updateAddress(h.getAddress().getId(), address);
+            } else {
+                address = addressService.save(address);
+            }
+
+            h.setAddress(address);
+            hospitalService.save(h);
+        } else if  (userService.getCurrentUser().getRole() ==Role.AMBULANCE){
+                Ambulance ambulance = ambulanceService.getAmbulanceById(userService.getCurrentUser().getId());
+                Address address = new Address();
+                address.setLongitude(longitude);
+                address.setLatitude(latitude);
+
+                if (ambulance.getAddress() != null && ambulance.getAddress().getId() != null) {
+                    address = addressService.updateAddress(ambulance.getAddress().getId(), address);
+                } else {
+                    address = addressService.save(address);
+                }
+
+                ambulance.setAddress(address);
+                ambulanceService.save(ambulance);
         }
-
-        h.setAddress(address);
-        hospitalService.save(h);
         return "redirect:/home";
 
     }

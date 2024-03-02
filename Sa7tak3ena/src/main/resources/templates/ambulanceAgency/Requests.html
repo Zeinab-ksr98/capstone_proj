@@ -16,7 +16,7 @@
          aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
-                <form action="/add-request" th:object="${newrequest}" method="post">
+                <form th:action="@{/add-request}" th:object="${newrequest}" method="post">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLongTitle">Add request</h5>
                         <button type="button" class="close" data-dismiss="modal"
@@ -43,34 +43,18 @@
 
                                 <input type="text" class="form-control" name="description" id="description" th:field="*{description}" placeholder="Description" required>
                                 <input type="text" class="form-control" name="phone" id="phone" placeholder="Phone Number" required>
-                                <input type="text" class="form-control" name="equipment" id="equipment" placeholder="Equipment">
-                                <input type="text" class="form-control" name="name" id="name" placeholder="Name" required>
-
-                                <script>
-                                    document.getElementById('type').addEventListener('change', function () {
-                                        var selectedService = this.value;
-                                        var descriptionField = document.getElementById('description');
-                                        var phoneField = document.getElementById('phone');
-                                        var equipmentField = document.getElementById('equipment');
-                                        var nameField = document.getElementById('name');
-
-                                        document.getElementById('homeServiceFields').style.display = (selectedService === 'homeService') ? 'block' : 'none';
-                                        document.getElementById('transferFields').style.display = (selectedService === 'transfer') ? 'block' : 'none';
-                                        document.getElementById('inDoorServiceFields').style.display = (selectedService === 'inDoorService') ? 'block' : 'none';
-
-                                        // Append phone, equipment, and name to the description before submitting
-                                        descriptionField.value = descriptionField.value + '\nPhone: ' + phoneField.value + '\nEquipment: ' + equipmentField.value + '\nName: ' + nameField.value;
-                                    });
-                                </script>
+                                <input type="text" class="form-control" name="equipment" id="equipment" th:field="*{equipments}" placeholder="Equipment">
+                                <input type="text" class="form-control" name="name" id="name" placeholder="Patient Name" required>
 
                                 <!-- Additional fields for different service types -->
                                 <div id="homeServiceFields" style="display: none;">
-                                    <input type="text" class="form-control" name="from" th:field="*{from}" placeholder="Patient address" required>
+                                    <input type="text" class="form-control" name="from.name" id="fromName" th:field="*{pickupaddress.name}" placeholder="Location Name">
                                 </div>
 
                                 <div id="transferFields" style="display: none;">
-                                    <input type="text" class="form-control" name="from" th:field="*{from}" placeholder="From" required>
-                                    <input type="text" class="form-control" name="to" th:field="*{to}" placeholder="To" required>
+                                    <input type="text" class="form-control" name="from.name" id="fromName" th:field="*{pickupaddress.name}" placeholder="From Location Name">
+                                    <input type="text" class="form-control" name="to.name" id="toName" th:field="*{to.name}" placeholder="To Location Name">
+
                                     <label for="car_type">Select Ambulance Type:</label>
                                     <select name="car_type" id="car_type" class="form-control" required>
                                         <option th:each="type : ${T(com.dgpad.thyme.model.enums.Ambulancetypes).values()}"
@@ -78,14 +62,35 @@
                                         </option>
                                     </select>
                                 </div>
-
-
                                 <script>
                                     document.getElementById('type').addEventListener('change', function () {
                                         var selectedService = this.value;
+
                                         document.getElementById('homeServiceFields').style.display = (selectedService === 'homeService') ? 'block' : 'none';
                                         document.getElementById('transferFields').style.display = (selectedService === 'transfer') ? 'block' : 'none';
-                                        document.getElementById('inDoorServiceFields').style.display = (selectedService === 'inDoorService') ? 'block' : 'none';
+
+                                        // Remove 'required' attribute from all fields
+                                        document.getElementById('fromName').removeAttribute('required');
+                                        document.getElementById('toName').removeAttribute('required');
+
+                                        // Add 'required' attribute to the necessary fields based on the selected service type
+                                        if (selectedService === 'homeService') {
+                                            document.getElementById('fromName').setAttribute('required', 'required');
+                                        } else if (selectedService === 'transfer') {
+                                            document.getElementById('fromName').setAttribute('required', 'required');
+                                            document.getElementById('toName').setAttribute('required', 'required');
+                                        }
+                                    });
+
+                                    // Add event listener to the form submission event
+                                    document.getElementById('requestForm').addEventListener('submit', function () {
+                                        var selectedService = document.getElementById('type').value;
+                                        var descriptionField = document.getElementById('description');
+                                        var phoneField = document.getElementById('phone');
+                                        var nameField = document.getElementById('name');
+
+                                        // Append phone and name to the description before submitting
+                                        descriptionField.value = descriptionField.value + '\nPhone: ' + phoneField.value + '\nName: ' + nameField.value;
                                     });
                                 </script>
                             </div>
@@ -126,8 +131,16 @@
                 <td th:text="${request.service}"></td>
                 <td th:text="${request.getSender().username}"></td>
                 <td th:text="${request.getSender().phone}"></td>
-                <td th:text="${request.from}"></td>
-                <td th:text="${request.to}"></td>
+                <td>
+                    <a th:href="'https://www.google.com/maps?q=' + ${request.pickupaddress.latitude} + ',' + ${request.pickupaddress.longitude}" target="_blank">
+                        View on Map
+                    </a>
+                </td>
+                <td>
+                    <a th:href="'https://www.google.com/maps?q=' + ${request.to.latitude} + ',' + ${request.to.longitude}" target="_blank">
+                        View on Map
+                    </a>
+                </td>
                 <td th:text="${request.car_type}"></td>
 
                 <td th:text="${request.status}"></td>
@@ -200,12 +213,20 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="request : ${requests}" th:if="${!request.isFrom_hospital() && request.status != request.status.PENDING}">
+            <tr th:each="request : ${requests}" th:if="${!request.isFrom_hospital() && request.status != request.status.PENDING && request.sender != current_user}">
                 <td th:text="${request.service}"></td>
                 <td th:text="${request.getSender().username}"></td>
                 <td th:text="${request.getSender().phone}"></td>
-                <td th:text="${request.from}"></td>
-                <td th:text="${request.to}"></td>
+                <td>
+                    <a th:href="'https://www.google.com/maps?q=' + ${request.pickupaddress.getLatitude()} + ',' + ${request.pickupaddress.getLongitude()}" target="_blank">
+                        View on Map
+                    </a>
+                </td>
+                <td>
+                    <a th:href="'https://www.google.com/maps?q=' + ${request.to.latitude} + ',' + ${request.to.longitude}" target="_blank">
+                        View on Map
+                    </a>
+                </td>
                 <td th:text="${request.status}"></td>
                 <td th:text="${request.staff != null ? request.staff.name : 'N/A'}"></td>
                 <td th:text="${request.createdAt}"></td>
@@ -234,7 +255,7 @@
                             </button>
                         </div>
                         <div class="modal-body text-center">
-                            <input type="hidden" name="id" id="id" th:value="${request.id}" />
+                            <input type="hidden" name="id" th:value="${request.id}" />
                             <div class="form-group">
                                 <label for="stype">Select Survice Type:</label>
                                 <select name="stype" class="form-control" id="stype" required>
@@ -317,6 +338,68 @@
             </div>
         </div>
     </div>
+    <div class="container mt-3">
+        <h5>Non app Requests</h5>
+        <table class="table">
+            <thead class="thead-light">
+            <tr>
+                <th scope="col">Request type</th>
+                <th scope="col">from</th>
+                <th scope="col">To</th>
+                <th scope="col">status</th>
+                <th scope="col">staff</th>
+                <th scope="col">created at</th>
+                <th scope="col"> description</th>
+                <th scope="col"></th>
+
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="nrequest : ${requests}" th:if="${!nrequest.isFrom_hospital() && nrequest.sender == current_user}">
+                <td th:text="${nrequest.survice}"></td>
+                <td th:text="${nrequest.pickupaddress.name}"></td>
+                <td th:text="${nrequest.to.name}"></td>
+                <td th:text="${nrequest.status}"></td>
+                <td th:text="${nrequest.staff.name}"></td>
+                <td th:text="${nrequest.createdAt}"></td>
+                <td th:text="${nrequest.description}"></td>
+
+                <td>
+                    <button class="btn btn-primary" data-toggle="modal" th:attr="data-target='#updateNOnApped'+${request.id}">
+                        modify details
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div th:each="request : ${requests}" th:id="'updateNOnApped'+${request.id}" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog " role="document">
+                <div class="modal-content">
+                    <form th:action="@{/update-nonappedrequestdetails}" method="get">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="nonappedModalLongTitle">edit details</h5>
+                            <button type="button" class="close" data-dismiss="modal"
+                                    aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <input type="hidden" name="id" id="id" th:value="${request.id}" />
+
+                            <input type="text" class="form-control" name="newdescription"   placeholder="Description ,keep it empty to avoid edit " required>
+                            <input type="text" class="form-control" name="equipment"  placeholder="Equipment,keep it empty to avoid edit">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary"
+                                    data-dismiss="modal">Close</button>
+                            <input type="submit" value="Save Changes" class="btn btn-primary">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 <!-- Include Bootstrap JavaScript and jQuery -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
