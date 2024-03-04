@@ -78,68 +78,6 @@ public class AdminController {
     }
     return "redirect:/manage-users";
 }
-    @GetMapping("/location")
-    public String location() {
-        return "account/test_location";
-    }
-    @Autowired
-    private AddressService addressService;
-    @PostMapping("/gps_location")
-    public String receiveLocation(@RequestParam("latitude") double latitude, @RequestParam("longitude") double longitude) {
-        if (userService.getCurrentUser().getRole() ==Role.HOSPITAL){
-            Hospital h = hospitalService.getHospitalById(userService.getCurrentUser().getId());
-            Address address = new Address();
-            address.setLongitude(longitude);
-            address.setLatitude(latitude);
-
-            if (h.getAddress() != null && h.getAddress().getId() != null) {
-                address = addressService.updateAddress(h.getAddress().getId(), address);
-            } else {
-                address = addressService.save(address);
-            }
-
-            h.setAddress(address);
-            hospitalService.save(h);
-        } else if  (userService.getCurrentUser().getRole() ==Role.AMBULANCE){
-                Ambulance ambulance = ambulanceService.getAmbulanceById(userService.getCurrentUser().getId());
-                Address address = new Address();
-                address.setLongitude(longitude);
-                address.setLatitude(latitude);
-
-                if (ambulance.getAddress() != null && ambulance.getAddress().getId() != null) {
-                    address = addressService.updateAddress(ambulance.getAddress().getId(), address);
-                } else {
-                    address = addressService.save(address);
-                }
-
-                ambulance.setAddress(address);
-                ambulanceService.save(ambulance);
-        }
-        return "redirect:/home";
-
-    }
-
-//@PostMapping(value = "/admin-create-withRole")
-//@PreAuthorize("hasAnyAuthority('ADMIN')")
-//public String CreateAdmin(@RequestParam("username") String userName,@RequestParam("publicname") String publicName, @RequestParam("pass") String pass, @RequestParam("email") String email, @RequestParam("phone") String phone, @RequestParam("role") Role role,@RequestParam("agency") AmbulanceAgency agency) {
-//    Role selectedRole = Role.valueOf(role.name());
-//    if (selectedRole == Role.HOSPITAL) {
-//        Hospital hospital = new Hospital(userName, publicName, email, passwordEncoder.encode(pass), phone);
-//        hospitalService.save(hospital);
-//    }
-//    else if (selectedRole == Role.ADMIN) {
-//        User admin = new User(userName, email, passwordEncoder.encode(pass), phone,Role.ADMIN);
-//        userService.save(admin);
-//    }
-//    else if (selectedRole == Role.AMBULANCE) {
-//        Ambulance ambulance = new Ambulance(userName, publicName, email, passwordEncoder.encode(pass), phone);
-//        ambulance.setAgency(agency);
-//        ambulanceService.save(ambulance);
-//    }
-////    User user = new User(userName, email, pass, phone,role);
-//
-//    return "redirect:/manage-users";
-//}
 
 //agency
     @GetMapping("/manage-agency")
@@ -166,9 +104,6 @@ public class AdminController {
         ambulanceAgencyService.save(agency);
         return "redirect:/manage-agency";
     }
-
-    //can add a method that edit the category name in all ambulance
-
 
     //bed category management (by admin)
     @GetMapping("/manage-bedsCategory")

@@ -23,4 +23,8 @@ public class Address {
 //    @Enumerated(EnumType.STRING)
 //    private Distracts distract;
 
+
+    public Address(String name) {
+        this.name = name;
+    }
 }

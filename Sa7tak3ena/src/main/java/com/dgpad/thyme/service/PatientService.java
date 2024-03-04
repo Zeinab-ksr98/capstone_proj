@@ -95,32 +95,36 @@ public class PatientService {
         return randomStringBuilder.toString();
     }
     public Patient update(Patient currentuser,Patient user){
-        if (user.getFirstName()!=null)
-            currentuser.setFirstName(user.getFirstName());
-        if (user.getLastName()!=null)
-            currentuser.setLastName(user.getLastName());
-        if (user.getIdentityCardImage()!=null)
-            currentuser.setIdentityCardImage(user.getIdentityCardImage());
-        if (user.getSelfie()!=null)
-            currentuser.setSelfie(user.getSelfie());
-        if (user.getAge()!=0)
-            currentuser.setAge(user.getAge());
-        if (user.isVerified())
-            currentuser.setVerified(user.isVerified());
-        if (user.getGender()!=null)
-            currentuser.setGender(user.getGender());
-        if (user.getNationality()!=null)
-            currentuser.setNationality(user.getNationality());
-        if (user.getInsurance()!=null)
-            currentuser.setInsurance(user.getInsurance());
         if (user.getUsername()!=null)
             currentuser.setUsername(user.getUsername());
         if (user.getEmail()!=null)
             currentuser.setEmail(user.getEmail());
-        if (user.getPassword()!=null)
-            currentuser.setPassword(user.getPassword());
-        if (user.getPhone()!=null)
-            currentuser.setPhone(user.getPhone());
+
+        if (user.getFirstName()!=null)
+            currentuser.setFirstName(user.getFirstName());
+        if (user.getLastName()!=null)
+            currentuser.setLastName(user.getLastName());
+
+
+        if (user.getIdentityCardImage()!=null)
+            currentuser.setIdentityCardImage(user.getIdentityCardImage());
+        if (user.getSelfie()!=null)
+            currentuser.setSelfie(user.getSelfie());
+
+
+        currentuser.setVerified(true);
+
+
+        if (user.getAge()!=0)
+            currentuser.setAge(user.getAge());
+        if (user.getGender()!=null)
+            currentuser.setGender(user.getGender());
+
+        if (user.getNationality()!=null)
+            currentuser.setNationality(user.getNationality());
+        if (user.getInsurance()!=null)
+            currentuser.setInsurance(user.getInsurance());
+
         return save(currentuser);
     }
 

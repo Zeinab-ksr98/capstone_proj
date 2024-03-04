@@ -74,14 +74,51 @@
                 </p>
                 <p>
                     <strong>Address:</strong>
-                    <span th:if="${user.address != null}">
-                        <span th:text="${user.address.street} + ', '"></span>
-                        <span th:text="${user.address.city} + ', '"></span>
-                        <span th:text="${user.address.zipCode}"></span>
-                    </span>
+                    <a th:href="'https://www.google.com/maps?q=' + ${user.address.latitude} + ',' + ${user.address.longitude}" target="_blank">
+                        View on Map
+                    </a>
                     <span th:if="${user.address == null}">Not filled yet</span>
                 </p>
+                <button class="btn btn-primary" onclick="getLocation()">
+                    Edit My Location by GPS
+                    <img width="24" height="24" src="https://img.icons8.com/pastel-glyph/64/FFFFFF/location--v2.png" alt="location--v2"/>
+                </button>
             </div>
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+            <script th:inline="javascript">
+                function getLocation() {
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(showPosition);
+                    } else {
+                        alert("Geolocation is not supported by this browser.");
+                    }
+                }
+
+                function showPosition(position) {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+
+                    // Construct the URL with latitude and longitude as query parameters
+                    const url = '/gps_location?latitude=' + latitude + '&longitude=' + longitude;
+
+                    // Send a POST request to the constructed URL
+                    fetch(url, {
+                        method: 'POST'
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Failed to send location data.');
+                            }
+                            console.log('Location data sent successfully.');
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                }
+            </script>
+
+
             <div th:if="${user.role.toString() == 'HOSPITAL'}">
                 <!-- Hospital Details -->
                 <p>
@@ -114,13 +151,16 @@
                 <br>
                 <p>
                     <strong>Address:</strong>
-                    <span th:if="${user.address != null}">
-                        <span th:text="${user.address.street} + ', '"></span>
-                        <span th:text="${user.address.city} + ', '"></span>
-                        <span th:text="${user.address.zipCode}"></span>
-                    </span>
+
+                    <a th:href="'https://www.google.com/maps?q=' + ${user.address.latitude} + ',' + ${user.address.longitude}" target="_blank">
+                        View on Map
+                    </a>
                     <span th:if="${user.address == null}">Not filled yet</span>
                 </p>
+                <button class="btn btn-primary" onclick="getLocation()">
+                    Edit My Location by GPS
+                    <img width="24" height="24" src="https://img.icons8.com/pastel-glyph/64/FFFFFF/location--v2.png" alt="location--v2"/>
+                </button>
 
             </div>
             <div th:if="${user.role.toString() == 'PATIENT'}">
@@ -139,11 +179,6 @@
                     <strong>Identity Card Image:</strong>
                     <span th:if="${user.identityCardImage != null}" th:text="${user.identityCardImage}"></span>
                     <span th:if="${user.identityCardImage == null}">Not filled yet</span>
-                </p>
-                <p>
-                    <strong>Passport Image:</strong>
-                    <span th:if="${user.passportImage != null}" th:text="${user.passportImage}"></span>
-                    <span th:if="${user.passportImage == null}">Not filled yet</span>
                 </p>
                 <p>
                     <strong>Age:</strong>
@@ -199,10 +234,7 @@
                             <input name="username" required th:field="${user.username}" type="text">
                             <br>
                             <label for="email">Email:</label>
-                            <input name="email" required th:field="${user.email}" type="email">
-                            <br>
-                            <label for="phone">Phone:</label>
-                            <input name="phone" required th:field="${user.phone}" type="text">
+                            <input name="email" required id="email" th:field="${user.email}" type="email">
                             <br>
 
                             <!-- Patient-specific Fields -->
@@ -218,32 +250,43 @@
                             <input id="identityCardImage" name="identityCardImage" required
                                    th:field="${user.identityCardImage}" type="text">
                             <br>
-
                             <label for="selfie">Selfie:</label>
                             <input id="selfie" name="selfie" required th:field="${user.selfie}" type="text">
                             <br>
+
+
 
                             <label for="age">Age:</label>
                             <input id="age" name="age" required th:field="${user.age}" type="text">
                             <br>
 
-                            <label for="gender">Gender:</label>
-                            <select id="gender" name="gender" th:field="${user.gender}">
-                                <option value="MALE">Male</option>
-                                <option value="FEMALE">Female</option>
-                                <!-- Add more options if needed -->
-                            </select>
-                            <br>
 
-                            <label for="nationality">Nationality:</label>
-                            <select id="nationality" name="nationality" th:field="${user.nationality}">
-                            </select>
-                            <br>
+                            <div class="form-group">
+                                <label for="gender">Gender</label>
+                                <select name="gender" class="form-control" id="gender" required>
+                                    <option th:each="gender : ${T(com.dgpad.thyme.model.enums.Gender).values()}"
+                                            th:value="${gender}" th:field="${user.gender}"  th:text="${gender.name()}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="nationality">Nationality:</label>
+                                <select name="nationality" class="form-control" id="nationality" required>
+                                    <option th:each="nationality : ${T(com.dgpad.thyme.model.enums.Nationality).values()}"
+                                            th:value="${nationality}" th:field="${user.nationality}"  th:text="${nationality.name()}">
+                                    </option>
+                                </select>
+                            </div>
 
-                            <label for="insurance">Insurance:</label>
-                            <select id="insurance" name="insurance" th:field="${user.insurance}">
-                            </select>
-                            <br>
+                            <div class="form-group">
+                                <label for="insurance">Insurance:</label>
+                                <select name="insurance" class="form-control" id="insurance" required>
+                                    <option th:each="insurance : ${T(com.dgpad.thyme.model.enums.Insurance).values()}"
+                                            th:value="${insurance}" th:field="${user.insurance}"  th:text="${insurance.name()}">
+                                    </option>
+                                </select>
+                            </div>
+
 
                             <br>
                             <button type="submit">Save Changes</button>
@@ -251,41 +294,40 @@
 
                     </th:block>
                     <th:block th:case="'HOSPITAL'">
-                        <form method="post" th:action="@{/profile-edit-hospital}" th:object="${newuser}" >
-                            <!-- Common Fields -->
+                        <form method="post" th:action="@{/profile-edit-hospital}" th:object="${user}" >
+                            <label for="username">Username:</label>
+                            <input id="username" name="username" required th:field="${user.username}" type="text">
+                            <br>
                             <label for="publicName">Public Name:</label>
-                            <input name="publicName"  th:field="*{publicName}" type="text">
+                            <input name="publicName" required th:field="${user.publicName}" type="text">
                             <br>
                             <label for="phone">Phone:</label>
-                            <input name="phone"  th:field="*{phone}" type="text">
+                            <input name="phone" required th:field="${user.phone}" type="text">
                             <br>
                             <label for="managerName">Manager Name:</label>
-                            <input id="managerName" name="managerName"  th:field="*{managerName}"
-                                   type="text">
+                            <input id="managerName" required name="managerName"  th:field="${user.managerName}" type="text">
                             <br>
 
                             <label for="managerPhone">Manager Phone:</label>
-                            <input id="managerPhone" name="managerPhone"  th:field="*{managerPhone}"
-                                   type="text">
+                            <input id="managerPhone" name="managerPhone" required th:field="${user.managerPhone}" type="text">
                             <br>
 
                             <label for="supervisingPhysicianName">Supervising Physician Name:</label>
-                            <input id="supervisingPhysicianName" name="supervisingPhysicianName" 
-                                   th:field="*{supervisingPhysicianName}" type="text">
+                            <input id="supervisingPhysicianName" name="supervisingPhysicianName" required th:field="${user.supervisingPhysicianName}" type="text">
                             <br>
 
                             <label for="supervisingPhysicianPhone">Supervising Physician Phone:</label>
                             <input id="supervisingPhysicianPhone" name="supervisingPhysicianPhone" required
-                                   th:field="*{supervisingPhysicianPhone}" type="text">
+                                   th:field="${user.supervisingPhysicianPhone}" type="text">
                             <br>
                             <button type="submit">Save Changes</button>
                         </form>
                     </th:block>
                     <th:block th:case="'AMBULANCE'">
-                        <form method="post" th:action="@{/profile-edit-ambilance}" th:object="${user}">
+                        <form method="post" th:action="@{/profile-edit-ambulance}" th:object="${user}">
                             <!-- Common Fields -->
-                            <label for="username">Username:</label>
-                            <input id="username" name="username" required th:field="${user.username}" type="text">
+                            <label>Username:</label>
+                            <input  name="username" required th:field="${user.username}" type="text">
                             <br>
                             <label for="phone">Phone:</label>
                             <input id="phone" name="phone" required th:field="${user.phone}" type="text">
@@ -294,11 +336,6 @@
                             <!-- Ambulance-specific Fields -->
                             <label for="publicName">Public Name:</label>
                             <input id="publicName" name="publicName" required th:field="${user.publicName}" type="text">
-                            <br>
-
-                            <label for="ambulanceAgency">Ambulance Agency:</label>
-                            <select id="ambulanceAgency" name="ambulanceAgency" th:field="${user.agency.id}">
-                            </select>
                             <br>
 
                             <br>

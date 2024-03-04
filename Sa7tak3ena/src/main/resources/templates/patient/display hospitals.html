@@ -181,21 +181,21 @@
                     </div>
 
                     <!-- HSection 2 -->
-                    <div class="card mt-4">
-                        <a data-toggle="collapse" href="#collapseTwo" class="job-list" aria-expanded="true" aria-controls="collapseTwo">
-                            <div class="card-header" id="headingTwo">
-                                <h6 class="mb-0 text-dark f-18">Distracts</h6>
-                            </div>
-                        </a>
-                        <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo">
-                            <div class="card-body p-0" th:each="district : ${T(com.dgpad.thyme.model.enums.Distracts).values()}">
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" th:id="'customCheckboxDistrict_' + ${district}" th:name="'customCheckboxDistrict_' + ${district}" class="custom-control-input">
-                                    <label th:for="'customCheckboxDistrict_' + ${district}" class="custom-control-label ml-1 text-muted f-15" th:text="${district}"></label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+<!--                    <div class="card mt-4">-->
+<!--                        <a data-toggle="collapse" href="#collapseTwo" class="job-list" aria-expanded="true" aria-controls="collapseTwo">-->
+<!--                            <div class="card-header" id="headingTwo">-->
+<!--                                <h6 class="mb-0 text-dark f-18">Distracts</h6>-->
+<!--                            </div>-->
+<!--                        </a>-->
+<!--                        <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo">-->
+<!--                            <div class="card-body p-0" th:each="district : ${T(com.dgpad.thyme.model.enums.Distracts).values()}">-->
+<!--                                <div class="custom-control custom-checkbox">-->
+<!--                                    <input type="checkbox" th:id="'customCheckboxDistrict_' + ${district}" th:name="'customCheckboxDistrict_' + ${district}" class="custom-control-input">-->
+<!--                                    <label th:for="'customCheckboxDistrict_' + ${district}" class="custom-control-label ml-1 text-muted f-15" th:text="${district}"></label>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
                 </div>
             </div>
         </div>
@@ -205,13 +205,13 @@
                 <div class="col-lg-4 col-md-6" th:each="hospital, status : ${hospitalList}">
                     <div class="list-grid-item mt-4" data-district="${hospital.district}" data-section="${hospital.section}">
                         <div class="grid-item-content p-2">
-                            <div class="grid-list-desc text-center mt-4">
-                                <h6 class="mb-1" th:text="${hospital.publicName}"></h6>
+                            <div class="grid-list-desc  mt-4">
+                                <h6 class="mb-1 text-center" th:text="${hospital.publicName}"></h6>
 <!--                                <h6 class="mb-1" th:text="${hospital.address.city.toString()}"></h6>-->
+
+                                <br>
                                 <p class="mb-1" th:text="${hospital.phone}"></p>
                                 <p class="mb-1" th:text="${hospital.email}"></p>
-
-                                <span class="badge badge-warning text-white">4.9</span>
                             </div>
                         </div>
                         <hr class="mt-0 mb-0">
@@ -219,11 +219,11 @@
                             <a href="#" class="btn btn-custom btn-sm" data-toggle="modal" th:attr="data-target='#detailsModal'+${hospital.id}">View more details</a>
                         </div>
 
-                        <div  th:each="h : ${hospitalList}" th:id="'detailsModal'+${hospital.id}" class="modal fade" tabindex="-1" role="dialog">
+                        <div  th:each="Hospital : ${hospitalList}" th:id="'detailsModal'+${hospital.id}" class="modal fade" tabindex="-1" role="dialog">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" th:text="${h.username}+'Details'"></h5>
+                                        <h5 class="modal-title" th:text="${Hospital.username} +'Details'"></h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
@@ -232,26 +232,26 @@
 
                                             <div class="form-group">
                                                 <label>name</label>
-                                                <p th:text="${h.publicName}"></p>
+                                                <p th:text="${Hospital.publicName}"></p>
                                             </div>
                                             <div class="form-group">
-                                                <p>phone:<span th:text="${h.phone}"></span></p>
+                                                <p>phone:<span th:text="${Hospital.phone}"></span></p>
                                             </div>
                                             <div class="form-group">
-                                                <p >email: <span th:text="${h.email}"></span></p>
+                                                <p >email: <span th:text="${Hospital.email}"></span></p>
                                             </div>
                                             <div class="form-group">
-                                                <p>Manager: <span th:text="${h.managerName}"></span></p>
-                                                <p><span th:text="${h.managerPhone}"></span></p>
+                                                <p>Manager: <span th:text="${Hospital.managerName}"></span></p>
+                                                <p><span th:text="${Hospital.managerPhone}"></span></p>
                                             </div>
                                             <div class="form-group">
-                                                <p>Supervising Physician:<span th:text="${h.getSupervisingPhysicianName()}"></span></p>
-                                                <p > <span th:text="${h.getSupervisingPhysicianPhone()}"></span></p>
+                                                <p>Supervising Physician:<span th:text="${Hospital.getSupervisingPhysicianName()}"></span></p>
+                                                <p > <span th:text="${Hospital.getSupervisingPhysicianPhone()} "></span></p>
                                             </div>
                                             <div class="form-group">
-                                                <div th:each="section: ${h.getHospitalSections()}">
+                                                <div th:each="section: ${Hospital.getHospitalSections()}">
                                                     <ul>
-                                                        <li th:text="section.name">
+                                                        <li th:text="${section.name}">
                                                         </li>
                                                     </ul>
                                                 </div>
@@ -273,12 +273,12 @@
 </div>
 <script th:inline="javascript">
     document.addEventListener('DOMContentLoaded', function () {
-        var districtCheckboxes = document.querySelectorAll('input[name^="customCheckboxDistrict_"]');
+        // var districtCheckboxes = document.querySelectorAll('input[name^="customCheckboxDistrict_"]');
         var sectionCheckboxes = document.querySelectorAll('input[name^="customCheckboxHSection_"]');
 
-        districtCheckboxes.forEach(function (checkbox) {
-            checkbox.addEventListener('change', filterHospitals);
-        });
+        // districtCheckboxes.forEach(function (checkbox) {
+        //     checkbox.addEventListener('change', filterHospitals);
+        // });
 
         sectionCheckboxes.forEach(function (checkbox) {
             checkbox.addEventListener('change', filterHospitals);
@@ -310,13 +310,14 @@
             var district = card.getAttribute('data-district');
             var section = card.getAttribute('data-section');
 
-            var districtMatch = selectedDistracts.length === 0 || selectedDistracts.includes(district);
+            // var districtMatch = selectedDistracts.length === 0 || selectedDistracts.includes(district);
             var sectionMatch = selectedSections.length === 0 || selectedSections.includes(section);
 
-            if (districtMatch && sectionMatch) {
-                card.style.display = 'block';
-            } else {
+            // if (districtMatch && sectionMatch) {
+            if ( sectionMatch) {
                 card.style.display = 'none';
+            } else {
+                card.style.display = 'block';
             }
         });
     }

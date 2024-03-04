@@ -28,12 +28,6 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private PatientService patientService;
-    @Autowired
-    private AmbulanceService ambulanceService;
-    @Autowired
-    private HospitalService hospitalService;
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
 
@@ -46,34 +40,15 @@ public class UserService {
     public User save(User user){
         return userRepository.save(user);
     }
-//    public User update(User user){
-//        User currentUser =getCurrentUser();
-//        switch (currentUser.getRole()) {
-//            case ADMIN: {
-//                if (user.getUsername()!= null)
-//                    currentUser.setUsername(user.getUsername());
-//                if (user.getEmail() != null)
-//                    currentUser.setEmail(user.getEmail());
-//                if (user.getPassword() != null)
-//                    currentUser.setPassword(user.getPassword());
-//                if (user.getPhone() != null)
-//                    currentUser.setPhone(user.getPhone());
-//                save(user);
-//            }
-//                break;
-//            case PATIENT:
-//                patientService.update((Patient)currentUser,(Patient)user);
-//                break;
-//            case HOSPITAL:
-//                hospitalService.update((Hospital)currentUser,(Hospital) user);
-//                break;
-//            case AMBULANCE:
-//                ambulanceService.update((Ambulance)currentUser,(Ambulance) user);
-//                break;
-//        }
-//        return currentUser;
-//
-//    }
+    public User update(User currentuser,User user){
+        if(user.getUsername()!=null)
+            currentuser.setUsername(user.getUsername());
+        if (user.getEmail()!=null)
+            currentuser.setEmail(user.getEmail());
+        if (user.getPhone()!=null)
+            currentuser.setPhone(user.getPhone());
+        return save(currentuser);
+    }
     public Boolean userNameExists(String username){ return userRepository.existsByUsername(username);}
 
     public Optional<User> findUserByEmail(String email){

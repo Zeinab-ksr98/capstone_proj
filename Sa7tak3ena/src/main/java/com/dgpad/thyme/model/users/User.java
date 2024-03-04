@@ -5,6 +5,8 @@ import com.dgpad.thyme.model.Reservation;
 import com.dgpad.thyme.model.enums.Role;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+
+import com.dgpad.thyme.model.usercomplements.Feedback;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -45,9 +47,11 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private Role role;
-
+    @OneToOne
+    private Feedback feedback;
     public boolean deleted;
     private boolean enabled;
+
 //    mainly used for knowing the responsible one
     private boolean administrator;
     public User(String username, String email, String password,String phone,Role role, boolean administrator) {

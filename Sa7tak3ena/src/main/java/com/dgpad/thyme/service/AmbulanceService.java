@@ -42,20 +42,13 @@ public class AmbulanceService {
         return  ambulanceRepository.getAmbulanceByAvailableCarTypeAndAgency(agency,type);
     }
     public Ambulance update(Ambulance currentuser, Ambulance user){
-        if (user.getAddress()!=null)
-            currentuser.setAddress(user.getAddress());
-        if (user.getPublicName()!=null)
-            currentuser.setPublicName(user.getPublicName());
-        if (user.getAgency()!=null)
-            currentuser.setAgency(user.getAgency());
         if(user.getUsername()!=null)
             currentuser.setUsername(user.getUsername());
-        if (user.getEmail()!=null)
-            currentuser.setEmail(user.getEmail());
-        if (user.getPassword()!=null)
-            currentuser.setPassword(user.getPassword());
         if (user.getPhone()!=null)
             currentuser.setPhone(user.getPhone());
+        if (user.getPublicName()!=null)
+            currentuser.setPublicName(user.getPublicName());
+
         return save(currentuser);
     }
 }

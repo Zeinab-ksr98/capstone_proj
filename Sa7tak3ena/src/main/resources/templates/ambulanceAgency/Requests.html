@@ -27,13 +27,12 @@
                     <div class="modal-body text-center">
                             <div class="modal-body text-center">
                                 <div class="form-group">
-                                    <select name="service" class="form-control" id="type" required>
+                                    <select name="service" id="serviceSelect" th:field="*{service}" onchange="toggleLocationInputs()"  class="form-control" required>
                                         <option th:each="service : ${T(com.dgpad.thyme.model.enums.Ambulanceservice).values()}"
-                                                th:value="${service}" th:field="*{service}" th:text="${service.name()}">
+                                                th:value="${service}"  th:text="${service.name()}">
                                         </option>
                                     </select>
                                 </div>
-
                                 <div class="form-group">
                                     <label for="staff">Select Staff:</label>
                                     <select id="staff" th:field="*{staff}" name="staff-id" class="form-control" required>
@@ -48,11 +47,12 @@
 
                                 <!-- Additional fields for different service types -->
                                 <div id="homeServiceFields" style="display: none;">
-                                    <input type="text" class="form-control" name="from.name"  th:field="*{pickupaddress.name}" placeholder="Location Name">
+                                    <input type="text" class="form-control" name="from.name" id="houseName" th:field="*{pickupaddress.name}" placeholder="Location Name">
                                 </div>
 
+
                                 <div id="transferFields" style="display: none;">
-                                    <input type="text" class="form-control" name="from.name" id="fromName" th:field="*{pickupaddress.name}" placeholder="From Location Name">
+                                    <input type="text" class="form-control" name="from.name" id="fromName" th:field="*{pickupaddress.name}" placeholder=" Location Name">
                                     <input type="text" class="form-control" name="to.name" id="toName" th:field="*{to.name}"  placeholder="To Location Name">
 
                                     <label for="car_type">Select Ambulance Type:</label>
@@ -62,29 +62,33 @@
                                         </option>
                                     </select>
                                 </div>
-                                <script>
-                                    document.getElementById('type').addEventListener('change', function () {
-                                        var selectedService = this.value;
+                                <script th:inline="javascript">
+                                    /*<![CDATA[*/
+                                    function toggleLocationInputs() {
+                                        const select = document.getElementById("serviceSelect");
+                                        const homeServiceFields = document.getElementById("homeServiceFields");
+                                        const transferFields = document.getElementById("transferFields");
 
-                                        document.getElementById('homeServiceFields').style.display = (selectedService === 'homeService') ? 'block' : 'none';
-                                        document.getElementById('transferFields').style.display = (selectedService === 'transfer') ? 'block' : 'none';
+                                        const HOME_SERVICE = /*[[${T(com.dgpad.thyme.model.enums.Ambulanceservice).homeService}]]*/ null;
+                                        const TRANSFER = /*[[${T(com.dgpad.thyme.model.enums.Ambulanceservice).transfer}]]*/ null;
 
-                                        // Remove 'required' attribute from all fields
-                                        document.getElementById('fromName').removeAttribute('required');
-                                        document.getElementById('toName').removeAttribute('required');
-
-                                        // Add 'required' attribute to the necessary fields based on the selected service type
-                                        if (selectedService === 'homeService') {
-                                            document.getElementById('fromName').setAttribute('required', 'required');
-                                        } else if (selectedService === 'transfer') {
-                                            document.getElementById('fromName').setAttribute('required', 'required');
-                                            document.getElementById('toName').setAttribute('required', 'required');
+                                        if (select.value === HOME_SERVICE) {
+                                            homeServiceFields.style.display = "block";
+                                            transferFields.style.display = "none";
+                                        } else if (select.value === TRANSFER) {
+                                            homeServiceFields.style.display = "none";
+                                            transferFields.style.display = "block";
+                                        } else {
+                                            homeServiceFields.style.display = "none";
+                                            transferFields.style.display = "none";
                                         }
-                                    });
+                                    }
+                                    /*]]>*/
+                                </script>
 
+                                <script>
                                     // Add event listener to the form submission event
                                     document.getElementById('requestForm').addEventListener('submit', function () {
-                                        var selectedService = document.getElementById('type').value;
                                         var descriptionField = document.getElementById('description');
                                         var phoneField = document.getElementById('phone');
                                         var nameField = document.getElementById('name');
@@ -348,58 +352,27 @@
                 <th scope="col">To</th>
                 <th scope="col">status</th>
                 <th scope="col">staff</th>
-                <th scope="col">created at</th>
                 <th scope="col"> description</th>
-                <th scope="col"></th>
+                <th scope="col"> Equipments</th>
+                <th scope="col">created at</th>
+
 
             </tr>
             </thead>
             <tbody>
             <tr th:each="nrequest : ${requests}" th:if="${!nrequest.isFrom_hospital() && nrequest.sender == current_user}">
-                <td th:text="${nrequest.survice}"></td>
-                <td th:text="${nrequest.pickupaddress.name}"></td>
-                <td th:text="${nrequest.to.name}"></td>
+                <td th:text="${nrequest.service}"></td>
+                <td th:text="${nrequest.pickupaddress != null ? nrequest.pickupaddress.name : 'N/A'}"></td>
+                <td th:text="${nrequest.to!= null ? nrequest.to.name : 'N/A'}"></td>
                 <td th:text="${nrequest.status}"></td>
                 <td th:text="${nrequest.staff.name}"></td>
-                <td th:text="${nrequest.createdAt}"></td>
                 <td th:text="${nrequest.description}"></td>
-
-                <td>
-                    <button class="btn btn-primary" data-toggle="modal" th:attr="data-target='#updateNOnApped'+${request.id}">
-                        modify details
-                    </button>
-                </td>
+                <td th:text="${nrequest.equipments}"></td>
+                <td th:text="${nrequest.createdAt}"></td>
             </tr>
             </tbody>
         </table>
-        <div th:each="request : ${requests}" th:id="'updateNOnApped'+${request.id}" class="modal fade" tabindex="-1" role="dialog">
-            <div class="modal-dialog " role="document">
-                <div class="modal-content">
-                    <form th:action="@{/update-nonappedrequestdetails}" method="get">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="nonappedModalLongTitle">edit details</h5>
-                            <button type="button" class="close" data-dismiss="modal"
-                                    aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body text-center">
-                            <input type="hidden" name="id" id="id" th:value="${request.id}" />
-
-                            <input type="text" class="form-control" name="newdescription"   placeholder="Description ,keep it empty to avoid edit " required>
-                            <input type="text" class="form-control" name="equipment"  placeholder="Equipment,keep it empty to avoid edit">
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary"
-                                    data-dismiss="modal">Close</button>
-                            <input type="submit" value="Save Changes" class="btn btn-primary">
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
     </div>
-
 </div>
 <!-- Include Bootstrap JavaScript and jQuery -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

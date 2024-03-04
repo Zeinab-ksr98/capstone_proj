@@ -1,13 +1,11 @@
 package com.dgpad.thyme.controller;
 
-import com.dgpad.thyme.model.enums.AmbulanceRequestStatus;
-import com.dgpad.thyme.model.enums.AmbulanceStatus;
-import com.dgpad.thyme.model.enums.ReservationStatus;
-import com.dgpad.thyme.model.enums.Role;
+import com.dgpad.thyme.model.enums.*;
 import com.dgpad.thyme.model.requests.AmbulanceRequest;
 import com.dgpad.thyme.model.requests.RequestBedCategory;
 import com.dgpad.thyme.model.usercomplements.AccountRequest;
 import com.dgpad.thyme.model.usercomplements.Address;
+import com.dgpad.thyme.model.usercomplements.Feedback;
 import com.dgpad.thyme.model.users.Ambulance;
 import com.dgpad.thyme.model.users.Hospital;
 import com.dgpad.thyme.model.users.Patient;
@@ -48,13 +46,13 @@ public class accountController {
     @Autowired
     private AddressService addressService;
     @Autowired
+    private FeedbackService feedbackService;
+    @Autowired
     private AccountRequestService accountRequestService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private AmbulanceAgencyService ambulanceAgencyService;
     @GetMapping(value = "/Main")
     public String home(Model model) {
         model.addAttribute("account", new AccountRequest());
@@ -67,9 +65,23 @@ public class accountController {
     }
     @GetMapping(value = "/feed")
     public String feed(Model model) {
+
         return "account/feedback";
     }
+    @PostMapping("/saveFeedback")
+    public String saveFeedback(@RequestParam("feedbackRating") feedbackRating rating, @RequestParam("feedbackMessage") String message) {
+        // Save the feedback using the feedback service
+        User cu =userService.getCurrentUser();
+        Feedback feedback = new Feedback();
+        feedback.setRate(rating);
+        feedback.setImprovement(message);
+        feedback.setUser(cu);
+        feedbackService.save(feedback);
+        cu.setFeedback(feedback);
+        userService.save(cu);
 
+        return "redirect:/home";
+    }
     @GetMapping(value = "/SignIn")
     public String SignIn(Model model) {
         model.addAttribute("newuser", new Patient());
@@ -144,7 +156,7 @@ public class accountController {
     @PostMapping("/profile-edit-ambulance")
     @PreAuthorize("hasAnyAuthority('AMBULANCE')")
     public String editUserProfile(@ModelAttribute("newuser") Ambulance user) {
-        ambulanceService.save(user);
+        ambulanceService.update(ambulanceService.getAmbulanceById(userService.getCurrentUser().getId()),user);
         return "redirect:/profile";
     }
     @PostMapping("/profile-edit-hospital")
@@ -156,7 +168,6 @@ public class accountController {
     @PostMapping("/profile-edit-patient")
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     public String editUserProfile(@ModelAttribute("newuser") Patient user) {
-
         patientService.update(patientService.getPatientById(userService.getCurrentUser().getId()),user);
         return "redirect:/profile";
     }
@@ -164,29 +175,10 @@ public class accountController {
     @PostMapping("/profile-edit-admin")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String editUserProfile(@ModelAttribute("newuser") User user) {
-        userService.save(user);
+        userService.update(userService.getCurrentUser(),user);
         return "redirect:/profile";
     }
 
-//    @PostMapping("/profile-edit")
-//    public String editUserProfile(@ModelAttribute("user") User user) {
-//        userService.update(user);
-////        switch (user.getRole()) {
-////            case ADMIN:
-////                userService.save(user);
-////                break;
-////            case PATIENT:
-////                u.update((Patient) user);
-////                break;
-////            case HOSPITAL:
-////                hospitalService.save((Hospital) user);
-////                break;
-////            case AMBULANCE:
-////                ambulanceService.save((Ambulance) user);
-////                break;
-////        }
-//        return "redirect:/profile";
-//    }
     @PostMapping("/change-password")
     public String changePassword(@RequestParam String currentPassword,
                                  @RequestParam String newPassword,
@@ -226,29 +218,6 @@ public class accountController {
         return "redirect:/profile";
 
 }
-
-    @GetMapping("/delete-address/{addressID}")
-    @PreAuthorize("hasAnyAuthority('USER')")
-    public String deleteAddress(@PathVariable Long addressID) {
-        Address address = addressService.getAddressById(addressID);
-        User user = userService.getUserById(userService.getCurrentUser().id);
-
-        if (address != null) {
-            if(user.getRole()== Role.HOSPITAL){
-                Hospital h= hospitalService.getHospitalById(user.getId());
-                userService.save(user);
-                addressService.deleteAddress(address);
-            }
-            else {
-                Ambulance A= ambulanceService.getAmbulanceById(user.getId());
-
-            }
-        }
-
-        return "redirect:/profile#";
-    }
-
-
     @PostMapping("/profile-resetPassword")
     public String resetPassword(@RequestParam String newPassword) {
         User user = userService.getCurrentUser();
@@ -286,6 +255,40 @@ public class accountController {
         model.addAttribute("hospitalList",hospitalService.getAllHospitals() );
         model.addAttribute("hospitalSections",hSectionsService.getAllHSections() );
         return "patient/display hospitals";
+    }
+    @PostMapping("/gps_location")
+    public String receiveLocation(@RequestParam("latitude") double latitude, @RequestParam("longitude") double longitude) {
+        if (userService.getCurrentUser().getRole() ==Role.HOSPITAL){
+            Hospital h = hospitalService.getHospitalById(userService.getCurrentUser().getId());
+            Address address = new Address();
+            address.setLongitude(longitude);
+            address.setLatitude(latitude);
+
+            if (h.getAddress() != null && h.getAddress().getId() != null) {
+                address = addressService.updateAddress(h.getAddress().getId(), address);
+            } else {
+                address = addressService.save(address);
+            }
+
+            h.setAddress(address);
+            hospitalService.save(h);
+        } else if  (userService.getCurrentUser().getRole() ==Role.AMBULANCE){
+            Ambulance ambulance = ambulanceService.getAmbulanceById(userService.getCurrentUser().getId());
+            Address address = new Address();
+            address.setLongitude(longitude);
+            address.setLatitude(latitude);
+
+            if (ambulance.getAddress() != null && ambulance.getAddress().getId() != null) {
+                address = addressService.updateAddress(ambulance.getAddress().getId(), address);
+            } else {
+                address = addressService.save(address);
+            }
+
+            ambulance.setAddress(address);
+            ambulanceService.save(ambulance);
+        }
+        return "redirect:/home";
+
     }
 
 }

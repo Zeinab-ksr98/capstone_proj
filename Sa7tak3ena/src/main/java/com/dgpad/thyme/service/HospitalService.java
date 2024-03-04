@@ -68,24 +68,23 @@ public class HospitalService {
     }
 
     public Hospital update(Hospital currentuser,Hospital user){
+        if(user.getUsername()!=null)
+            currentuser.setUsername(user.getUsername());
         if (user.getPublicName()!=null)
             currentuser.setPublicName(user.getPublicName());
-        if (user.getAddress()!=null)
-            currentuser.setAddress(user.getAddress());
-        if (user.getManagerName()!=null)
-            currentuser.setManagerName(user.getManagerName());
-        if (user.getManagerPhone()!=null)
-            currentuser.setManagerPhone(user.getManagerPhone());
-        if (user.getSupervisingPhysicianName()!=null)
-            currentuser.setSupervisingPhysicianName(user.getSupervisingPhysicianName());
-        if (user.getUsername()!=null)
-            currentuser.setUsername(user.getUsername());
-        if (user.getEmail()!=null)
-            currentuser.setEmail(user.getEmail());
-        if (user.getPassword()!=null)
-            currentuser.setPassword(user.getPassword());
         if (user.getPhone()!=null)
             currentuser.setPhone(user.getPhone());
+
+        if (user.getManagerPhone()!=null)
+            currentuser.setManagerPhone(user.getManagerPhone());
+        if (user.getManagerName()!=null)
+            currentuser.setManagerName(user.getManagerName());
+
+        if (user.getSupervisingPhysicianName()!=null)
+            currentuser.setSupervisingPhysicianName(user.getSupervisingPhysicianName());
+        if (user.getSupervisingPhysicianPhone()!=null)
+            currentuser.setSupervisingPhysicianPhone(user.getSupervisingPhysicianPhone());
+
         return save(currentuser);
     }
 

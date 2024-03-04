@@ -32,7 +32,7 @@ public class AmbulanceController {
     @Autowired
     private HospitalService hospitalService;
     @Autowired
-    private BedsService bedsService;
+    private AddressService addressService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -59,7 +59,7 @@ public class AmbulanceController {
 
     @PostMapping("/add-staff")
     @PreAuthorize("hasAnyAuthority('AMBULANCE')")
-    public String addSection(@RequestParam("name") String name) {
+    public String addStaff(@RequestParam("name") String name) {
         Ambulance cu = ambulanceService.getAmbulanceById(userService.getCurrentUser().getId());
         Paramedic staff = new Paramedic() ;
         staff.setName(name);
@@ -123,7 +123,7 @@ public class AmbulanceController {
     }
     @GetMapping("/new-requests")
     @PreAuthorize("hasAuthority('AMBULANCE')")
-    public String home(Model model) {
+    public String request(Model model) {
         Ambulance cu = ambulanceService.getAmbulanceById(userService.getCurrentUser().getId());
         List<Integer> analytics = new ArrayList<>();
         analytics.add(cu.getAmbulanceRequests().size());
@@ -174,6 +174,40 @@ public class AmbulanceController {
         model.addAttribute("cars", ambulanceCarService.findAllUserCarByStatus(AmbulanceStatus.Avilable,cu.id));
         return "ambulanceAgency/Requests";
     }
+//    @PostMapping("/add-request")
+//    @PreAuthorize("hasAnyAuthority('AMBULANCE')")
+//    public String addRequest(@ModelAttribute("newrequest") AmbulanceRequest newrequest) {
+//        // Get the current user's ambulance
+//        Ambulance cu = ambulanceService.getAmbulanceById(userService.getCurrentUser().getId());
+//
+//        // Set the ambulance and sender for the new request
+//        newrequest.setAmbulance(cu);
+//        newrequest.setSender(cu);
+//        newrequest.setStatus(AmbulanceRequestStatus.ACCEPTED);
+//        newrequest.setCreatedAt(LocalDateTime.now());
+//
+//        // Check if it's an indoor service request
+//        if (newrequest.getService().equals(Ambulanceservice.inDoorService)) {
+//            // Set the to and pickupaddress fields to null
+//            newrequest.setTo(null);
+//            newrequest.setPickupaddress(null);
+//        } else {
+//            // If it's not an indoor service, save the related addresses if they exist
+//            if (newrequest.getTo() != null && !newrequest.getTo().getName().isEmpty()) {
+//                newrequest.setTo(addressService.save(newrequest.getTo()));
+//            }
+//            if (newrequest.getPickupaddress() != null && !newrequest.getPickupaddress().getName().isEmpty()) {
+//                newrequest.setPickupaddress(addressService.save(newrequest.getPickupaddress()));
+//            }
+//        }
+//
+//        // Save the ambulance request
+//        ambulanceRequestService.save(newrequest);
+//
+//        // Redirect to the manage requests page
+//        return "redirect:/manage-requests";
+//    }
+
     @PostMapping("/add-request")
     @PreAuthorize("hasAnyAuthority('AMBULANCE')")
     public String addRequest( @ModelAttribute("newrequest") AmbulanceRequest newrequest) {
@@ -186,6 +220,16 @@ public class AmbulanceController {
             // Set the to and from fields to null
             newrequest.setTo(null);
             newrequest.setPickupaddress(null);
+        }
+        else {
+            if (newrequest.to != null && !newrequest.to.getName().isEmpty())
+                newrequest.to = addressService.save(newrequest.to);
+            else
+                newrequest.setTo(null);
+            if (newrequest.pickupaddress != null && !newrequest.pickupaddress.getName().isEmpty())
+                newrequest.pickupaddress = addressService.save(newrequest.pickupaddress);
+            else
+                newrequest.setPickupaddress(null);
         }
         ambulanceRequestService.save(newrequest);
         return "redirect:/manage-requests";
