@@ -41,7 +41,7 @@
                         </div>
                         <div class="form-check mt-3">
                             <input class="form-check-input" id="administrator" name="administrator" type="checkbox">
-                            <label class="form-check-label" for="administrator">I need an ambulance</label>
+                            <label class="form-check-label" for="administrator">Administrator account</label>
                         </div>
                         <div class="form-check mt-3">
                             <input type="text" name="pass" class="form-control" id="pass" required placeholder="passward">
@@ -62,8 +62,8 @@
                                 <br>
                             </div>
                         </div>
-                        <input type="text" name="publicname" class="form-control" id="publicname" required placeholder="publicname" style="display: none">
-                        <select id="agency" name="agency" class="form-control"  required style="display: none">
+                        <input type="text" name="publicname" class="form-control" id="publicname" placeholder="publicname" style="display: none">
+                        <select id="agency" name="agency" class="form-control"   style="display: none">
                             <option value="">Select Category</option>
                             <option th:each="agency : ${agencies}" th:value="${agency.id}" th:text="${agency.name}"></option>
                         </select>
@@ -120,16 +120,24 @@
         $('input[type=radio][name=role]').change(function () {
             var publicNameInput = $('#publicname');
             var agencySelect = $('#agency');
+            const agency = document.getElementById("agency");
+            const publicname = document.getElementById("publicName");
+
 
             if (this.getAttribute('data-role') === 'AMBULANCE') {
                 publicNameInput.show();
                 agencySelect.show();
+
             } else if (this.getAttribute('data-role') === 'HOSPITAL') {
                 publicNameInput.show();
                 agencySelect.hide();
+                agency.style.display="none";
+
             } else {
                 publicNameInput.hide();
                 agencySelect.hide();
+                publicname.style.display="block";
+                agency.style.display="block";
             }
 
             // Set values to null when hidden

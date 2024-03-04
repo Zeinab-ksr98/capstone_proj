@@ -1,5 +1,6 @@
 package com.dgpad.thyme.controller;
 
+import com.dgpad.thyme.Email.EmailService;
 import com.dgpad.thyme.model.enums.Role;
 import com.dgpad.thyme.model.usercomplements.Address;
 import com.dgpad.thyme.model.usercomplements.AmbulanceAgency;
@@ -20,6 +21,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 
 @Controller
 public class AdminController {
@@ -39,6 +42,8 @@ public class AdminController {
     private BedCategoryRequestService bedCategoryRequestService;
     @Autowired
     private AccountRequestService accountRequestService;
+    @Autowired
+    private EmailService emailService;
     @GetMapping("/manage-users")
     @PreAuthorize("hasAuthority('ADMIN')")
     public String manageusers(Model model) {
@@ -57,7 +62,7 @@ public class AdminController {
                               @RequestParam("email") String email,
                               @RequestParam("phone") String phone,
                               @RequestParam("role") Role role,
-                              @RequestParam(value = "agency", required = false) AmbulanceAgency agency ,Model model) {
+                              @RequestParam(value = "agency", required = false) AmbulanceAgency agency ,Model model) throws IOException {
         if (role == Role.AMBULANCE && (publicName == null || agency == null)) {
             model.addAttribute("error", "Public Name and Agency are required for Ambulance role.");
             return "error-page";
@@ -66,17 +71,22 @@ public class AdminController {
     if (selectedRole == Role.HOSPITAL) {
         Hospital hospital = new Hospital(userName, publicName, email, passwordEncoder.encode(pass), phone,administrator);
         hospitalService.save(hospital);
+        emailService.senddetailsEmail(userService.getUserById(hospital.id));
+
     }
     else if (selectedRole == Role.ADMIN) {
         User admin = new User(userName, email, passwordEncoder.encode(pass), phone,Role.ADMIN,administrator);
         userService.save(admin);
+        emailService.senddetailsEmail(admin);
     }
     else if (selectedRole == Role.AMBULANCE) {
         Ambulance ambulance = new Ambulance(userName, publicName, email, passwordEncoder.encode(pass), phone,administrator);
         ambulance.setAgency(agency);
         ambulanceService.save(ambulance);
+        emailService.senddetailsEmail(userService.getUserById(ambulance.getId()));
     }
     return "redirect:/manage-users";
+
 }
 
 //agency

@@ -5,27 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e5695fe8-4a5d-46de-ac47-5b530232ef42" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../.gitattributes" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Sa7tak3ena/src/main/java/com/dgpad/thyme/Whatsapp/VerificationCodeRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Sa7tak3ena/src/main/java/com/dgpad/thyme/Whatsapp/VerificationCodes.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Sa7tak3ena/src/main/java/com/dgpad/thyme/Whatsapp/VerificationSender.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Sa7tak3ena/src/main/java/com/dgpad/thyme/Whatsapp/WhatsappController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Sa7tak3ena/src/main/java/com/dgpad/thyme/Whatsapp/requests/AddUserRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Sa7tak3ena/src/main/java/com/dgpad/thyme/Whatsapp/requests/VerifyUserRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Sa7tak3ena/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Sa7tak3ena/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Sa7tak3ena/src/main/java/com/dgpad/thyme/ThymeApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Sa7tak3ena/src/main/java/com/dgpad/thyme/ThymeApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Sa7tak3ena/src/main/java/com/dgpad/thyme/controller/ApplicationAPIs.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Sa7tak3ena/src/main/java/com/dgpad/thyme/dto/AddUserRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Sa7tak3ena/src/main/java/com/dgpad/thyme/Whatsapp/AddUserRequestDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Sa7tak3ena/src/main/java/com/dgpad/thyme/service/PatientService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Sa7tak3ena/src/main/java/com/dgpad/thyme/service/PatientService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Sa7tak3ena/src/main/java/com/dgpad/thyme/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Sa7tak3ena/src/main/java/com/dgpad/thyme/service/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Sa7tak3ena/src/main/resources/templates/Admin/requests.html" beforeDir="false" afterPath="$PROJECT_DIR$/../Sa7tak3ena/src/main/resources/templates/Admin/requests.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/app.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,9 +15,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 1
-}</component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 6
+}]]></component>
   <component name="ProjectId" id="2c9JY29AC8b12nEfM02imhLhE8p" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -45,11 +25,12 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
     "git-widget-placeholder": "main",
+    "last_opened_file_path": "C:/Users/User/IdeaProjects/Capstoneproj/whatsapp-messenger",
     "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
@@ -67,11 +48,6 @@
       <envs />
       <method v="2" />
     </configuration>
-    <recent_temporary>
-      <list>
-        <item itemvalue="npm.start" />
-      </list>
-    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -83,6 +59,7 @@
       <updated>1707517907082</updated>
       <workItem from="1707727079576" duration="3617000" />
       <workItem from="1707759087986" duration="641000" />
+      <workItem from="1709530275453" duration="603000" />
     </task>
     <servers />
   </component>

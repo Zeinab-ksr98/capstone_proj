@@ -1,5 +1,6 @@
 package com.dgpad.thyme.Email;
 
+import com.dgpad.thyme.model.users.User;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
@@ -19,12 +20,12 @@ import java.io.IOException;
 public class EmailService {
     @Value("${app.sendgrid.key}")
     private String sendGrid;
-    public String  sendEmail(String email) throws IOException {
+    public String  senddetailsEmail( User user) throws IOException {
 
         Email from = new Email("Sa7tak3enalb@gmail.com");
         String subject = "Please verify Your account";
-        Email to = new Email(email);
-        Content content = new Content("text/html", "<h2> Varify your account </h2><br><h3></h3>" );
+        Email to = new Email(user.email);
+        Content content = new Content("text/html", "<h2>Welcome to your new community where we meet the ultimate goal saving lives in golden hours</h2><br><h3>your account now is ready please start your journey by logging in with your email and default pass 123</h3>" );
         Mail mail = new Mail(from, subject, to, content);
         SendGrid sg = new SendGrid(sendGrid);
         Request request = new Request();
@@ -40,6 +41,27 @@ public class EmailService {
         return "an email has been sent please check your inbox";
 
     }
+//    public String  sendEmail( String email) throws IOException {
+//
+//        Email from = new Email("Sa7tak3enalb@gmail.com");
+//        String subject = "Please verify Your account";
+//        Email to = new Email(email);
+//        Content content = new Content("text/html", "<h2> Varify your account </h2><br><h3></h3>" );
+//        Mail mail = new Mail(from, subject, to, content);
+//        SendGrid sg = new SendGrid(sendGrid);
+//        Request request = new Request();
+//        try {
+//            request.setMethod(Method.POST);
+//            request.setEndpoint("mail/send");
+//            request.setBody(mail.build());
+//            Response response = sg.api(request);
+//        }
+//        catch (IOException ex)
+//        { throw ex;
+//        }
+//        return "an email has been sent please check your inbox";
+//
+//    }
 
 
 }
