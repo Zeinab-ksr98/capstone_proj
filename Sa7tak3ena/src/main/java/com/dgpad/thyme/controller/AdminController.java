@@ -57,8 +57,6 @@ public class AdminController {
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String createAdmin(@RequestParam("username") String userName,
                               @RequestParam(value = "publicname", required = false) String publicName,
-                              @RequestParam("pass") String pass,
-                              @RequestParam("administrator") boolean administrator,
                               @RequestParam("email") String email,
                               @RequestParam("phone") String phone,
                               @RequestParam("role") Role role,
@@ -69,18 +67,18 @@ public class AdminController {
         }
         Role selectedRole = Role.valueOf(role.name());
     if (selectedRole == Role.HOSPITAL) {
-        Hospital hospital = new Hospital(userName, publicName, email, passwordEncoder.encode(pass), phone,administrator);
+        Hospital hospital = new Hospital(userName, publicName, email, passwordEncoder.encode("123"), phone,true);
         hospitalService.save(hospital);
         emailService.senddetailsEmail(userService.getUserById(hospital.id));
 
     }
     else if (selectedRole == Role.ADMIN) {
-        User admin = new User(userName, email, passwordEncoder.encode(pass), phone,Role.ADMIN,administrator);
+        User admin = new User(userName, email, passwordEncoder.encode("123"), phone,Role.ADMIN,false);
         userService.save(admin);
         emailService.senddetailsEmail(admin);
     }
     else if (selectedRole == Role.AMBULANCE) {
-        Ambulance ambulance = new Ambulance(userName, publicName, email, passwordEncoder.encode(pass), phone,administrator);
+        Ambulance ambulance = new Ambulance(userName, publicName, email, passwordEncoder.encode("123"), phone,true);
         ambulance.setAgency(agency);
         ambulanceService.save(ambulance);
         emailService.senddetailsEmail(userService.getUserById(ambulance.getId()));

@@ -84,6 +84,7 @@ public class RequestController {
         addressService.save(address);
         List<Hospital> sortedHospitals = addressService.sortHospitalsByDistance(address,hospitalService.getAllEnabledHospitals());
         model.addAttribute("availablehospitals", sortedHospitals);
+        model.addAttribute("fromhospitals", hospitalService.getAllHospitals());
         model.addAttribute("availableagencies", ambulanceAgencyService.getAllAgencies());
         model.addAttribute("grequest", new GRequest());
 //        when initially no requests and when there is requests and one of the requests is confirmed

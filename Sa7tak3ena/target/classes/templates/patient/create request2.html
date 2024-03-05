@@ -163,7 +163,6 @@
                     <img th:src="@{/assits/underline1.png}" >
                 </div>
                 <form method="post" th:action="@{/submit2}" th:object="${grequest}">
-
                     <div class="form-check mt-3">
                         <label class="form-check-label">Reserve bed:</label>
                         <div th:each="type, status : ${T(com.dgpad.thyme.model.enums.ReservationType).values()}">
@@ -173,38 +172,46 @@
                         </div>
                     </div>
 
-                <div class="form-check mt-3">
-                    <input class="form-check-input" id="needAmbulance" name="needAmbulance"
-                           th:field="*{request.needAmbulance}" type="checkbox">
-                    <label class="form-check-label" for="needAmbulance">I need an ambulance</label>
-                </div>
+                    <div class="form-check mt-3">
+                        <input class="form-check-input" id="needAmbulance" name="needAmbulance"
+                               th:field="*{request.needAmbulance}" type="checkbox">
+                        <label class="form-check-label" for="needAmbulance">I need an ambulance</label>
+                    </div>
+                    <div id="ambulanceAgencies" style="display: none;">
+                        <label for="ambulance">Select Ambulance:</label><br>
+                        <select id="ambulance" multiple name="ambulance.ID" th:field="${grequest.preferedagencies}">
+                            <option th:each="agency : ${availableagencies}"  th:text="${agency.name}"
+                                    th:value="${agency.id}"> </option>
+                        </select>
+                        <br>
+                    </div>
+                    <div id="fromhospitals" style="display: none;">
+                        <label>transfer from:</label><br>
+                        <div th:each="hospital : ${fromhospitals}">
+                            <input type="radio" id="hospital_${hospital.ID}" name="hospitalID" th:value="${hospital.address}">
+                            <label th:for="'hospital_' + ${hospital.address}" th:text="${hospital.publicName}"></label><br>
+                        </div>
+                    </div>
+                    <div id="hospitals">
+                        <label for="hospital">Select Hospital:</label><br>
+                        <select id="hospital" multiple name="hospital.ID" th:field="${grequest.preferedhospitals}">
+                            <option th:each="hospital : ${availablehospitals}" th:text="${hospital.publicName}"
+                                    th:value="${hospital.id}"></option>
+                        </select>
+                        <br>
+                    </div>
 
-                    add the pick up address and the to and take into conideration thehospital to hospital trasfer
-                <div id="ambulanceAgencies" style="display: none;">
-                    <label for="ambulance">Select Ambulance:</label><br>
-                    <select id="ambulance" multiple name="ambulance.ID" th:field="${grequest.preferedagencies}">
-                        <option th:each="agency : ${availableagencies}"  th:text="${agency.name}"
-                                th:value="${agency.id}"> </option>
-                    </select><br>
-                </div>
-                <div id="hospitals">
-                    <label for="hospital">Select Hospital:</label><br>
-                    <select id="hospital" multiple name="hospital.ID" th:field="${grequest.preferedhospitals}">
-                        <option th:each="hospital : ${availablehospitals}" th:text="${hospital.publicName}"
-                                th:value="${hospital.id}"></option>
-                    </select><br>
-                </div>
-                <div class="form-group mt-3">
-                    <label for="medicalRecord">Medical Record:</label>
-                    <textarea class="form-control" id="medicalRecord" name="medicalRecord" rows="3" th:field="*{request.medicalRecord}"></textarea>
-                </div>
 
-                <button class="btn btn-light mt-3" type="submit">Submit Request</button>
-            </form>
+                    <div class="form-group mt-3">
+                        <label for="medicalRecord">Medical Record:</label>
+                        <textarea class="form-control" id="medicalRecord" name="medicalRecord" rows="3" th:field="*{request.medicalRecord}"></textarea>
+                    </div>
+                    <button class="btn btn-light mt-3" type="submit">Submit Request</button>
+                </form>
         </div>
     </div>
 </div>
-
+</div>
 <!-- Include Bootstrap JavaScript and jQuery -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
@@ -216,6 +223,21 @@
         var ambulanceAgencies = document.getElementById("ambulanceAgencies");
         ambulanceAgencies.style.display = this.checked ? "block" : "none";
     });
+    // Function to show/hide transfer from hospital section based on selected reservation type
+    function toggleTransferFromHospital() {
+        var reservationType = document.querySelector('input[name="request.reservationType"]:checked').value;
+        var fromHospitals = document.getElementById("fromhospitals");
+        fromHospitals.style.display = reservationType === "HOSPITAL_TO_HOSPITAL_TRANSFER" ? "block" : "none";
+    }
+
+    // Add event listeners to reservation type radio buttons to update visibility of transfer from hospital section
+    var reservationTypeRadios = document.querySelectorAll('input[name="request.reservationType"]');
+    for (var i = 0; i < reservationTypeRadios.length; i++) {
+        reservationTypeRadios[i].addEventListener('change', toggleTransferFromHospital);
+    }
+
+    // Call the function initially to set initial visibility of transfer from hospital section
+    toggleTransferFromHospital();
 </script>
 </body>
 </html>

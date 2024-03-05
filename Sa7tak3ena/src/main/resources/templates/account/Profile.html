@@ -72,9 +72,9 @@
                     <span th:if="${user.Agency != null}" th:text="${user.Agency.name}"></span>
                     <span th:if="${user.Agency == null}">Not filled yet</span>
                 </p>
-                <p>
+                <p >
                     <strong>Address:</strong>
-                    <a th:href="'https://www.google.com/maps?q=' + ${user.address.latitude} + ',' + ${user.address.longitude}" target="_blank">
+                    <a th:if="${user.address !=null}" th:href="'https://www.google.com/maps?q=' + ${user.address.latitude} + ',' + ${user.address.longitude}" target="_blank">
                         View on Map
                     </a>
                     <span th:if="${user.address == null}">Not filled yet</span>
@@ -152,7 +152,7 @@
                 <p>
                     <strong>Address:</strong>
 
-                    <a th:href="'https://www.google.com/maps?q=' + ${user.address.latitude} + ',' + ${user.address.longitude}" target="_blank">
+                    <a th:if="${user.address !=null}" th:href="'https://www.google.com/maps?q=' + ${user.address.latitude} + ',' + ${user.address.longitude}" target="_blank">
                         View on Map
                     </a>
                     <span th:if="${user.address == null}">Not filled yet</span>
