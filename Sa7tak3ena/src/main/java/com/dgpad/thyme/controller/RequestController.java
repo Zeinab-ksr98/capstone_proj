@@ -120,7 +120,6 @@ public class RequestController {
             for (int agencyId : agenciesIDs) {
                 ambulanceAgencies.add(ambulanceAgencyService.getAmbulanceAgencyId(agencyId));
             }
-
         }
         Patient patient=patientService.getPatientById(userService.getCurrentUser().getId());
         for (UUID hospitalId : hospitalsIDs) {
@@ -131,7 +130,11 @@ public class RequestController {
             r.setPatient(patient);
             r.setPreferedAmbulance(ambulanceAgencies);
             r.setStatus(ReservationStatus.PENDING);
-            patient.requests.add(requestService.save(r));
+            Request request=requestService.save(r);
+            patient.requests.add(request);
+            hospitalService.getHospitalById(hospitalId).requests.add(request);
+            hospitalService.save(hospitalService.getHospitalById(hospitalId));
+
         }
         patientService.save(patient);
         model.addAttribute("alertMessage", "Request sent successfully!");
@@ -171,43 +174,47 @@ public class RequestController {
 //                filtering by location
                 filteredAmbulance= addressService.sortAmbulancesByDistance(request.getPickupAddress(),filteredAmbulance);
                 for (int i = 0; i < 2; i++) {
-                    Ambulance ambulance = filteredAmbulance.get(i);
-                    AmbulanceRequest ambulanceRequest =new AmbulanceRequest();
+                    if (!filteredAmbulance.isEmpty() && i < filteredAmbulance.size()) {
 
-                    ambulanceRequest.setTo(request.getHospital().getAddress());
-                    ambulanceRequest.setPickupaddress(request.getPickupAddress());
+                        Ambulance ambulance = filteredAmbulance.get(i);
+                        AmbulanceRequest ambulanceRequest = new AmbulanceRequest();
 
-                    ambulanceRequest.setAmbulance(ambulance);
-                    ambulanceRequest.setSender(request.getPatient());
-                    ambulanceRequest.setHospital(ambulanceRequest.getHospital());
+                        ambulanceRequest.setTo(request.getHospital().getAddress());
+                        ambulanceRequest.setPickupaddress(request.getPickupAddress());
 
-                    ambulanceRequest.setService(Ambulanceservice.transfer);
-                    ambulanceRequest.setCar_type(request.getCarType());
-                    ambulanceRequest.setDescription(request.getMedicalRecord());
+                        ambulanceRequest.setAmbulance(ambulance);
+                        ambulanceRequest.setSender(request.getPatient());
+                        ambulanceRequest.setHospital(ambulanceRequest.getHospital());
 
-                    ambulanceRequest.setStatus(AmbulanceRequestStatus.PENDING);
-                    ambulanceRequest.setCreatedAt(LocalDateTime.now());
-                    ambulanceRequest.setFrom_hospital(true);
-                    ambulanceRequestService.save(ambulanceRequest);
-                    reservation.getAmbulanceRequests().add(ambulanceRequest);
+                        ambulanceRequest.setService(Ambulanceservice.transfer);
+                        ambulanceRequest.setCar_type(request.getCarType());
+                        ambulanceRequest.setDescription(request.getMedicalRecord());
+
+                        ambulanceRequest.setStatus(AmbulanceRequestStatus.PENDING);
+                        ambulanceRequest.setCreatedAt(LocalDateTime.now());
+                        ambulanceRequest.setFrom_hospital(true);
+                        ambulanceRequestService.save(ambulanceRequest);
+                        reservation.getAmbulanceRequests().add(ambulanceRequest);
+                    }
                 }
             }
         }
         reservation.setReservationType(request.getReservationType());
         reservation.setStatus(ReservationStatus.RESERVED);
-
         reservation.setHospital(request.getHospital());
-        reservation.setPatient(request.getPatient());
+        reservation.setPatient(patientService.getPatientById(request.getPatient().id));
         reservation.setMedicalRecord(request.getMedicalRecord());
         reservation.setCreatedAt(LocalDateTime.now());
         reservationService.save(reservation);
 //        cancelling all other hospital not reserved requests to ensure that only one reservation at a time
-        for (Request existingRequests : requestService.findAllRequestsForUserByStatus(userService.getCurrentUser().id,ReservationStatus.PENDING)) {
+        for (Request existingRequests : requestService.findAllnonResurvedRequestsForUser(userService.getCurrentUser().id)) {
             if (existingRequests !=request) {
                 existingRequests.setStatus(ReservationStatus.Deleted);
                 requestService.save(existingRequests);
             }
         }
+        hospitalService.getHospitalById(request.getHospital().id).reservations.add(reservation);
+//        hospitalService.save(reservation.getHospital());
         requestService.statusRequest(id ,ReservationStatus.RESERVED);
 
         return "redirect:/get-all-requests";

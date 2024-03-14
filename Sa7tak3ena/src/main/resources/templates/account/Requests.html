@@ -30,7 +30,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr class="align-middle" th:each="request : ${requests}"  th:if="${request.status != request.status.RESERVED}">
+        <tr class="align-middle" th:each="request : ${requests}"  th:if="${request.status != request.status.RESERVED }" th:unless="${request.status == request.status.Deleted}">
             <td th:text="${request.id}" th:if="${userrole == 'HOSPITAL'}"></td>
             <td th:text="${request.hospital.publicName}" th:if="${userrole == 'PATIENT'}"></td>
             <td th:text="${request.reservationType}"></td>

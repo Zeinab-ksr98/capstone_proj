@@ -35,6 +35,9 @@ public class RequestService {
     public  List<Request> findAllRequestsForUserByStatus(UUID userId,ReservationStatus status){
         return requestRepository.findAllRequestsForUserByStatus(userId,status);
     }
+    public  List<Request> findAllnonResurvedRequestsForUser(UUID userId){
+        return requestRepository.findAllRequestsForUserExceptStatus(userId,ReservationStatus.RESERVED);
+    }
 
     public void statusRequest(long id,ReservationStatus status) {
         Request r =getRequestById(id);

@@ -1,27 +1,18 @@
 package com.dgpad.thyme.service;
 
 
-import com.dgpad.thyme.model.usercomplements.BedCategory;
 import com.dgpad.thyme.model.usercomplements.Beds;
-import com.dgpad.thyme.model.users.Ambulance;
 import com.dgpad.thyme.model.users.Hospital;
-import com.dgpad.thyme.model.users.Patient;
-import com.dgpad.thyme.model.users.User;
 import com.dgpad.thyme.repository.HospitalRepository;
-import com.dgpad.thyme.repository.PatientRepository;
-import com.dgpad.thyme.repository.UserRepository;
-import com.dgpad.thyme.security.UserInfoDetails;
 import com.dgpad.thyme.service.UserComplements.BedsService;
-import jdk.jfr.Category;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+import java.util.Comparator;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
+
 import java.util.UUID;
 
 @Service
@@ -43,6 +34,12 @@ public class HospitalService {
     }
     public List<Hospital> getAllHospitals(){
         return hospitalRepository.findAll();
+    }
+    public List<Hospital> getAllHospitalsSortedByReservationSize() {
+        List<Hospital> hospitals = hospitalRepository.findAll();
+        return hospitals.stream()
+                .sorted(Comparator.comparingInt(hospital -> hospital.getReservations().size()))
+                .collect(Collectors.toList());
     }
     public List<Hospital> getAllEnabledHospitals(){
         return hospitalRepository.getAllEnabledHospitals();

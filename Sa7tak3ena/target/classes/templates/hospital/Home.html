@@ -167,83 +167,34 @@
                 </div>
             </div>
         </div>
-
     </div>
-
-
-<button type="button" th:if="${admin == true}" style="margin: 20px 0" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-    Create Hospital Branch
-</button>
-<div class="modal fade" id="exampleModalCenter" tabindex="-1" th:if="${admin == true}"
-     role="dialog" aria-labelledby="exampleModalCenterTitle"
-     aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <form th:action="@{/create-hospital}" method="Post">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">establish a new branch account</h5>
-                    <button type="button" class="close" data-dismiss="modal"
-                            aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body text-center">
-                    <input type="text" name="username" class="form-control"
-                           id="name" th:value="${username}" required placeholder="username">
-                    <br>
-                    <input type="text" name="publicname" class="form-control"
-                           id="publicname" th:value="${publicname}" required placeholder="as it shull apear to other users">
-                    <br>
-                    <input type="text" name="email" class="form-control"
-                           id="email" th:value="${email}" required placeholder="email">
-                    <br>
-                    <input type="text" name="phone" class="form-control"
-                           id="phone" th:value="${phone}" required placeholder="phone">
-                    <br>
-                    <p>this hospital account will be a sub of your agency <br> default passward :123 </p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary"
-                            data-dismiss="modal">Close</button>
-                    <input type="submit" value="Save Changes" class="btn btn-primary">
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-    <table class="table" th:if="${admin == true}">
+    <table class="table">
         <thead class="thead-light">
         <tr>
+            <th scope="col">rank</th>
             <th scope="col">user name</th>
             <th scope="col">email</th>
             <th scope="col">Status</th>
             <th scope="col">phone number</th>
-            <th scope="col">total Requests</th>
             <th scope="col">total Reservations</th>
-            <th scope="col">actions</th>
+            <th scope="col">Address</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="ambulance, categoryIndex : ${hospitals}">
-            <td th:text="${ambulance.publicName}"></td>
-            <td th:text="${ambulance.email}"></td>
-            <td th:text="${ambulance.enabled ? 'Active' : 'Not Active'}"></td>
-            <td th:text="${ambulance.phone}"></td>
-            <td th:text="${ambulance.getReservations().size()}"></td>
-            <td th:text="${ambulance.getRequests().size()}"></td>
+        <tr th:each="hospital, categoryIndex : ${hospitals}" th:class="${!hospital.enabled} ? 'table-secondary' : ''">
+            <td th:text="${categoryIndex.count}"></td>
+            <td th:text="${hospital.publicName}"></td>
+            <td th:text="${hospital.email}"></td>
+            <td th:text="${hospital.enabled ? 'Active' : 'Not Active'}"></td>
+            <td th:text="${hospital.phone}"></td>
+            <td th:text="${hospital.getReservations().size()}"></td>
             <td>
-                <a class="btn btn-secondary" th:href="@{users/deactivate/{id}(id=${ambulance.id.toString()})}">
-                    Deactivate
-                </a>
-
-                <a class="btn btn-info" th:href="@{users/activate/{id}(id=${ambulance.id.toString()})}">
-                    Activate
-                </a>
+                <a th:if="${hospital.address != null}" th:href="'https://www.google.com/maps?q=' + ${hospital.address.latitude} + ',' + ${hospital.address.longitude}" target="_blank" th:text="${hospital.address.name != null ? hospital.address.name : 'View on maps'}"></a>
             </td>
         </tr>
         </tbody>
     </table>
+
 </div>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>

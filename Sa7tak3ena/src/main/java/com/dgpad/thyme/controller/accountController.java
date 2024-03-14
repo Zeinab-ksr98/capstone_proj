@@ -13,6 +13,7 @@ import com.dgpad.thyme.model.users.User;
 import com.dgpad.thyme.service.*;
 import com.dgpad.thyme.service.UserComplements.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -109,9 +110,9 @@ public class accountController {
             analytics.add(cu.getRequests().size());
             analytics.add(0);
             model.addAttribute("analytics",analytics);
-            model.addAttribute("hospitals", hospitalService.getAllHospitals());
-
-            model.addAttribute("admin", userService.getCurrentUser().isAdministrator());
+            List<Hospital> hospitals = hospitalService.getAllHospitalsSortedByReservationSize();
+            model.addAttribute("hospitals", hospitals);
+//            model.addAttribute("hospitals", hospitalService.getAllHospitals());
             return "hospital/Home";
         }
         else if (userService.getCurrentUser().getRole()== Role.AMBULANCE) {

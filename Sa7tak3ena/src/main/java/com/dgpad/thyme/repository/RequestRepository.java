@@ -15,5 +15,7 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     List<Request> findAllRequestsForUser(@Param("userId") UUID userID);
     @Query("SELECT o FROM Request o WHERE (o.patient.id=?1) and o.status=?2")
     List<Request> findAllRequestsForUserByStatus(@Param("userId") UUID userID, @Param("status")ReservationStatus status);
+    @Query("SELECT o FROM Request o WHERE (o.patient.id=?1) and o.status!=?2")
+    List<Request> findAllRequestsForUserExceptStatus(@Param("userId") UUID userID, @Param("status")ReservationStatus status);
 
 }

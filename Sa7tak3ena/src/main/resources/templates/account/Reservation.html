@@ -22,6 +22,7 @@
             <th th:if="${userrole.toString() == 'PATIENT'}">Hospital Name</th>
             <th>Reservation Type</th>
             <th th:if="${userrole.toString() == 'HOSPITAL'}">Patient Name</th>
+
             <th th:if="${userrole.toString() == 'HOSPITAL'}">Medical Record</th>
             <th>Date</th>
         </tr>
@@ -32,15 +33,42 @@
             <td th:text="${reservation.hospital.publicName}" th:if="${userrole.toString() == 'PATIENT'}"></td>
             <td th:text="${reservation.reservationType}"></td>
             <td th:if="${reservation.patient.username == null and userrole.toString() == 'HOSPITAL'}">reserved by ambulance</td>
-            <td th:text="${reservation.patient.username}" th:if="${userrole == 'HOSPITAL'}"></td>
+            <td th:text="${reservation.patient.firstName}+${reservation.patient.lastName}" th:if="${userrole == 'HOSPITAL'}"></td>
 
+<!--            <td>-->
+<!--                <span th:each="request : ${reservation.ambulanceRequests}">-->
+<!--                    <span th:text="${request.ambulance.publicName}"></span>-->
+<!--                    <span th:text="${request.status}"></span>-->
+<!--                    <span th:if="${not #lists.isEmpty(reservation.ambulanceRequests) and request.status == 'Pending'}">waiting acceptance</span>-->
+<!--                    <span th:if="${request.status == 'Accepted'}">accepted</span>-->
+<!--                    <span th:if="${request.status == 'Rejected'}">rejected</span>-->
+<!--                    <br>-->
+<!--                </span>-->
+
+<!--            </td>-->
             <td>
-                <span th:each="request : ${reservation.ambulanceRequests}">
-                    <span th:text="${request.status}"></span>
-                    <span th:if="${not #lists.isEmpty(reservation.ambulanceRequests) and request.status == 'Pending'}">waiting acceptance</span>
-                    <span th:if="${request.status == 'Accepted'}">accepted</span>
-                    <span th:if="${request.status == 'Rejected'}">rejected</span>
-                </span>
+                <th:block th:if="${#lists.isEmpty(reservation.ambulanceRequests)}">
+                    no ambulance required
+                </th:block>
+                <th:block th:unless="${#lists.isEmpty(reservation.ambulanceRequests)}">
+                    <span th:with="allRejected=true">
+                        <span th:each="request : ${reservation.ambulanceRequests}">
+                            <span th:if="${request.status != 'REJECTED'}">
+                                <span th:with="allRejected=false"></span>
+                            </span>
+                        </span>
+                        <span th:if="${allRejected}">
+                                All requests are declined. Your ambulances are out of service.
+                        </span>
+                        <span th:unless="${allRejected}">
+                            <span th:each="request : ${reservation.ambulanceRequests}">
+                                <span th:if="${request.status == 'ACCEPTED'}">Accepted: <span th:text="${request.ambulance.publicName}"></span></span>
+                                <span th:if="${request.status == 'PENDING'}">Pending: <span th:text="${request.ambulance.publicName}"></span></span>
+                                <span th:if="${request.status == 'REJECTED'}">Rejected</span>
+                            </span>
+                        </span>
+                    </span>
+                </th:block>
             </td>
             <td th:text="${reservation.medicalRecord}" th:if="${userrole.toString() == 'HOSPITAL'}"></td>
             <td th:text="${reservation.createdAt}" ></td>

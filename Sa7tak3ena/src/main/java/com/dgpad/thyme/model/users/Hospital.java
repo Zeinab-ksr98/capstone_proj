@@ -40,10 +40,10 @@ public class Hospital extends User {
     private List<AmbulanceRequest> ambulanceRequest;
 
     @OneToMany
-    private List<Reservation> reservations;
+    public List<Reservation> reservations;
 
     @OneToMany
-    private List<Request> requests;
+    public List<Request> requests;
     @OneToMany
     private List<Beds> availableBeds;
 
