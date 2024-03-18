@@ -1,5 +1,7 @@
 package com.dgpad.thyme.controller;
 
+import com.dgpad.thyme.hospital_dataScraping.HospitalRecord;
+import com.dgpad.thyme.hospital_dataScraping.MOHService;
 import com.dgpad.thyme.model.enums.*;
 import com.dgpad.thyme.model.requests.AmbulanceRequest;
 import com.dgpad.thyme.model.requests.RequestBedCategory;
@@ -25,7 +27,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 //the following controller group out the common functions that are accessed by all the users
 @Controller
@@ -48,6 +52,8 @@ public class accountController {
     private BedsService bedsService;
     @Autowired
     private AddressService addressService;
+    @Autowired
+    private MOHService mohService;
     @Autowired
     private FeedbackService feedbackService;
     @Autowired
@@ -125,6 +131,22 @@ public class accountController {
         return"landingPages/Main";
 //        return "redirect:/Main";
 
+    }
+    @GetMapping("/scrap")
+    public String scrap(Model model) {
+        HashMap<String,HospitalRecord> hospitalRecords = mohService.getRecords();
+        for (Map.Entry<String, HospitalRecord> entry: hospitalRecords.entrySet()) {
+            String key = entry.getKey();
+            HospitalRecord value = entry.getValue();
+
+            try{
+                System.out.println(mohService.getHospitalData(key,value.detailsLink()));
+            }catch (Exception e){
+                e.printStackTrace();
+                System.out.println("\nError Fetching link : "+value.detailsLink()+" for hospital "+value.name()+"\n");
+            }
+        }
+            return "redirect:/home";
     }
 //    profile
     @GetMapping("/profile")

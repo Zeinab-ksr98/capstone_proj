@@ -36,9 +36,6 @@ public class Hospital extends User {
     private String managerPhone;
     private String SupervisingPhysicianName;
     private String SupervisingPhysicianPhone;
-
-    private String OWNERSHIP;
-    private String MOSOPH;//Member of syndicate of private hospitals
     private String CONSTRUCTION_AUTH_NB; //Construction Authorization Nb
     @OneToOne
     private Block block;
@@ -72,6 +69,7 @@ public class Hospital extends User {
     public String toString() {
         return "Hospital{" +
                 "address=" + address +
+                "Phone="+getPhone()+
                 ", publicName='" + publicName + '\'' +
                 ", Fax='" + Fax + '\'' +
                 ", hospitalSections=" + hospitalSections +
@@ -79,8 +77,6 @@ public class Hospital extends User {
                 ", managerPhone='" + managerPhone + '\'' +
                 ", SupervisingPhysicianName='" + SupervisingPhysicianName + '\'' +
                 ", SupervisingPhysicianPhone='" + SupervisingPhysicianPhone + '\'' +
-                ", OWNERSHIP='" + OWNERSHIP + '\'' +
-                ", MOSOPH='" + MOSOPH + '\'' +
                 ", CONSTRUCTION_AUTH_NB='" + CONSTRUCTION_AUTH_NB + '\'' +
                 ", block=" + block +
                 ", ambulanceRequest=" + ambulanceRequest +
