@@ -63,10 +63,7 @@ public class MOHService {
 
                 }
             }
-            catch (HttpStatusException e) {
-                // Handle HTTP errors (e.g., 404 Not Found)
-                System.err.println("HTTP error fetching URL: " + e.getUrl());
-            }
+
             catch (Exception e){
                 System.out.println("finished Scraping !!");
                 break;
@@ -77,9 +74,11 @@ public class MOHService {
     }
 
     public Hospital getHospitalData(String name,String link) throws IOException {
+        Hospital hospital = new Hospital();
+
+        try{
         Connection connection = Jsoup.connect(link);
         Document doc = connection.get();
-        Hospital hospital = new Hospital();
 
         Element facilityContent = doc.selectFirst(".facilityContent");
         Elements facilityRowDetails = facilityContent.select(".facilityRowDetails");
@@ -94,7 +93,7 @@ public class MOHService {
         // Extract information from HTML elements and set them in the Hospital object
         hospital.setPhone(information.get(PHONE));
         hospital.setFax(information.getOrDefault(FAX,null));
-        hospital.setEmail(information.getOrDefault(EMAIL,null));
+        hospital.setEmail(information.getOrDefault(EMAIL,"_"));
         hospital.setManagerName(information.getOrDefault(DIRECTOR,null));
         hospital.setSupervisingPhysicianName(information.getOrDefault(CONTROLLING_DOCTOR, null));
         hospital.setSupervisingPhysicianPhone(information.getOrDefault(CONTROLLING_DOCTOR_PHONE_NUMBER,null));
@@ -115,6 +114,13 @@ public class MOHService {
         hospital.setPublicName(name);
         hospital.setUsername(name);
         hospitalService.save(hospital);
+
+        }
+        catch (HttpStatusException e) {
+            // Handle HTTP errors (e.g., 404 Not Found)
+            System.err.println("HTTP error fetching URL: " + e.getUrl());
+
+        }
         return hospital;
     }
 }

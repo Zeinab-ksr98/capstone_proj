@@ -12,12 +12,15 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 </head>
-<body>
+<body style="background: lavender">
 <div th:replace="fragments/Adimnheader :: header"></div>
 
 <div class="container">
-    <button type="button" style="margin: 20px 0" class="btn btn-primary"
+    <div class="d-flex justify-content-end align-items-end" >
+
+    <button type="button" style="margin: 20px 0; background: #155FA9" class="btn text-light mb-0"
             data-toggle="modal" data-target="#exampleModalCenter">Add Agency</button>
+    </div>
     <div class="modal fade" id="exampleModalCenter" tabindex="-1"
          role="dialog" aria-labelledby="exampleModalCenterTitle"
          aria-hidden="true">
@@ -44,8 +47,9 @@
             </div>
         </div>
     </div><br>
+    <div class="row rounded border" style="background: white">
 
-    <table class="table">
+    <table class="table table-light">
         <thead class="thead-light">
         <tr>
             <th scope="col">SN</th>
@@ -66,6 +70,7 @@
         </tr>
         </tbody>
     </table>
+    </div>
     <!--    update modal-->
     <div th:each="agency : ${agencies}" th:id="'updateModal'+${agency.id}" class="modal fade" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">

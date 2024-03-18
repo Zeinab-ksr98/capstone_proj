@@ -173,7 +173,7 @@
         <thead class="thead-light">
         <tr>
             <th scope="col">rank</th>
-            <th scope="col">user name</th>
+            <th scope="col">public name</th>
             <th scope="col">email</th>
             <th scope="col">Status</th>
             <th scope="col">phone number</th>
@@ -183,7 +183,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="hospital, categoryIndex : ${hospitals}" th:class="${!hospital.enabled} ? 'table-secondary' : ''">
+        <tr th:each="hospital, categoryIndex : ${hospitals}">
             <td th:text="${categoryIndex.count}"></td>
             <td th:text="${hospital.publicName}"></td>
             <td th:text="${hospital.email}"></td>

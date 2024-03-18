@@ -1,4 +1,5 @@
 package com.dgpad.thyme.controller;
+import com.dgpad.thyme.Email.EmailService;
 import com.dgpad.thyme.model.enums.Gender;
 import com.dgpad.thyme.model.enums.Role;
 import com.dgpad.thyme.model.users.Hospital;
@@ -17,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.UUID;
 
 
@@ -25,6 +27,8 @@ import java.util.UUID;
 public class UserController {
     @Autowired
     private PatientService patientService;
+    @Autowired
+    private EmailService emailService;
     @Autowired
     private HospitalService hospitalService;
     @Autowired
@@ -101,8 +105,9 @@ public class UserController {
     }
     @GetMapping(value = "/deactivate/{id}",  produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAnyAuthority('ADMIN','HOSPITAL','AMBULANCE')")
-    public String deActivateUser(@PathVariable("id") String id){
+    public String deActivateUser(@PathVariable("id") String id) throws IOException {
         userService.save(userService.deActivateUser(UUID.fromString(id)));
+        emailService.senddetailsEmail(userService.getUserById(UUID.fromString(id)),2);
         if (userService.getCurrentUser().getRole()==Role.ADMIN)
             return "redirect:/manage-users";
         else
@@ -112,8 +117,9 @@ public class UserController {
 
     @GetMapping(value = "/activate/{id}",  produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAnyAuthority('ADMIN','HOSPITAL','AMBULANCE')")
-    public String activateUser(@PathVariable("id") String id){
+    public String activateUser(@PathVariable("id") String id) throws IOException {
         userService.save(userService.activate(UUID.fromString(id)));
+        emailService.senddetailsEmail(userService.getUserById(UUID.fromString(id)),3);
         if (userService.getCurrentUser().getRole()== Role.ADMIN)
             return "redirect:/manage-users";
         else

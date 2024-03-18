@@ -22,6 +22,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.UUID;
 
 
 @Controller
@@ -53,6 +54,22 @@ public class AdminController {
 
         return "Admin/manage-users";
     }
+    @PostMapping("/edit-account")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public String editUserProfile(@RequestParam("id") UUID id, @RequestParam("updatedName") String name, @RequestParam("updatedEmail") String email, @RequestParam("updatedPhone") String phone) {
+        User user= userService.getUserById(id);
+        user.setUsername(name);
+        user.setEmail(email);
+        user.setPhone(phone);
+        userService.save(user);
+        return "redirect:/manage-users";
+    }
+    @PostMapping("/send-mail")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public String sendMail(@RequestParam("to") String to, @RequestParam("subject") String subject  ,@RequestParam("massage") String massage) throws IOException {
+        emailService.sendEmail(to, subject,massage);
+        return "redirect:/manage-users";
+    }
     @PostMapping(value = "/admin-create-withRole")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String createAdmin(@RequestParam("username") String userName,
@@ -69,19 +86,19 @@ public class AdminController {
     if (selectedRole == Role.HOSPITAL) {
         Hospital hospital = new Hospital(userName, publicName, email, passwordEncoder.encode("123"), phone,true);
         hospitalService.save(hospital);
-        emailService.senddetailsEmail(userService.getUserById(hospital.id));
+        emailService.senddetailsEmail(userService.getUserById(hospital.id),1);
 
     }
     else if (selectedRole == Role.ADMIN) {
         User admin = new User(userName, email, passwordEncoder.encode("123"), phone,Role.ADMIN,false);
         userService.save(admin);
-        emailService.senddetailsEmail(admin);
+        emailService.senddetailsEmail(admin,1);
     }
     else if (selectedRole == Role.AMBULANCE) {
         Ambulance ambulance = new Ambulance(userName, publicName, email, passwordEncoder.encode("123"), phone,true);
         ambulance.setAgency(agency);
         ambulanceService.save(ambulance);
-        emailService.senddetailsEmail(userService.getUserById(ambulance.getId()));
+        emailService.senddetailsEmail(userService.getUserById(ambulance.getId()),1);
     }
     return "redirect:/manage-users";
 

@@ -15,7 +15,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     boolean existsByUsername(String username);
     @Query(value = "select * from user where email = ?1", nativeQuery = true)
     Optional<User> findUserByEmail(String email);
-    @Query(value = "SELECT * FROM user WHERE deleted = 0", nativeQuery = true)
+    @Query(value = "SELECT * FROM user WHERE deleted = 0 ORDER BY enabled DESC", nativeQuery = true)
     List<User> findAllNotBlocked();
 
     @Query(value = "select * from user where email = ?1 and username = ?2", nativeQuery = true)

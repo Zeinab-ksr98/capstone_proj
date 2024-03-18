@@ -36,7 +36,7 @@ public class HospitalService {
         return hospitalRepository.findAll();
     }
     public List<Hospital> getAllHospitalsSortedByReservationSize() {
-        List<Hospital> hospitals = hospitalRepository.findAll();
+        List<Hospital> hospitals = getAllEnabledHospitals();
         return hospitals.stream()
                 .sorted(Comparator.comparingInt(hospital -> hospital.getReservations().size()))
                 .collect(Collectors.toList());

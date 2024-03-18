@@ -11,15 +11,35 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        body{
+            background: lavender;
+        }
+        /* Styles for active users */
+        .active-user {
+            /* Example styles: change as needed */
+            background: whitesmoke; /* Change text color to gray for active users */
+        }
+
+        /* Styles for inactive users */
+        .inactive-user {
+            /* Example styles: change as needed */
+            background:lavender ; /* Change text color to blue for inactive users */
+        }
+
+    </style>
 </head>
-<body>
+<body >
 <div th:replace="fragments/Adimnheader :: header"></div>
 
 <div class="container">
-    <button type="button" style="margin: 20px 0" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-        Create Hospital/Ambulance
-    </button>
-    <div class="modal fade" id="exampleModalCenter" tabindex="-1"
+    <div class="d-flex justify-content-end align-items-end" >
+        <button type="button" style="margin: 20px 0 ; background: #155FA9"  class="btn text-light mb-0" data-toggle="modal" data-target="#exampleModalCenter">
+            Create Account
+            <img width="24" height="24" src="https://img.icons8.com/pulsar-line/48/FFFFFF/add-user-male.png" alt="add-user-male"/>
+        </button>
+    </div>
+    <div class="modal fade mt-1" id="exampleModalCenter" tabindex="-1"
          role="dialog" aria-labelledby="exampleModalCenterTitle"
          aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -70,45 +90,120 @@
                 </form>
             </div>
         </div>
-    </div><br>
-
-    <table class="table">
-        <thead class="thead-light">
-        <tr>
-            <th scope="col">SN</th>
-            <th scope="col">user name</th>
-            <th scope="col">email</th>
-            <th scope="col">Status</th>
-            <th scope="col">Role</th>
-            <th scope="col">phone number</th>
-            <th scope="col">actions</th>
-        </tr>
-        </thead>
-        <tbody>
-            <tr th:each="user, categoryIndex : ${users}" >
-                <td th:text="${categoryIndex.index + 1}"></td>
-                <td th:text="${user.username}" ></td>
-                <td th:text="${user.email}" ></td>
-                <td th:text="${user.enabled ? 'Active' : 'Not Active'}"></td>
-                <td th:text="${user.role.name}"></td>
-                <td th:text="${user.phone}" ></td>
-                <td>
-                    <a class="btn btn-danger" th:href="@{users/block/{id}(id=${user.id.toString()})}"
-                       th:unless="${#strings.contains(user.role, 'ADMIN')}">
-                        Block
-                    </a>
-                    <a class="btn btn-secondary" th:href="@{users/deactivate/{id}(id=${user.id.toString()})}">
+    </div>
+    <br>
+    <div class="row rounded border" style="background: white">
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-3 mt-3" th:each="user, categoryIndex : ${users}" >
+            <div th:classappend="${user.enabled} ? 'active-user' : 'inactive-user'">
+                <div class="card-body ">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="card-title">
+                            <h5 th:text="${user.username}" style="color: #155FA9"></h5>
+                        </div>
+                        <div class="ml-auto mr-1">
+                            <button th:if="${user.role !='PATIENT'}" style="border: none; background: transparent " data-toggle="modal" th:attr="data-target='#emailModal'+${user.id}">
+                                <img width="24" height="24" src="https://img.icons8.com/pulsar-line/48/228BE6/mail.png" alt="mail"/>
+                            </button>
+                            <button style="border: none ; background: transparent" data-toggle="modal" th:attr="data-target='#updateModal'+${user.id}">
+                            <img width="24" height="24" src="https://img.icons8.com/fluency-systems-filled/48/737373/edit-user.png" alt="edit-user"/>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-text">
+                        <p th:text="${user.email}"> </p>
+                        <p th:text="${user.enabled ? 'Active' : 'Not Active'}"></p>
+                        <p th:text="${user.role.name}"></p>
+                        <p th:text="${user.phone}"></p>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a class="btn btn-secondary" th:if="${user.enabled}" th:href="@{users/deactivate/{id}(id=${user.id.toString()})}">
                         Deactivate
                     </a>
-                    <a class="btn btn-info" th:href="@{users/activate/{id}(id=${user.id.toString()})}">
+                    <a class="btn btn-info" th:unless="${user.enabled}" th:href="@{users/activate/{id}(id=${user.id.toString()})}">
                         Activate
                     </a>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+                    <a class="btn btn-danger" th:href="@{users/block/{id}(id=${user.id.toString()})}"
+                       th:unless="${#strings.contains(user.role, 'ADMIN')}">
+                        <img width="24" height="24" src="https://img.icons8.com/external-tanah-basah-basic-outline-tanah-basah/24/FFFFFF/external-block-user-user-tanah-basah-basic-outline-tanah-basah.png" alt="external-block-user-user-tanah-basah-basic-outline-tanah-basah"/>                        Block
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+<!--    update modal-->
+<div th:each="user : ${users}" th:id="'updateModal'+${user.id}" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Category</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <!-- Input fields for updating data -->
+            <form th:action="@{/edit-account}" method="post">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input class="form-control" type="text" name="id" id="id" th:value="${user.id}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="updatedName">New User Name:</label>
+                        <input type="text" class="form-control" id="updatedName" name="updatedName" th:value="${user.username}" placeholder="Category Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updatedName">New Email :</label>
+                        <input type="email" class="form-control" id="updatedEmail" name="updatedEmail" th:value="${user.email}" placeholder="Category Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updatedName">New Phone :</label>
+                        <input type="tel" class="form-control" id="updatedPhone" name="updatedPhone" th:value="${user.phone}" placeholder="Category Name" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!--    mail modal-->
+<div th:each="user : ${users}" th:id="'emailModal'+${user.id}" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Category</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <!-- Input fields for updating data -->
+            <form th:action="@{/send-mail}" method="post">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="to">Recipient</label>
+                        <input class="form-control" type="text" name="to" id="to" th:value="${user.email}" readonly>
 
+                    </div>
+                    <div class="form-group">
+                        <label for="massage"> Mail content</label>
+                        <input type="text" class="form-control" id="subject" name="subject"  required>
+                    </div>
+                    <div class="form-group">
+                        <label for="massage"> Mail content</label>
+                        <input type="text" class="form-control" id="massage" name="massage"  required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">send</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <script>
     $(document).ready(function () {
         $('input[type=radio][name=role]').change(function () {

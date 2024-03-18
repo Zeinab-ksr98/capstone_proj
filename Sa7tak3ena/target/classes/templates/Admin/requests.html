@@ -12,18 +12,10 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 </head>
-<body>
+<body style="background: lavender">
 <div th:replace="fragments/Adimnheader :: header"></div>
-<div class="container mt-5" th:if="${requestedaccounts != null and not #lists.isEmpty(requestedaccounts)}">
-    <table class="table">
-        <thead class="thead-light">
-        <tr>
-            <th scope="col">Account to be created</th>
-            <th scope="col">Public Name</th>
-            <th scope="col">email</th>
-            <th scope="col">Delete</th>
-        </tr>
-        </thead>
+<div class="container mt-5" th:if="${requestedaccounts != null and not #lists.isEmpty(requestedaccounts) and requestedcategories != null and not #lists.isEmpty(requestedcategories)}">
+    <table class="table table-light">
         <tbody>
         <tr th:each="account : ${requestedaccounts} " >
             <td th:text="${account.type}"></td>
@@ -35,34 +27,11 @@
                 </a>
             </td>
         </tr>
-
-        </tbody>
-    </table>
-</div>
-
-<!--will be displayed only if there is a request-->
-<div class="container mt-5" th:if="${requestedcategories != null and not #lists.isEmpty(requestedcategories)}">
-    <table class="table">
-        <thead class="thead-light">
-        <tr>
-            <th scope="col">Requested to be created</th>
-            <th scope="col">Delete</th>
-        </tr>
-        </thead>
-        <tbody>
         <tr th:each="cat : ${requestedcategories} " >
             <td th:text="${cat.RequestedCategory}"></td>
             <td>
                 <a class="btn btn-danger" th:href="@{/delete-CategoryRequest/{ID}(ID=${cat.id})}">
-                    Delete
-                </a>
-            </td>
-        </tr>
-        <tr th:each="account : ${requestedaccount} " >
-            <td th:text="${account.type}"></td>
-            <td>
-                <a class="btn btn-danger" th:href="@{/delete-CategoryRequest/{ID}(ID=${cat.id})}">
-                    Delete
+                    x
                 </a>
             </td>
         </tr>
