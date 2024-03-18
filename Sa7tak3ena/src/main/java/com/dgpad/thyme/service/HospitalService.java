@@ -48,6 +48,13 @@ public class HospitalService {
     public Hospital getHospitalById(UUID id){
         return hospitalRepository.findById(id).orElse(null);
     }
+    public int getTotalBeds(List<Beds> beds){
+        int sum=0;
+        for ( Beds bed:beds) {
+            sum+=bed.getNbBeds();
+        }
+        return sum;
+    }
     public Hospital getHospitalByBedId(int id){
         List<Hospital> hospitals =getAllHospitals();
         for (int i = 0; i < hospitals.size(); i++) {
@@ -63,6 +70,7 @@ public class HospitalService {
     public List<Hospital> findHospitalsWithAvailableEmergencyBeds(String categoryName) {
         return hospitalRepository.findHospitalsWithAvailableEmergencyBeds(categoryName);
     }
+
 
     public Hospital update(Hospital currentuser,Hospital user){
         if(user.getUsername()!=null)

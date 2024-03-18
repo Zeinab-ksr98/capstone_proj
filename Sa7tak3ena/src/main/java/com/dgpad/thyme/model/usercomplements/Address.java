@@ -18,6 +18,7 @@ public class Address {
     private double latitude;
     private double longitude;
     private String name;
+    private String REGION;
 //    private String street;
 //    private String city;
 //    @Enumerated(EnumType.STRING)

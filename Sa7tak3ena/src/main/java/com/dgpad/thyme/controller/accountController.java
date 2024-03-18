@@ -45,6 +45,8 @@ public class accountController {
     @Autowired
     private AmbulanceService ambulanceService;
     @Autowired
+    private BedsService bedsService;
+    @Autowired
     private AddressService addressService;
     @Autowired
     private FeedbackService feedbackService;
@@ -106,9 +108,11 @@ public class accountController {
         else if (userService.getCurrentUser().getRole()== Role.HOSPITAL) {
             Hospital cu =hospitalService.getHospitalById(userService.getCurrentUser().getId());
             List<Integer> analytics = new ArrayList<>();
-            analytics.add(cu.getReservations().size());
             analytics.add(cu.getRequests().size());
-            analytics.add(0);
+            analytics.add(cu.getReservations().size());
+            analytics.add(cu.getAvailableBeds().size());
+            analytics.add(hospitalService.getTotalBeds(cu.getAvailableBeds()));
+
             model.addAttribute("analytics",analytics);
             List<Hospital> hospitals = hospitalService.getAllHospitalsSortedByReservationSize();
             model.addAttribute("hospitals", hospitals);

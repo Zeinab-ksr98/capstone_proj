@@ -116,38 +116,9 @@
                             <p class="mb-0 text-secondary">Total Requests</p>
                             <h4 class="my-1 text-info" th:text="${analytics.get(0)}"></h4>
                         </div>
-                        <div class="widgets-icons-2 rounded-circle bg-gradient-scooter text-white ms-auto">
-                            <img width="24" height="24" src="https://img.icons8.com/external-tal-revivo-solid-tal-revivo/24/external-patient-with-heart-condition-isolated-on-a-white-background-hospital-solid-tal-revivo.png" alt="external-patient-with-heart-condition-isolated-on-a-white-background-hospital-solid-tal-revivo"/>                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card radius-10 border-start border-0 border-3 border-danger">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div>
-                            <p class="mb-0 text-secondary">Available Cars</p>
-                            <h4 class="my-1 text-danger" th:text="${analytics.get(1)}"></h4>
-                        </div>
-                        <div class="widgets-icons-2 rounded-circle bg-gradient-bloody text-white ms-auto">
-                            <img width="34" height="34" src="https://img.icons8.com/pastel-glyph/64/ambulance--v3.png" alt="ambulance--v3"/>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card radius-10 border-start border-0 border-3 border-warning">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div>
-                            <p class="mb-0 text-secondary">Total Paramedic</p>
-                            <h4 class="my-1 text-warning" th:text="${analytics.get(2)}"></h4>
-                        </div>
                         <div class="widgets-icons-2 rounded-circle bg-gradient-blooker text-white ms-auto">
-                            <img width="64" height="64" src="https://img.icons8.com/external-victoruler-linear-colour-victoruler/64/external-paramedic-medical-staff-characters-victoruler-linear-colour-victoruler-1.png" alt="external-paramedic-medical-staff-characters-victoruler-linear-colour-victoruler-1"/>
-                        </div>
+                            <img width="64" height="64" src="https://img.icons8.com/external-justicon-lineal-color-justicon/64/external-hospital-bed-hospital-justicon-lineal-color-justicon.png" alt="external-hospital-bed-hospital-justicon-lineal-color-justicon"/>                        </div>
+
                     </div>
                 </div>
             </div>
@@ -157,16 +128,46 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div>
-                            <p class="mb-0 text-secondary">Top Paramedic</p>
-                            <h4 class="my-1 text-success">Ali Reda</h4>
+                            <p class="mb-0 text-secondary">Total Reservations</p>
+                            <h4 class="my-1 text-success" th:text="${analytics.get(1)}"></h4>
                         </div>
                         <div class="widgets-icons-2 rounded-circle bg-gradient-ohhappiness text-white ms-auto">
-                            <img width="50" height="50" src="https://img.icons8.com/bubbles/50/medal2-1.png" alt="medal2-1"/>
+                            <img width="44" height="44" src="https://img.icons8.com/external-justicon-lineal-color-justicon/64/external-hospital-bed-hospital-justicon-lineal-color-justicon.png" alt="external-hospital-bed-hospital-justicon-lineal-color-justicon"/>                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card radius-10 border-start border-0 border-3 border-danger">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <p class="mb-0 text-secondary"> Total Sections</p>
+                            <h4 class="my-1 text-danger" th:text="${analytics.get(2)}"></h4>
+                        </div>
+                        <div class="widgets-icons-2 rounded-circle bg-gradient-bloody text-white ms-auto">
+                            <img width="34" height="34" src="https://img.icons8.com/pastel-glyph/64/ambulance--v3.png" alt="ambulance--v3"/>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="col">
+            <div class="card radius-10 border-start border-0 border-3 border-info">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <p class="mb-0 text-secondary">Available Beds</p>
+                            <h4 class="my-1 text-info" th:text="${analytics.get(3)}"></h4>
+                        </div>
+                        <div class="widgets-icons-2 rounded-circle bg-gradient-scooter text-white ms-auto">
+                            <img width="64" height="64" src="https://img.icons8.com/external-justicon-lineal-color-justicon/64/external-hospital-bed-hospital-justicon-lineal-color-justicon.png" alt="external-hospital-bed-hospital-justicon-lineal-color-justicon"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
     <table class="table">
         <thead class="thead-light">
@@ -176,6 +177,7 @@
             <th scope="col">email</th>
             <th scope="col">Status</th>
             <th scope="col">phone number</th>
+            <th scope="col">total Sections</th>
             <th scope="col">total Reservations</th>
             <th scope="col">Address</th>
         </tr>
@@ -187,6 +189,7 @@
             <td th:text="${hospital.email}"></td>
             <td th:text="${hospital.enabled ? 'Active' : 'Not Active'}"></td>
             <td th:text="${hospital.phone}"></td>
+            <td th:text="${hospital.hospitalSections.size()}"></td>
             <td th:text="${hospital.getReservations().size()}"></td>
             <td>
                 <a th:if="${hospital.address != null}" th:href="'https://www.google.com/maps?q=' + ${hospital.address.latitude} + ',' + ${hospital.address.longitude}" target="_blank" th:text="${hospital.address.name != null ? hospital.address.name : 'View on maps'}"></a>
@@ -196,6 +199,7 @@
     </table>
 
 </div>
+
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.1/js/bootstrap.min.js"></script>

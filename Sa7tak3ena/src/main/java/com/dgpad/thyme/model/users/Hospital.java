@@ -27,6 +27,8 @@ public class Hospital extends User {
     @ManyToOne
     private Address address;
     private String publicName;
+    private String Fax;
+
     @OneToMany(mappedBy = "hospital")
     private List<HSections> hospitalSections;
 
@@ -34,6 +36,10 @@ public class Hospital extends User {
     private String managerPhone;
     private String SupervisingPhysicianName;
     private String SupervisingPhysicianPhone;
+
+    private String OWNERSHIP;
+    private String MOSOPH;//Member of syndicate of private hospitals
+    private String CONSTRUCTION_AUTH_NB; //Construction Authorization Nb
     @OneToOne
     private Block block;
     @OneToMany
@@ -60,5 +66,31 @@ public class Hospital extends User {
         this.reservations=new ArrayList<>();
         this.requests=new ArrayList<>();
         this.availableBeds=new ArrayList<>();
+    }
+
+    @Override
+    public String toString() {
+        return "Hospital{" +
+                "address=" + address +
+                ", publicName='" + publicName + '\'' +
+                ", Fax='" + Fax + '\'' +
+                ", hospitalSections=" + hospitalSections +
+                ", managerName='" + managerName + '\'' +
+                ", managerPhone='" + managerPhone + '\'' +
+                ", SupervisingPhysicianName='" + SupervisingPhysicianName + '\'' +
+                ", SupervisingPhysicianPhone='" + SupervisingPhysicianPhone + '\'' +
+                ", OWNERSHIP='" + OWNERSHIP + '\'' +
+                ", MOSOPH='" + MOSOPH + '\'' +
+                ", CONSTRUCTION_AUTH_NB='" + CONSTRUCTION_AUTH_NB + '\'' +
+                ", block=" + block +
+                ", ambulanceRequest=" + ambulanceRequest +
+                ", reservations=" + reservations +
+                ", requests=" + requests +
+                ", availableBeds=" + availableBeds +
+                ", id=" + id +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", deleted=" + deleted +
+                '}';
     }
 }
