@@ -6,6 +6,8 @@
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
+    <link rel="stylesheet" th:href="@{css/test.css}">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <!-- Include Bootstrap JavaScript and jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
@@ -13,9 +15,11 @@
 
 </head>
 <body>
-<div th:replace="fragments/hheader :: header"></div>
-
-<div class="container">
+<div class="container-fluid">
+    <div class="d-flex">
+        <div th:replace="fragments/Hheader :: header"></div>
+        <div class="credits ml-5 mt-5">
+            <div class="container-fluid">
     <button type="button" style="margin: 20px 0" class="btn btn-primary"
             data-toggle="modal" data-target="#exampleModalCenter">Add Section</button>
     <div class="modal fade" id="exampleModalCenter" tabindex="-1"
@@ -44,8 +48,7 @@
             </div>
         </div>
     </div><br>
-
-    <table class="table">
+    <table class="table table-responsive table-light">
         <thead class="thead-light">
         <tr>
             <th scope="col">SN</th>
@@ -99,6 +102,9 @@
                     </div>
                 </form>
             </div>
+        </div>
+    </div>
+</div>
         </div>
     </div>
 </div>

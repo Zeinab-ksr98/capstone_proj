@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Verification Code</title>
+    <link rel="stylesheet" th:href="@{css/codeVerification.css}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Include Bootstrap JavaScript and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body style="background: rgba(23,161,183,0.7)">
+<div class="container">
+    <div class="row justify-content-center mt-7">
+        <div class="col-lg-5 text-center">
+            <div class="card mt-5">
+                <div class="card-body py-5 px-lg-5">
+                    <div class="svg-icon svg-icon-xl text-purple">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 512 512">
+                            <title>ionicons-v5-g</title>
+                            <path d="M336,208V113a80,80,0,0,0-160,0v95" style="fill:none;stroke:#17a1b7;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></path>
+                            <rect x="96" y="208" width="320" height="272" rx="48" ry="48" style="fill:none;stroke:#17a1b7;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></rect>
+                        </svg>
+                    </div>
+                    <h3 class="fw-normal text-dark mt-3">
+                        Phone Verification
+                    </h3>
+                    <p class="mt-2 mb-1">
+                        We sent a verification code to your WhatsApp.
+                    </p>
+                    <p>
+                        Please enter the code in the field below.
+                    </p>
+                    <form method="post" action="/verify-user">
+                        <!-- Hidden input field for the phone number -->
+                        <input type="hidden" name="number" th:value="${num}">
+                        <div class="row mt-4 pt-2">
+                            <div class="col">
+                                <input type="text" class="form-control form-control-lg text-center py-4" maxlength="8" name="code"  title="Please enter 8 digits" autofocus required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-info btn-lg w-100 hover-lift-light mt-4">
+                            Verify my account
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

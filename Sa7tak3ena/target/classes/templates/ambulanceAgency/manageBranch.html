@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Include Bootstrap JavaScript and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" th:href="@{css/test.css}">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+</head>
+<body>
+<div class="container-fluid">
+    <div class="d-flex">
+        <div th:replace="fragments/Aheader :: header"></div>
+        <div class="credits ml-5 mt-5">
+            <div class="container-fluid">
+                <button th:if="${user.isAdministrator() == true}" class="btn btn-primary" data-target="#exampleModalCenter" data-toggle="modal" style="margin: 20px 0"
+                        type="button">
+                    new branch account
+                </button>
+                <div th:if="${user.isAdministrator() == true}" aria-hidden="true" aria-labelledby="exampleModalCenterTitle" class="modal fade"
+                     id="exampleModalCenter" role="dialog"
+                     tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <form method="Post" th:action="@{/create-ambulance}">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLongTitle">establish a new branch account</h5>
+                                    <button aria-label="Close" class="close" data-dismiss="modal"
+                                            type="button">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body text-center">
+                                    <input class="form-control" id="name" name="username"
+                                           placeholder="username" required th:value="${username}" type="text">
+                                    <br>
+                                    <input class="form-control" id="publicname" name="publicname"
+                                           placeholder="as it shall appear to other users" required th:value="${publicname}"
+                                           type="text">
+                                    <br>
+                                    <input class="form-control" id="email" name="email"
+                                           placeholder="email" required th:value="${email}" type="text">
+                                    <br>
+                                    <input class="form-control" id="phone" name="phone"
+                                           placeholder="phone" required th:value="${phone}" type="text">
+                                    <br>
+                                    <p>this ambulance account will be a sub of your agency <br> default password: 123 </p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-secondary" data-dismiss="modal"
+                                            type="button">Close
+                                    </button>
+                                    <input class="btn btn-primary" type="submit" value="Save Changes">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class=" mt-1 row row-cols-1 row-cols-md-1 row-cols-xl-1 mr-1">
+
+                <table class="table table-light table-responsive" th:if="${user.isAdministrator() == true}">
+                    <thead class="thead-light">
+                    <tr>
+                        <th scope="col">user name</th>
+                        <th scope="col">email</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">phone number</th>
+                        <th scope="col">Staff</th>
+                        <th scope="col">Total Cars</th>
+                        <th scope="col">Total Requests</th>
+                        <th scope="col">actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="ambulance, categoryIndex : ${ambulances}">
+                        <td th:text="${ambulance.publicName}"></td>
+                        <td th:text="${ambulance.email}"></td>
+                        <td th:text="${ambulance.enabled ? 'Active' : 'Not Active'}"></td>
+                        <td th:text="${ambulance.phone}"></td>
+                        <td th:text="${ambulance.getParamedicList().size()}"></td>
+                        <td th:text="${ambulance.ambulanceCars.size()}"></td>
+                        <td th:text="${ambulance.getAmbulanceRequests().size()}"></td>
+                        <td>
+                            <a class="btn btn-secondary" th:href="@{users/deactivate/{id}(id=${ambulance.id.toString()})}">
+                                Deactivate
+                            </a>
+
+                            <a class="btn btn-info" th:href="@{users/activate/{id}(id=${ambulance.id.toString()})}">
+                                Activate
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

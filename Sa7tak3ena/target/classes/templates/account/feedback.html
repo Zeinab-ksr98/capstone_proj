@@ -3,67 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" th:href="@{css/feedback.css}">
-    <link rel="stylesheet" th:href="@{css/feedback.css}">
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
     <!-- Include Bootstrap JavaScript and jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script></head>
-<body>
-<!--Modal Launch Button-->
-<button type="button" class="btn btn-info btn-lg openmodal" data-toggle="modal" data-target="#myModal">Open
-    Modal</button>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-<!--Division for Modal-->
-<div id="myModal" class="modal fade" role="dialog">
+    <link rel="stylesheet" th:href="@{css/test.css}">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body style="background: lavender">
+<div class="d-flex" >
+    <!--sides bar-->
+    <div th:if="${user.role.toString() == 'PATIENT'}">
+        <div th:replace="fragments/Pheader :: header"></div>
+    </div>
+    <div th:if="${user.role.toString() == 'AMBULANCE'}">
+        <div th:replace="fragments/Aheader :: header"></div>
+    </div>
+    <div th:if="${user.role.toString() == 'HOSPITAL'}">
+        <div th:replace="fragments/hheader :: header"></div>
+    </div>
+<div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <form id="feedbackForm" method="post" th:action="@{/saveFeedback}" class="modal-body ">
+                        <div class="text-center">
+                            <h6 >Your opinion matters</h6>
+                            <h4 >Help us improve our Services? </h4>
+                            <h6 >Give us your feedback.</h6>
 
-    <!--Modal-->
-    <div class="modal-dialog">
-
-        <!--Modal Content-->
-        <div class="modal-content">
-
-            <!-- Modal Header-->
-            <div class="modal-header">
-                <h3>Feedback Request</h3>
-                <!--Close/Cross Button-->
-                <button type="button" class="close" data-dismiss="modal" style="color: white;">&times;</button>
-            </div>
-
-            <!-- Modal Body-->
-            <form id="feedbackForm" method="post" th:action="@{/saveFeedback}">
-                <div class="modal-body text-center">
-                    <i class="far fa-file-alt fa-4x mb-3 animated rotateIn icon1"></i>
-                    <h3>Your opinion matters</h3>
-                    <h5>Help us improve our product? <strong>Give us your feedback.</strong></h5>
-                    <hr>
-                    <h6>Your Rating</h6>
-                    <div class="form-check" th:each="rating : ${T(com.dgpad.thyme.model.enums.feedbackRating).values()}">
-                        <input class="form-check-input" type="radio" name="feedbackRating" th:id="${rating}" th:value="${rating}" />
-                        <label class="form-check-label" th:for="${rating}" th:text="${rating}"></label>
+                            <hr>
+                            <h5>Your Rating</h5>
+                            <div class="form-check text-info  " th:each="rating : ${T(com.dgpad.thyme.model.enums.feedbackRating).values()}">
+                                <input class="form-check-input" type="radio" name="feedbackRating" th:id="${rating}" th:value="${rating}" />
+                                <label class="form-check-label" th:for="${rating}" th:text="${rating}"></label>
+                            </div>
+                        </div>
+                        <div class=" mt-3">
+                            <h5>What could we improve?</h5>
+                        </div>
+                        <textarea name="feedbackMessage" id="feedbackMessage" placeholder="Your Message" rows="3" class="form-control"></textarea>
+                        <!-- Modal Footer-->
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-info">Send <i class="fa fa-paper-plane"></i></button>
+                            <button type="button" class="btn btn-outline-info" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-center">
+                        <img th:src="@{/assits/feed.png}" class="img-fluid mb-3" alt="Feedback Image">
                     </div>
                 </div>
-                <!--Text Message-->
-                <div class="text-center">
-                    <h4>What could we improve?</h4>
-                </div>
-                <textarea name="feedbackMessage" id="feedbackMessage" placeholder="Your Message" rows="3"></textarea>
-                <!-- Modal Footer-->
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Send
-                        <i class="fa fa-paper-plane"></i>
-                    </button>
-                    <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Cancel</button>
-                </div>
-            </form>
-
+            </div>
         </div>
 
-    </div>
-
-</div>
 </body>
 </html>

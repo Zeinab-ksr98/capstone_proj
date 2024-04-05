@@ -5,6 +5,15 @@
     <title>Request Form</title>
     <!-- Add Bootstrap CSS link -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Include Bootstrap JavaScript and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" th:href="@{css/test.css}">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
     <style>
         .background-image {
             position: absolute;
@@ -14,66 +23,6 @@
             height: 100%;
             object-fit: cover; /* This ensures the image covers the entire container */
             z-index: -1; /* This places the image behind other content */
-        }
-        #error-page {
-            position: absolute;
-            top: 10%;
-            left: 25%;
-            right: 25%;
-            bottom: 20%;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #fff;
-            box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        #error-page .content {
-            max-width: 600px;
-            text-align: center;
-        }
-
-        .content h3.header {
-            font-size: 7vw;
-            line-height: 1.5em;
-            position: relative;
-        }
-
-        .content h3.header:after {
-            position: absolute;
-            content: attr(data-text);
-            top: 0;
-            left: 0;
-            right: 0;
-            background: -webkit-repeating-linear-gradient(-45deg, #71b7e6, #69a6ce, #b98acc, #ee8176, #b98acc, #69a6ce, #9b59b6);
-            background-size: 400%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.25);
-            animation: animate 10s ease-in-out infinite;
-        }
-
-        @keyframes animate {
-            0% {
-                background-position: 0 0;
-            }
-
-            25% {
-                background-position: 100% 0;
-            }
-
-            50% {
-                background-position: 100% 100%;
-            }
-
-            75% {
-                background-position: 0% 100%;
-            }
-
-            100% {
-                background-position: 0% 0%;
-            }
         }
 
         .content h5 {
@@ -125,118 +74,130 @@
         }
     </style>
 </head>
-<body style="background-color:#fff  ">
-<!--the request form shall when there is no request and when there is no requests in process-->
-<div class="container" th:if="${allow==false}">
-    <div id="error-page">
-        <div class="content">
-            <h3 class="header" data-text="Opps!">
-                Opps!</h3>
-            <h5 data-text=" Cann't submit multiple request at a time">
-                Cann't submit multiple request at a time</h5>
-            <p>
-                Sorry,Your requests are in process <br> Please Try Again Later
-            </p>
-            <div class="btns">
-                <a th:href="@{/home}">return home</a>
+<body>
+<!--<div class="container-fluid">-->
+<div class="d-flex">
+    <div th:replace="fragments/Pheader :: header"></div>
+    <div class="credits ml-5 ">
+        <div class="container">
+
+            <div class=" row row-cols-1">
+                <div class="col mx-auto mt-5 text-light">
+                <div class="card " style="background-color: transparent ; border-radius: 5px">
+
+                    <div class="card-body">
+                        <img alt=" " class="background-image" style="max-width: 100%; border-radius: 5px;"
+                             th:src="@{/assits/ls.jpg}">
+                        <div class="text-center">
+                            <h2>Request Form</h2>
+                            <img th:src="@{/assits/underline1.png}">
+                        </div>
+                        <form method="post" th:action="@{/submit2}" th:object="${grequest}">
+                            <div class="form-check mt-3">
+                                <label class="form-check-label">Reserve bed:</label>
+                                <div th:each="type, status : ${T(com.dgpad.thyme.model.enums.ReservationType).values()}">
+                                    <input class="form-check-input" id="${'bedtype_' + status.index}"
+                                           th:field="*{request.reservationType}"
+                                           th:value="${type}" type="radio"/>
+                                    <label th:for="${'bedtype_' + status.index}" th:text="${type}"></label>
+                                </div>
+                            </div>
+
+                            <div class="form-check mt-3">
+                                <input class="form-check-input" id="needAmbulance" name="needAmbulance"
+                                       th:field="*{request.needAmbulance}" type="checkbox">
+                                <label class="form-check-label" for="needAmbulance">I need an ambulance</label>
+                            </div>
+                            <div id="ambulanceAgencies" style="display: none;">
+                                <label for="ambulance">Select Ambulance:</label><br>
+                                <select id="ambulance" multiple name="ambulance.ID"
+                                        th:field="${grequest.preferedagencies}">
+                                    <option th:each="agency : ${availableagencies}" th:text="${agency.name}"
+                                            th:value="${agency.id}"></option>
+                                </select>
+                                <br>
+                            </div>
+                            <div id="fromhospitals" style="display: none;">
+                                <label>transfer from:</label><br>
+                                <div th:each="hospital : ${fromhospitals}">
+                                    <input id="hospital_${hospital.ID}" name="hospitalID" th:value="${hospital.address}"
+                                           type="radio">
+                                    <label th:for="'hospital_' + ${hospital.address}"
+                                           th:text="${hospital.publicName}"></label><br>
+                                </div>
+                            </div>
+                            <div id="hospitals">
+                                <label for="hospital">Select Hospital:</label><br>
+                                <select id="hospital" multiple name="hospital.ID"
+                                        th:field="${grequest.preferedhospitals}">
+                                    <option th:each="hospital : ${availablehospitals}" th:text="${hospital.publicName}"
+                                            th:value="${hospital.id}"></option>
+                                </select>
+                                <br>
+                            </div>
+                            <div class="form-group mt-3">
+                                <label for="medicalRecord">detailed Location:</label>
+                                <input class="form-control" name="location" placeholder="detailed address" required="required"
+                                       type="text">
+                            </div>
+                            <div class="form-group mt-3">
+                                <label for="medicalRecord">Medical Record:</label>
+                                <textarea class="form-control" id="medicalRecord" name="medicalRecord" rows="3"
+                                          th:field="*{request.medicalRecord}"></textarea>
+                            </div>
+                            <!-- Hidden input fields to store latitude and longitude -->
+                            <input id="latitude" name="lat" type="hidden">
+                            <input id="longitude" name="lon" type="hidden">
+                            <button class="btn btn-light mt-3" type="submit">Submit Request</button>
+                        </form>
+                    </div>
+                </div>
+                </div>
             </div>
         </div>
-    </div>
+        <script>
+            // Add an event listener to show/hide ambulance agencies select based on checkbox
+            document.getElementById("needAmbulance").addEventListener("change", function () {
+                var ambulanceAgencies = document.getElementById("ambulanceAgencies");
+                ambulanceAgencies.style.display = this.checked ? "block" : "none";
+            });
 
-</div>
-<script>
-    // Check the value of allow
-    var allow = false; // Assuming allow is a variable defined elsewhere in your code
-    if (!allow)
-        document.getElementById("body").style.backgroundColor = "#155FA9";
-</script>
-<div class="container" th:if="${allow==true}">
+            // Function to show/hide transfer from hospital section based on selected reservation type
+            function toggleTransferFromHospital() {
+                var reservationType = document.querySelector('input[name="request.reservationType"]:checked').value;
+                var fromHospitals = document.getElementById("fromhospitals");
+                fromHospitals.style.display = reservationType === "HOSPITAL_TO_HOSPITAL_TRANSFER" ? "block" : "none";
+            }
 
-    <div class="row">
-        <div class="card col-md-6 mx-auto mt-5 text-light" style="background-color: transparent ; border-radius: 5px" >
+            // Add event listeners to reservation type radio buttons to update visibility of transfer from hospital section
+            var reservationTypeRadios = document.querySelectorAll('input[name="request.reservationType"]');
+            for (var i = 0; i < reservationTypeRadios.length; i++) {
+                reservationTypeRadios[i].addEventListener('change', toggleTransferFromHospital);
+            }
 
-            <div class="card-body">
-                <img alt=" " class="background-image" style="max-width: 100%; border-radius: 5px;" th:src="@{/assits/ls.jpg}" >
-                <div class="text-center">
-                    <h2 >Request Form</h2>
-                    <img th:src="@{/assits/underline1.png}" >
-                </div>
-                <form method="post" th:action="@{/submit2}" th:object="${grequest}">
-                    <div class="form-check mt-3">
-                        <label class="form-check-label">Reserve bed:</label>
-                        <div th:each="type, status : ${T(com.dgpad.thyme.model.enums.ReservationType).values()}">
-                            <input class="form-check-input" id="${'bedtype_' + status.index}" th:field="*{request.reservationType}"
-                                   th:value="${type}" type="radio"/>
-                            <label th:for="${'bedtype_' + status.index}" th:text="${type}"></label>
-                        </div>
-                    </div>
+            // Call the function initially to set initial visibility of transfer from hospital section
+            toggleTransferFromHospital();
+        </script>
+        <script>
+            // Get user's current location
+            function getLocation() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(showPosition);
+                } else {
+                    alert("Geolocation is not supported by this browser.");
+                }
+            }
 
-                    <div class="form-check mt-3">
-                        <input class="form-check-input" id="needAmbulance" name="needAmbulance"
-                               th:field="*{request.needAmbulance}" type="checkbox">
-                        <label class="form-check-label" for="needAmbulance">I need an ambulance</label>
-                    </div>
-                    <div id="ambulanceAgencies" style="display: none;">
-                        <label for="ambulance">Select Ambulance:</label><br>
-                        <select id="ambulance" multiple name="ambulance.ID" th:field="${grequest.preferedagencies}">
-                            <option th:each="agency : ${availableagencies}"  th:text="${agency.name}"
-                                    th:value="${agency.id}"> </option>
-                        </select>
-                        <br>
-                    </div>
-                    <div id="fromhospitals" style="display: none;">
-                        <label>transfer from:</label><br>
-                        <div th:each="hospital : ${fromhospitals}">
-                            <input type="radio" id="hospital_${hospital.ID}" name="hospitalID" th:value="${hospital.address}">
-                            <label th:for="'hospital_' + ${hospital.address}" th:text="${hospital.publicName}"></label><br>
-                        </div>
-                    </div>
-                    <div id="hospitals">
-                        <label for="hospital">Select Hospital:</label><br>
-                        <select id="hospital" multiple name="hospital.ID" th:field="${grequest.preferedhospitals}">
-                            <option th:each="hospital : ${availablehospitals}" th:text="${hospital.publicName}"
-                                    th:value="${hospital.id}"></option>
-                        </select>
-                        <br>
-                    </div>
+            // Callback function to set latitude and longitude
+            function showPosition(position) {
+                document.getElementById("latitude").value = position.coords.latitude;
+                document.getElementById("longitude").value = position.coords.longitude;
+            }
 
-
-                    <div class="form-group mt-3">
-                        <label for="medicalRecord">Medical Record:</label>
-                        <textarea class="form-control" id="medicalRecord" name="medicalRecord" rows="3" th:field="*{request.medicalRecord}"></textarea>
-                    </div>
-                    <button class="btn btn-light mt-3" type="submit">Submit Request</button>
-                </form>
-        </div>
+            // Call getLocation function when the page loads
+            window.onload = getLocation;
+        </script>
     </div>
 </div>
-</div>
-<!-- Include Bootstrap JavaScript and jQuery -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-<script>
-    // Add an event listener to show/hide ambulance agencies select based on checkbox
-    document.getElementById("needAmbulance").addEventListener("change", function () {
-        var ambulanceAgencies = document.getElementById("ambulanceAgencies");
-        ambulanceAgencies.style.display = this.checked ? "block" : "none";
-    });
-    // Function to show/hide transfer from hospital section based on selected reservation type
-    function toggleTransferFromHospital() {
-        var reservationType = document.querySelector('input[name="request.reservationType"]:checked').value;
-        var fromHospitals = document.getElementById("fromhospitals");
-        fromHospitals.style.display = reservationType === "HOSPITAL_TO_HOSPITAL_TRANSFER" ? "block" : "none";
-    }
-
-    // Add event listeners to reservation type radio buttons to update visibility of transfer from hospital section
-    var reservationTypeRadios = document.querySelectorAll('input[name="request.reservationType"]');
-    for (var i = 0; i < reservationTypeRadios.length; i++) {
-        reservationTypeRadios[i].addEventListener('change', toggleTransferFromHospital);
-    }
-
-    // Call the function initially to set initial visibility of transfer from hospital section
-    toggleTransferFromHospital();
-</script>
 </body>
 </html>

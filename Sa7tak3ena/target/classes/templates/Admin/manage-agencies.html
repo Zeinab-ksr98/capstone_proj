@@ -11,11 +11,15 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
+    <link rel="stylesheet" th:href="@{css/test.css}">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
-<body style="background: lavender">
-<div th:replace="fragments/Adimnheader :: header"></div>
-
-<div class="container">
+<body style="background: silver">
+<div class="container-fluid">
+    <div class="d-flex">
+        <div th:if="" th:replace="fragments/Adimnheader :: header"></div>
+        <div class="credits ml-5 mt-5">
+            <div class="container-fluid">
     <div class="d-flex justify-content-end align-items-end" >
 
     <button type="button" style="margin: 20px 0; background: #155FA9" class="btn text-light mb-0"
@@ -98,6 +102,9 @@
                     </div>
                 </form>
             </div>
+        </div>
+    </div>
+</div>
         </div>
     </div>
 </div>

@@ -3,137 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <title>Home</title>
-    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.1/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Include Bootstrap JavaScript and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" th:href="@{css/test.css}">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
     <style>
-        .background-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* This ensures the image covers the entire container */
-            z-index: -1; /* This places the image behind other content */
-        }
+
     </style>
 </head>
 
 <body>
-<div th:replace="fragments/Pheader :: header"></div>
-<div class="container">
-    <a th:href="@{/ambulance_request}"  onclick="return showHrefModal(this)">
-        <img id="callButton" width="150" th:src="@{/assits/call%20buton.png}" alt="external-call-medical-filled-outline-satawat-anukul"/>
-    </a>
+    <div class="d-flex">
+        <div th:replace="fragments/Pheader :: header"></div>
+        <div class="container m-5">
+            <div class="d-flex justify-content-end align-items-end mr-3" >
+                <a th:href="@{/ambulance_request}"  onclick="return showHrefModal(this)">
+                    <img id="callButton" width="130" th:src="@{/assits/call%20buton.png}" alt="external-call-medical-filled-outline-satawat-anukul"/>
+                </a>
+            </div>
+            <div th:replace="account/Requests :: requests"></div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="requestModal" tabindex="-1" aria-labelledby="requestModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
 
-                <div class="modal-body text-center">
-                    <img width="100" height="100" src="https://img.icons8.com/keek/100/experimental-error-keek.png" alt="experimental-error-keek"/>
-                    <div>
-                        <h5>You cannot request now <br>You have already requested.</h5>
+            <!-- Modal -->
+            <div class="modal fade" id="requestModal" tabindex="-1" aria-labelledby="requestModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+
+                        <div class="modal-body text-center">
+                            <img width="100" height="100" src="https://img.icons8.com/keek/100/experimental-error-keek.png" alt="experimental-error-keek"/>
+                            <div>
+                                <h5>You cannot request now <br>You have already requested.</h5>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+
+            <!-- Confirmation Modal -->
+            <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="confirmationModalLabel">Confirmation</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to request?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary" id="confirmRequestBtn">Yes</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Confirmation Modal -->
-    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="confirmationModalLabel">Confirmation</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to request?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="confirmRequestBtn">Yes</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
 
-    <script th:inline="javascript">
-        function showHrefModal(anchor) {
-            var requestsSize = /*[[${requests_size}]]*/;
-            if (requestsSize > 0) {
-                $('#requestModal').modal('show');
-                return false; // Prevent default anchor behavior
-            } else if (requestsSize <= 0) {
-                // Show the confirmation modal
-                $('#confirmationModal').modal('show');
-                // Return false to prevent default anchor behavior until the user confirms
-                return false;
-            } else {
-                return true; // Allow default anchor behavior
-            }
-        }
-
-        // Script to handle action after confirmation
-        $(document).ready(function() {
-            $('#confirmRequestBtn').click(function() {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(function(position) {
-                        var lat = position.coords.latitude;
-                        var lon = position.coords.longitude;
-                        // Modify the href attribute to include latitude and longitude
-                        var url = '/ambulance_request?lat=' + lat + '&lon=' + lon;
-                        window.location.href = url;
-                    });
-                } else {
-                    alert("Geolocation is not supported by this browser.");
+            <script th:inline="javascript">
+                function showHrefModal(anchor) {
+                    var requestsSize = /*[[${requests_size}]]*/;
+                    if (requestsSize > 0) {
+                        $('#requestModal').modal('show');
+                        return false; // Prevent default anchor behavior
+                    } else if (requestsSize <= 0) {
+                        // Show the confirmation modal
+                        $('#confirmationModal').modal('show');
+                        // Return false to prevent default anchor behavior until the user confirms
+                        return false;
+                    } else {
+                        return true; // Allow default anchor behavior
+                    }
                 }
-            });
-        });
 
-    </script>
-    <div class="row">
-        <div class="col-5">
-            <!-- Left side content -->
-        </div>
-        <div class="card col-7" style="background: transparent">
-            <div class="card-body" style="height: 300px">
-                <img th:src="@{/assits/Artboard.png}" alt="" class="background-image">
-                <h6 style="margin-top: 110px;margin-left: 35px"> donate today to help equip ambulances<br> and streamline saving lifes
-                </h6>
-                <a th:href="@{/donate}" class="btn " style="background-color: #ffba69; color: #fdfefe;margin-top: 25px;margin-left: 80px">Donate Now</a>
-            </div>
+                // Script to handle action after confirmation
+                $(document).ready(function() {
+                    $('#confirmRequestBtn').click(function() {
+                        if (navigator.geolocation) {
+                            navigator.geolocation.getCurrentPosition(function(position) {
+                                var lat = position.coords.latitude;
+                                var lon = position.coords.longitude;
+                                // Modify the href attribute to include latitude and longitude
+                                var url = '/ambulance_request?lat=' + lat + '&lon=' + lon;
+                                window.location.href = url;
+                            });
+                        } else {
+                            alert("Geolocation is not supported by this browser.");
+                        }
+                    });
+                });
+
+            </script>
         </div>
     </div>
-
-
-    <!--<div class="card col-6">-->
-    <!--    <div class="card-body">-->
-    <!--        <form class="form" name="enq" method="post" action="">-->
-    <!--            <div class="row">-->
-    <!--                <div class="form-group col-md-6">-->
-    <!--                    <input type="text" name="name" class="form-control" placeholder="Name" required="required">-->
-    <!--                </div>-->
-    <!--                <div class="form-group col-md-6">-->
-    <!--                    <input type="email" name="email" class="form-control" placeholder="Email" required="required">-->
-    <!--                </div>-->
-    <!--                <div class="form-group col-md-12">-->
-    <!--                    <input type="text" name="subject" class="form-control" placeholder="Subject" required="required">-->
-    <!--                </div>-->
-    <!--                <div class="form-group col-md-12">-->
-    <!--                    <textarea rows="6" name="message" class="form-control" placeholder="Your Message" required="required"></textarea>-->
-    <!--                </div>-->
-    <!--                <div class="col-md-12 text-center">-->
-    <!--                    <button type="submit" value="Send message" name="submit" id="submitButton" class="btn btn-danger" >Send Message</button>-->
-    <!--                </div>-->
-    <!--            </div>-->
-    <!--        </form>-->
-    <!--    </div>-->
-    <!--</div>-->
     <script th:if="${alertMessage}" th:inline="javascript">
         /*<![CDATA[*/
         // Display an alert with the message
@@ -142,6 +112,7 @@
         /*]]>*/
     </script>
     <script th:src="@{/webjars/bootstrap/5.3.1/js/bootstrap.bundle.min.js}"></script>
-</div>
+
+
 </body>
 </html>

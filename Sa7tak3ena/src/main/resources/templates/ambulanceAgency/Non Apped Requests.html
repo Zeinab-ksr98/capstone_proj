@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Requests</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Include Bootstrap JavaScript and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" th:href="@{css/test.css}">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="d-flex">
+        <div th:replace="fragments/Aheader :: header"></div>
+        <div class="credits ml-5 mt-5">
+            <div class="container-fluid">
+                <button type="button" style="margin: 20px 0" class="btn btn-primary"
+                        data-toggle="modal" data-target="#exampleModalCenter">Create Request</button>
+            <div class="modal fade" id="exampleModalCenter" tabindex="-1"
+                 role="dialog" aria-labelledby="exampleModalCenterTitle"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <form th:action="@{/add-request}" th:object="${newrequest}" method="post">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLongTitle">Add request</h5>
+                                <button type="button" class="close" data-dismiss="modal"
+                                        aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body text-center">
+                                    <div class="modal-body text-center">
+                                        <div class="form-group">
+                                            <select name="service" id="serviceSelect" th:field="*{service}" onchange="toggleLocationInputs()"  class="form-control" required>
+                                                <option th:each="service : ${T(com.dgpad.thyme.model.enums.Ambulanceservice).values()}"
+                                                        th:value="${service}"  th:text="${service.name()}">
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="staff">Select Staff:</label>
+                                            <select id="staff" th:field="*{staff}" name="staff-id" class="form-control" required>
+                                                <option th:each="staff : ${stafflist}" th:value="${staff.id}" th:text="${staff.name}"></option>
+                                            </select>
+                                        </div>
+
+                                        <input type="text" class="form-control" name="description" id="description" th:field="*{description}" placeholder="Description" required>
+                                        <input type="text" class="form-control" name="phone" id="phone" placeholder="Phone Number" required>
+                                        <input type="text" class="form-control" name="equipment" id="equipment" th:field="*{equipments}" placeholder="Equipment">
+                                        <input type="text" class="form-control" name="name" id="name" placeholder="Patient Name" required>
+
+                                        <!-- Additional fields for different service types -->
+                                        <div id="homeServiceFields" style="display: none;">
+                                            <input type="text" class="form-control" name="from.name" id="houseName" th:field="*{pickupaddress.name}" placeholder="Location Name">
+                                        </div>
+
+
+                                        <div id="transferFields" style="display: none;">
+                                            <input type="text" class="form-control" name="from.name" id="fromName" th:field="*{pickupaddress.name}" placeholder=" Location Name">
+                                            <input type="text" class="form-control" name="to.name" id="toName" th:field="*{to.name}"  placeholder="To Location Name">
+
+                                            <label for="car_type">Select Ambulance Type:</label>
+                                            <select name="car_type" id="car_type" class="form-control" required>
+                                                <option th:each="type : ${T(com.dgpad.thyme.model.enums.Ambulancetypes).values()}"
+                                                        th:value="${type}" th:text="${type}">
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <script th:inline="javascript">
+                                            /*<![CDATA[*/
+                                            function toggleLocationInputs() {
+                                                const select = document.getElementById("serviceSelect");
+                                                const homeServiceFields = document.getElementById("homeServiceFields");
+                                                const transferFields = document.getElementById("transferFields");
+
+                                                const HOME_SERVICE = /*[[${T(com.dgpad.thyme.model.enums.Ambulanceservice).homeService}]]*/ null;
+                                                const TRANSFER = /*[[${T(com.dgpad.thyme.model.enums.Ambulanceservice).transfer}]]*/ null;
+
+                                                if (select.value === HOME_SERVICE) {
+                                                    homeServiceFields.style.display = "block";
+                                                    transferFields.style.display = "none";
+                                                } else if (select.value === TRANSFER) {
+                                                    homeServiceFields.style.display = "none";
+                                                    transferFields.style.display = "block";
+                                                } else {
+                                                    homeServiceFields.style.display = "none";
+                                                    transferFields.style.display = "none";
+                                                }
+                                            }
+                                            /*]]>*/
+                                        </script>
+
+                                        <script>
+                                            // Add event listener to the form submission event
+                                            document.getElementById('requestForm').addEventListener('submit', function () {
+                                                var descriptionField = document.getElementById('description');
+                                                var phoneField = document.getElementById('phone');
+                                                var nameField = document.getElementById('name');
+
+                                                // Append phone and name to the description before submitting
+                                                descriptionField.value = descriptionField.value + '\nPhone: ' + phoneField.value + '\nName: ' + nameField.value;
+                                            });
+                                        </script>
+                                    </div>
+                            </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">Close</button>
+                                    <input type="submit" value="Save Changes" class="btn btn-primary">
+                                </div>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+    <br>
+        <h5>Non app Requests</h5>
+        <table class="table">
+            <thead class="thead-light ">
+            <tr>
+                <th scope="col">Request type</th>
+                <th scope="col">from</th>
+                 <th scope="col">To</th>
+                <th scope="col">status</th>
+                <th scope="col">staff</th>
+                <th scope="col"> description</th>
+                <th scope="col"> Equipments</th>
+                <th scope="col">created at</th>
+            </tr>
+            </thead>
+            <tbody >
+                <tr th:each="nrequest : ${requests}" th:if="${!nrequest.isFrom_hospital() && nrequest.sender == user}">
+                    <td th:text="${nrequest.service}"></td>
+                    <td th:text="${nrequest.pickupaddress != null ? nrequest.pickupaddress.name : 'N/A'}"></td>
+                    <td th:text="${nrequest.to!= null ? nrequest.to.name : 'N/A'}"></td>
+                    <td th:text="${nrequest.status}"></td>
+                    <td th:text="${nrequest.staff.name}"></td>
+                    <td th:text="${nrequest.description}"></td>
+                    <td th:text="${nrequest.equipments}"></td>
+                    <td th:text="${nrequest.createdAt}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+        </div>
+    </div>
+</body>
+</html>

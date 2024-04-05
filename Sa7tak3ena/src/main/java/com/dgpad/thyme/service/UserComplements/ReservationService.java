@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -51,5 +52,32 @@ public class ReservationService {
     public List<Reservation> getAllReservationForCustomer(UUID userId){
         return reservationRepository.findAllReservationsForUser(userId);
     }
+    public List<Reservation> getAllReservationForCustomerWithin24hs(UUID userId){
+        // Retrieve all reservations for the user
+        List<Reservation> allReservations = getAllReservationForCustomer(userId);
+
+        // Filter reservations within the last 24 hours
+        LocalDateTime twentyFourHoursAgo = LocalDateTime.now().minusHours(24);
+        List<Reservation> reservationsWithin24Hours = allReservations.stream()
+                .filter(reservation -> reservation.getCreatedAt().isAfter(twentyFourHoursAgo))
+                .collect(Collectors.toList());
+        // Add both lists to the model
+        return reservationsWithin24Hours;
+    }
+    public List<Reservation> getAllReservationForCustomerOutside24hs(UUID userId){
+        // Retrieve all reservations for the user
+        List<Reservation> allReservations = getAllReservationForCustomer(userId);
+        LocalDateTime twentyFourHoursAgo = LocalDateTime.now().minusHours(24);
+
+        // Filter reservations outside 24 hours
+        List<Reservation> reservationsOutside24Hours = allReservations.stream()
+                .filter(reservation -> !reservation.getCreatedAt().isAfter(twentyFourHoursAgo))
+                .collect(Collectors.toList());
+
+        // Add both lists to the model
+        return reservationsOutside24Hours;
+    }
+
+
 }
 

@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Hospital sections</title>
+    <title>Paramedics</title>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
@@ -11,12 +11,17 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
+    <link rel="stylesheet" th:href="@{css/test.css}">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
 </head>
 <body>
-<div th:replace="fragments/Aheader :: header"></div>
-
-<div class="container">
-    <button type="button" style="margin: 20px 0" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">Add Staff</button>
+<div class="container-fluid">
+    <div class="d-flex">
+        <div th:replace="fragments/Aheader :: header"></div>
+        <div class="credits ml-5 mt-5">
+            <div class="container-fluid">
+    <button type="button" style="margin: 20px 0" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">Add Paramedic</button>
     <div class="modal fade" id="exampleModalCenter" tabindex="-1"
          role="dialog" aria-labelledby="exampleModalCenterTitle"
          aria-hidden="true">
@@ -24,7 +29,7 @@
             <div class="modal-content">
                 <form th:action="@{/add-staff}" method="post">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLongTitle">Add New Staff</h5>
+                        <h5 class="modal-title" id="exampleModalLongTitle">Add New Paramedics</h5>
                         <button type="button" class="close" data-dismiss="modal"
                                 aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -33,6 +38,10 @@
                     <div class="modal-body text-center">
                         <input type="text" name="name" class="form-control"
                                id="name" th:value="${name}" required placeholder="name">
+                    </div>
+                    <div class="modal-body ">
+                        <input type="image" name="image" class="form-control"
+                               id="image" th:value="${image}" required placeholder="upload">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary"
@@ -44,7 +53,7 @@
         </div>
     </div><br>
 
-    <table class="table">
+    <table class="table table-light table-responsive">
         <thead class="thead-light">
         <tr>
             <th scope="col">SN</th>
@@ -56,6 +65,11 @@
         <tbody>
         <tr th:each="astaff, sectionIndex : ${staff}">
             <td th:text="${sectionIndex.index + 1}"></td>
+            <td th:text="${astaff.image}" th:if="${astaff.image==null}">
+            </td>
+            <td  th:unless="${astaff.image==null}">
+                <img width="64" height="64" src="https://img.icons8.com/external-victoruler-linear-colour-victoruler/64/external-paramedic-medical-staff-characters-victoruler-linear-colour-victoruler-1.png" alt="external-paramedic-medical-staff-characters-victoruler-linear-colour-victoruler-1"/>
+            </td>
             <td th:text="${astaff.name}"></td>
             <td>
                 <a class="btn btn-danger" th:href="@{/delete-staff/{id}(id=${astaff.id})}">
@@ -90,7 +104,6 @@
                             <label for="updatedname">New Staff Name:</label>
                             <input type="text" class="form-control" id="updatedname" name="updatedname" th:value="${astaff.name}" placeholder="Section Name" required>
                         </div>
-
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">Update</button>
@@ -98,6 +111,9 @@
                     </div>
                 </form>
             </div>
+        </div>
+    </div>
+</div>
         </div>
     </div>
 </div>

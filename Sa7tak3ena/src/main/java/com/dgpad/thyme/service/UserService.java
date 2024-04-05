@@ -11,6 +11,7 @@ import com.dgpad.thyme.repository.HospitalRepository;
 import com.dgpad.thyme.repository.PatientRepository;
 import com.dgpad.thyme.repository.UserRepository;
 import com.dgpad.thyme.security.UserInfoDetails;
+import com.dgpad.thyme.service.UserComplements.FeedbackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,9 +19,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -28,8 +28,28 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
+    private FeedbackService feedbackService;
+    @Autowired
     private PasswordEncoder passwordEncoder;
+    public Map<Role, Double> calculateRolePercentage(Role[] allRoles) {
+        int totalUsers = getAllUsers().size();
+        Map<Role, Double> rolePercentage = new HashMap<>();
 
+        int hospitalCount = getAllUsersByRole(Role.HOSPITAL).size();
+        int ambulanceCount = getAllUsersByRole(Role.AMBULANCE).size();
+        int patientCount = getAllUsersByRole(Role.PATIENT).size();
+        int adminCount = getAllUsersByRole(Role.ADMIN).size();
+
+        rolePercentage.put(Role.HOSPITAL, ((double) hospitalCount / totalUsers) * 100); // Fixed division issue
+        rolePercentage.put(Role.AMBULANCE, ((double) ambulanceCount / totalUsers) * 100); // Fixed division issue
+        rolePercentage.put(Role.PATIENT, ((double) patientCount / totalUsers) * 100); // Fixed division issue
+        rolePercentage.put(Role.ADMIN, ((double) adminCount / totalUsers) * 100); // Fixed division issue
+
+        return rolePercentage;
+    }
+    public Optional<User> findUserByPhone(String phone){
+        return userRepository.findUserByPhone(phone);
+    }
 
     public Optional<User> findUserByUserName(String username){
         return userRepository.findUserByUserName(username);
@@ -50,6 +70,7 @@ public class UserService {
         return save(currentuser);
     }
     public Boolean userNameExists(String username){ return userRepository.existsByUsername(username);}
+    public Boolean userPhoneExists(String phone){ return userRepository.existsByPhone(phone);}
 
     public Optional<User> findUserByEmail(String email){
         return userRepository.findUserByEmail(email);
@@ -72,27 +93,6 @@ public class UserService {
         User newUser = new User(user.getUsername(),user.getEmail(), passwordEncoder.encode(user.getPassword()), user.getPhone(),Role.ADMIN, user.isAdministrator());
         return save(newUser);
     }
-
-//    public User createUserRolled(User user){
-//        if (user == null) {
-//            throw new IllegalArgumentException("Input user is null");
-//        }
-//
-//        if (user.getRole() == Role.HOSPITAL) {
-//            Hospital hospital = new Hospital(user.getUsername(), user.getPublicName(), user.getEmail(), passwordEncoder.encode(user.getPassword()), user.getPhone());
-//            return hospitalRepository.save(hospital);
-//        } else if (user.getRole() == Role.ADMIN) {
-//            User admin = new User(user.getUsername(), user.getEmail(), passwordEncoder.encode(user.getPassword()), user.getPhone(), Role.ADMIN);
-//            return userRepository.save(admin);
-//        } else if (user.getRole() == Role.AMBULANCE) {
-//            Ambulance ambulanceAgency = new Ambulance(user.getUsername(), user.getPublicName(), user.getEmail(), passwordEncoder.encode(user.getPassword()), user.getPhone());
-//            return ambulanceRepository.save(ambulanceAgency);
-//        } else {
-//            throw new UnsupportedUserTypeException("Unsupported user type: " + user.getRole());
-//        }
-//    }
-
-
 
     public User BlockUser(UUID id){
         Optional<User> user = userRepository.findById(id);
@@ -130,5 +130,12 @@ public class UserService {
             super(message);
         }
     }
+    public List<User> getAllUsersByRole(Role role) {
+        return userRepository.findAll().stream()
+                .filter(user -> user.getRole() == role)
+                .collect(Collectors.toList());
+    }
+
+
 
 }
