@@ -31,6 +31,9 @@ public class AmbulanceService {
     public List<Ambulance> getAllAmbulances(){
         return ambulanceRepository.findAll();
     }
+    public List<Ambulance> getAllCompletedAmbulances(){
+        return ambulanceRepository.findAllCompleted();
+    }
 
     public Ambulance getAmbulanceById(UUID id){
         return ambulanceRepository.findById(id).orElse(null);

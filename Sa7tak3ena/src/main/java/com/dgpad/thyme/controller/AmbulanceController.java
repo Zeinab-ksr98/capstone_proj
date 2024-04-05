@@ -1,5 +1,6 @@
 package com.dgpad.thyme.controller;
 
+import com.dgpad.thyme.Email.EmailService;
 import com.dgpad.thyme.model.enums.*;
 import com.dgpad.thyme.model.requests.AmbulanceRequest;
 import com.dgpad.thyme.model.usercomplements.*;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +39,8 @@ public class AmbulanceController {
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
+    private EmailService emailService;
+    @Autowired
     private AmbulanceRequestService ambulanceRequestService;
     private final AmbulanceCarService ambulanceCarService;
 
@@ -47,23 +51,23 @@ public class AmbulanceController {
     public AmbulanceController(AmbulanceCarService ambulanceCarService) {
         this.ambulanceCarService = ambulanceCarService;
     }
-
     @GetMapping(value = "/manage-staff")
     @PreAuthorize("hasAnyAuthority('AMBULANCE')")
     public String hospitalSectionManagement(Model model) {
         Ambulance cu = ambulanceService.getAmbulanceById(userService.getCurrentUser().getId());
-
+        model.addAttribute("user",cu);
         model.addAttribute("staff",cu.getParamedicList() );
         return "ambulanceAgency/manage-staff";
     }
 
     @PostMapping("/add-staff")
     @PreAuthorize("hasAnyAuthority('AMBULANCE')")
-    public String addStaff(@RequestParam("name") String name) {
+    public String addStaff(@RequestParam("name") String name,@RequestParam("image") String image) {
         Ambulance cu = ambulanceService.getAmbulanceById(userService.getCurrentUser().getId());
         Paramedic staff = new Paramedic() ;
         staff.setName(name);
         staff.setAmbulance(cu);
+        staff.setImage(image);
         aStaffService.save(staff);
         return "redirect:/manage-staff";
     }
@@ -89,6 +93,7 @@ public class AmbulanceController {
     @PreAuthorize("hasAuthority('AMBULANCE')")
     public String manageCar(Model model) {
         Ambulance cu = ambulanceService.getAmbulanceById(userService.getCurrentUser().getId());
+        model.addAttribute("user",cu );
 
         model.addAttribute("cars", cu.getAmbulanceCars());
         return "ambulanceAgency/manage-car";
@@ -100,7 +105,7 @@ public class AmbulanceController {
         Ambulance cu = ambulanceService.getAmbulanceById(userService.getCurrentUser().getId());
         for (int i = 0; i < num ; i++) {
             AmbulanceCar car = new AmbulanceCar();
-            car.setStatus(AmbulanceStatus.Avilable);
+            car.setStatus(AmbulanceStatus.Available);
             car.setType(cartype);
             car.setAmbulance(cu);
             ambulanceCarService.save(car);
@@ -110,7 +115,6 @@ public class AmbulanceController {
     @GetMapping("/update-car")
     @PreAuthorize("hasAnyAuthority('AMBULANCE')")
     public String updateCar(@RequestParam("id") int id, @RequestParam("updatedStatus") AmbulanceStatus status) {
-
         ambulanceCarService.updateStatus(id,status);
         return "redirect:/manage-car";
     }
@@ -127,8 +131,9 @@ public class AmbulanceController {
         Ambulance cu = ambulanceService.getAmbulanceById(userService.getCurrentUser().getId());
         List<Integer> analytics = new ArrayList<>();
         analytics.add(cu.getAmbulanceRequests().size());
-        analytics.add(ambulanceCarService.findAllUserCarByStatus(AmbulanceStatus.Avilable, cu.id).size());
+        analytics.add(ambulanceCarService.findAllUserCarByStatus(AmbulanceStatus.Available, cu.id).size());
         analytics.add(cu.getParamedicList().size());
+        model.addAttribute("user",cu);
         model.addAttribute("requests", ambulanceRequestService.getAllRequestsForUser(cu.id));
         model.addAttribute("ambulances", ambulanceService.getAmbulanceByAgency(cu.getAgency()));
         model.addAttribute("analytics",analytics);
@@ -136,6 +141,7 @@ public class AmbulanceController {
 
         return "ambulanceAgency/home";
     }
+
     //all new request in home
     @GetMapping("/acceptRequest")
     @PreAuthorize("hasAnyAuthority('AMBULANCE')")
@@ -166,13 +172,41 @@ public class AmbulanceController {
         Ambulance cu = ambulanceService.getAmbulanceById(userService.getCurrentUser().getId());
         model.addAttribute("newrequest",new AmbulanceRequest());
         model.addAttribute("stafflist",cu.getParamedicList() );
+        model.addAttribute("requests", ambulanceRequestService.getAllAmbulanceRequestsForUserWithin24hs(userService.getCurrentUser().getId()));
+        List<Hospital> hospitals = hospitalService.findHospitalsWithAvailableEmergencyBeds("طوارئ");
+        model.addAttribute("hospitals", hospitals);
+        model.addAttribute("user",cu );
+
+        model.addAttribute("cars", ambulanceCarService.findAllUserCarByStatus(AmbulanceStatus.Available,cu.id));
+        return "ambulanceAgency/Requests";
+    }
+    @GetMapping("/manage-historyRequests")
+    @PreAuthorize("hasAuthority('AMBULANCE')")
+    public String manageHistoryRequests(Model model) {
+        Ambulance cu = ambulanceService.getAmbulanceById(userService.getCurrentUser().getId());
+        model.addAttribute("newrequest",new AmbulanceRequest());
+        model.addAttribute("stafflist",cu.getParamedicList() );
+        model.addAttribute("requests", ambulanceRequestService.getAllAmbulanceRequestsForUserOutside24hs(userService.getCurrentUser().getId()));
+        List<Hospital> hospitals = hospitalService.findHospitalsWithAvailableEmergencyBeds("طوارئ");
+        model.addAttribute("hospitals", hospitals);
+        model.addAttribute("user",cu );
+
+        model.addAttribute("cars", ambulanceCarService.findAllUserCarByStatus(AmbulanceStatus.Available,cu.id));
+        return "ambulanceAgency/Requests";
+    }
+    @GetMapping("/manage-nonAppedrequests")
+    @PreAuthorize("hasAuthority('AMBULANCE')")
+    public String manageNonAppedRequests(Model model) {
+        Ambulance cu = ambulanceService.getAmbulanceById(userService.getCurrentUser().getId());
+        model.addAttribute("newrequest",new AmbulanceRequest());
+        model.addAttribute("stafflist",cu.getParamedicList() );
         model.addAttribute("requests", ambulanceRequestService.getAllRequestsForUser(userService.getCurrentUser().getId()));
         List<Hospital> hospitals = hospitalService.findHospitalsWithAvailableEmergencyBeds("طوارئ");
         model.addAttribute("hospitals", hospitals);
-        model.addAttribute("current_user",cu );
+        model.addAttribute("user",cu );
 
-        model.addAttribute("cars", ambulanceCarService.findAllUserCarByStatus(AmbulanceStatus.Avilable,cu.id));
-        return "ambulanceAgency/Requests";
+        model.addAttribute("cars", ambulanceCarService.findAllUserCarByStatus(AmbulanceStatus.Available,cu.id));
+        return "ambulanceAgency/Non Apped Requests";
     }
     @PostMapping("/add-request")
     @PreAuthorize("hasAnyAuthority('AMBULANCE')")
@@ -198,7 +232,7 @@ public class AmbulanceController {
                 newrequest.setPickupaddress(null);
         }
         ambulanceRequestService.save(newrequest);
-        return "redirect:/manage-requests";
+        return "redirect:/manage-nonAppedrequests";
     }
     @GetMapping("/update-requestdetails")
     @PreAuthorize("hasAnyAuthority('AMBULANCE')")
@@ -212,7 +246,7 @@ public class AmbulanceController {
         ambulanceRequestService.update(id, survice, car.getType(), paramedic, description, equipment);
         ambulanceCarService.updateStatus(car.getId(), AmbulanceStatus.Reserved);
 
-        return "redirect:/manage-requests";
+        return "redirect:/manage-nonAppedrequests";
     }
     @GetMapping("/update-nonappedrequestdetails")
     @PreAuthorize("hasAnyAuthority('AMBULANCE')")
@@ -228,22 +262,39 @@ public class AmbulanceController {
     public String updateHRequestDetails(
             @RequestParam("id") long id,
             @RequestParam("car") AmbulanceCar car,
-            @RequestParam("nstaff") Paramedic paramedic,
+            @RequestParam("paramedic") Paramedic paramedic,
             @RequestParam("equipment") String equipment) {
         ambulanceRequestService.update(id, paramedic, equipment);
         ambulanceCarService.updateStatus(car.getId(), AmbulanceStatus.Reserved);
 
         return "redirect:/manage-requests";
     }
+    @GetMapping("/manage-branch")
+    @PreAuthorize("hasAuthority('AMBULANCE')")
+    public String manageBranch(Model model) {
+        Ambulance cu = ambulanceService.getAmbulanceById(userService.getCurrentUser().getId());
+        List<Integer> analytics = new ArrayList<>();
+        analytics.add(cu.getAmbulanceRequests().size());
+        analytics.add(ambulanceCarService.findAllUserCarByStatus(AmbulanceStatus.Available, cu.id).size());
+        analytics.add(cu.getParamedicList().size());
+        model.addAttribute("user", cu);
 
+        model.addAttribute("requests", ambulanceRequestService.getAllRequestsForUser(cu.id));
+        model.addAttribute("ambulances", ambulanceService.getAmbulanceByAgency(cu.getAgency()));
+        model.addAttribute("analytics",analytics);
+
+        return "ambulanceAgency/manageBranch";
+    }
     @PostMapping(value = "/create-ambulance")
     @PreAuthorize("hasAnyAuthority('AMBULANCE')")
-    public String CreateSubAmbulance(@RequestParam("username") String userName,@RequestParam("publicname") String publicName,  @RequestParam("email") String email, @RequestParam("phone") String phone) {
+    public String CreateSubAmbulance(@RequestParam("username") String userName,@RequestParam("publicname") String publicName,  @RequestParam("email") String email, @RequestParam("phone") String phone) throws IOException {
         Ambulance cu = ambulanceService.getAmbulanceById(userService.getCurrentUser().getId());
         Ambulance ambulance = new Ambulance(userName, publicName, email, passwordEncoder.encode("123"), phone,false);
         ambulance.setAgency(cu.getAgency());
         ambulanceService.save(ambulance);
-        return "redirect:/home";
+        emailService.senddetailsEmail(email,1);
+
+        return "redirect:/manage-branch";
     }
     @PostMapping("/emergency-reservation")
     @PreAuthorize("hasAnyAuthority('AMBULANCE')")
@@ -257,11 +308,13 @@ public class AmbulanceController {
     ) {
         //description is only changed by update details
         AmbulanceRequest r= ambulanceRequestService.update(id,Ambulanceservice.transfer,car.getType(),paramedic,ambulanceRequestService.getRequestById(id).getDescription(),equipment);
+        r.setHospital(hospital);
         r.setTo(hospital.getAddress());
         ambulanceRequestService.save(r);
         reservationService.reserveEmergency(hospital,car,description);
         ambulanceCarService.updateStatus(car.getId(), AmbulanceStatus.Reserved);
         return "redirect:/manage-requests";
     }
+
 
 }

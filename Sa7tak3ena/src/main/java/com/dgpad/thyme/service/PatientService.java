@@ -36,24 +36,8 @@ public class PatientService {
     public Patient save(Patient user){
         return patientRepository.save(user);
     }
-    public PatientDTO savePatient(String number, String password) throws Exception {
-        String code =generateRandomString(8);
 
-        VerificationCodes verificationCode = new VerificationCodes(number,code);
-        verificationCode = verificationCodeRepository.save(verificationCode);
-
-        boolean sent = verificationSender.sendVerificationCode(number, code);
-        if(!sent){
-            verificationCodeRepository.delete(verificationCode);
-            throw new Exception("Failed to send the verification code!");
-        }
-
-        Patient user = new Patient(number, password, false);
-        user = patientRepository.save(user);
-
-        return new PatientDTO(user.getId().toString(), user.getPhone(), user.getVerifiedPhone());
-    }
-    public PatientDTO verifyUser(String number, String code) throws Exception {
+    public boolean verifyUser(String number, String code) throws Exception {
         Patient user = patientRepository.findPatientByNumber(number).orElse(null);
         if(user == null)
             throw new Exception("failed to find user with the supported number");
@@ -65,7 +49,7 @@ public class PatientService {
             throw new Exception("Failed to verify the number the code is incorrect");
         user.setVerifiedPhone(true);
         user = patientRepository.save(user);
-        return new PatientDTO(user.getId().toString(), user.getPhone(), user.getVerifiedPhone());
+        return true;
     }
     public List<PatientDTO> getUsers(){
         List<Patient> users = patientRepository.findAll();
@@ -128,10 +112,24 @@ public class PatientService {
         return save(currentuser);
     }
 
-    public Patient createUser(Patient user){
+    public Patient createUser(Patient user) throws Exception {
         Patient newUser = new Patient(user.getUsername(),user.getFirstName(), user.getLastName(), user.getEmail(), passwordEncoder.encode(user.getPassword()), user.getPhone(), user.getGender());
+//        send verification random code
+        String code =generateRandomString(8);
+
+        VerificationCodes verificationCode = new VerificationCodes(user.getPhone(),code);
+        verificationCode = verificationCodeRepository.save(verificationCode);
+
+        //send whatsapp Sms
+        String sms="Your Verification code: "+ code;
+        boolean sent = verificationSender.sendVerificationCode(user.getPhone(),sms);
+        if(!sent){
+            verificationCodeRepository.delete(verificationCode);
+            throw new Exception("Failed to send the verification code!");
+        }
         return save(newUser);
     }
+
     public Patient getPatientById(UUID id){
         return patientRepository.findById(id).orElse(null);
     }

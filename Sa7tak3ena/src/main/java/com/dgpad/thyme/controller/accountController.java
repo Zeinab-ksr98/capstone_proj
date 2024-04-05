@@ -4,7 +4,6 @@ import com.dgpad.thyme.hospital_dataScraping.HospitalRecord;
 import com.dgpad.thyme.hospital_dataScraping.MOHService;
 import com.dgpad.thyme.model.enums.*;
 import com.dgpad.thyme.model.requests.AmbulanceRequest;
-import com.dgpad.thyme.model.requests.RequestBedCategory;
 import com.dgpad.thyme.model.usercomplements.AccountRequest;
 import com.dgpad.thyme.model.usercomplements.Address;
 import com.dgpad.thyme.model.usercomplements.Feedback;
@@ -15,14 +14,10 @@ import com.dgpad.thyme.model.users.User;
 import com.dgpad.thyme.service.*;
 import com.dgpad.thyme.service.UserComplements.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -44,16 +39,16 @@ public class accountController {
     private AmbulanceRequestService ambulancerequestService;
     @Autowired
     private HospitalService hospitalService;
+
     @Autowired
     private PatientService patientService;
     @Autowired
     private AmbulanceService ambulanceService;
     @Autowired
-    private BedsService bedsService;
+    private RequestService requestService;
     @Autowired
     private AddressService addressService;
-    @Autowired
-    private MOHService mohService;
+
     @Autowired
     private FeedbackService feedbackService;
     @Autowired
@@ -67,6 +62,7 @@ public class accountController {
         model.addAttribute("account", new AccountRequest());
         return "landingPages/Main";
     }
+
     @PostMapping("/Request-Account")
     public String requestAccount(@ModelAttribute("account") AccountRequest accountRequest) {
         accountRequestService.save(accountRequest);
@@ -74,7 +70,7 @@ public class accountController {
     }
     @GetMapping(value = "/feed")
     public String feed(Model model) {
-
+        model.addAttribute("user", userService.getCurrentUser());
         return "account/feedback";
     }
     @PostMapping("/saveFeedback")
@@ -97,57 +93,42 @@ public class accountController {
         return "account/login_signup";
     }
 
-
     @GetMapping(value = "/home")
     public String displayHome(Model model) {
-        model.addAttribute("userrole", userService.getCurrentUser().getRole().toString());
+        model.addAttribute("user", userService.getCurrentUser());
         model.addAttribute("alertMessage", null);
 
-        if (userService.getCurrentUser().getRole()== Role.ADMIN)
+        if (userService.getCurrentUser().getRole()== Role.ADMIN){
+
             return "redirect:/Requests";
+        }
+
         else if (userService.getCurrentUser().getRole()== Role.PATIENT){
             List<AmbulanceRequest> requests = ambulancerequestService.findAllAmbulanceRequestsForUserByStatus(userService.getCurrentUser().id, AmbulanceRequestStatus.PENDING);
             model.addAttribute("requests_size",requests.size());
-
+            model.addAttribute("requests",requestService.getAllRequestsForUser(userService.getCurrentUser().id) );
             return "patient/Home";
         }
         else if (userService.getCurrentUser().getRole()== Role.HOSPITAL) {
             Hospital cu =hospitalService.getHospitalById(userService.getCurrentUser().getId());
             List<Integer> analytics = new ArrayList<>();
-            analytics.add(cu.getRequests().size());
+            analytics.add(requestService.getAllNewRequestsForUser(cu.id).size());
             analytics.add(cu.getReservations().size());
-            analytics.add(cu.getAvailableBeds().size());
+            analytics.add(cu.getHospitalSections().size());
             analytics.add(hospitalService.getTotalBeds(cu.getAvailableBeds()));
 
             model.addAttribute("analytics",analytics);
             List<Hospital> hospitals = hospitalService.getAllHospitalsSortedByReservationSize();
             model.addAttribute("hospitals", hospitals);
-//            model.addAttribute("hospitals", hospitalService.getAllHospitals());
             return "hospital/Home";
         }
         else if (userService.getCurrentUser().getRole()== Role.AMBULANCE) {
             return "redirect:/new-requests";
         }
         return"landingPages/Main";
-//        return "redirect:/Main";
 
     }
-    @GetMapping("/scrap")
-    public String scrap(Model model) {
-        HashMap<String,HospitalRecord> hospitalRecords = mohService.getRecords();
-        for (Map.Entry<String, HospitalRecord> entry: hospitalRecords.entrySet()) {
-            String key = entry.getKey();
-            HospitalRecord value = entry.getValue();
 
-            try{
-                System.out.println(mohService.getHospitalData(key,value.detailsLink()));
-            }catch (Exception e){
-                e.printStackTrace();
-                System.out.println("\nError Fetching link : "+value.detailsLink()+" for hospital "+value.name()+"\n");
-            }
-        }
-            return "redirect:/home";
-    }
 //    profile
     @GetMapping("/profile")
     public String userProfile(Model model) {
@@ -175,8 +156,6 @@ public class accountController {
                 break;
             }
         }
-        // Add the "role" and "user" attributes to the model
-        model.addAttribute("role", user.getRole().toString());
 
         return "account/Profile";
     }
@@ -271,14 +250,14 @@ public class accountController {
     @GetMapping(value = "/ambulance-contactInfo")
     public String displayAmbulance(Model model) {
         User user = userService.getCurrentUser();
-        model.addAttribute("role", user.getRole().toString());
+        model.addAttribute("user", user);
         model.addAttribute("ambulances",ambulanceService.getAllAmbulances());
         return "account/Ambulance contact info";
     }
     @GetMapping(value = "/hospitals")
     public String hospitals(Model model) {
         User user = userService.getCurrentUser();
-        model.addAttribute("role", user.getRole().toString());
+        model.addAttribute("user", user);
         model.addAttribute("hospitalList",hospitalService.getAllHospitals() );
         model.addAttribute("hospitalSections",hSectionsService.getAllHSections() );
         return "patient/display hospitals";

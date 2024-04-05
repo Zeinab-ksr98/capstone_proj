@@ -38,8 +38,8 @@ public class Patient extends User {
 
     @Enumerated(EnumType.STRING)
     private Insurance insurance;
-    @OneToMany
-    private List<Reservation> reservations;
+    @OneToMany (mappedBy = "patient", cascade = CascadeType.ALL,orphanRemoval = true)
+    public List<Reservation> reservations;
 
     @OneToMany (mappedBy = "patient", cascade = CascadeType.ALL,orphanRemoval = true)
     public List<Request> requests;
@@ -47,7 +47,7 @@ public class Patient extends User {
     public Patient(String username,String firstName,String Lastname, String email, String password, String phone,Gender gender) {
         super(username, email, password, phone,Role.PATIENT,false);
         setVerified(false);
-        setVerifiedPhone(true);
+        setVerifiedPhone(false);
         this.FirstName=firstName;
         this.LastName=Lastname;
         this.identityCardImage=null;
@@ -58,10 +58,5 @@ public class Patient extends User {
         this.insurance=null;
         this.reservations=new ArrayList<>();
         this.requests=new ArrayList<>();
-    }
-    public Patient(String number, String password, boolean verified){
-        setPhone(number);
-        this.password = password;
-        this.verifiedPhone = verified;
     }
 }

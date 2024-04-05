@@ -3,10 +3,14 @@ package com.dgpad.thyme.controller;
 import com.dgpad.thyme.Stripe.StripeRequest;
 import com.dgpad.thyme.model.enums.AmbulanceRequestStatus;
 import com.dgpad.thyme.model.enums.Ambulanceservice;
+import com.dgpad.thyme.model.enums.Distracts;
+import com.dgpad.thyme.model.enums.Role;
 import com.dgpad.thyme.model.requests.AmbulanceRequest;
 import com.dgpad.thyme.model.usercomplements.Address;
 import com.dgpad.thyme.model.users.Ambulance;
+import com.dgpad.thyme.model.users.User;
 import com.dgpad.thyme.service.AmbulanceService;
+import com.dgpad.thyme.service.HospitalService;
 import com.dgpad.thyme.service.UserComplements.AddressService;
 import com.dgpad.thyme.service.UserComplements.AmbulanceRequestService;
 import com.dgpad.thyme.service.UserService;
@@ -16,6 +20,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
@@ -28,8 +33,7 @@ public class PatientController {
     private UserService userService;
     @Autowired
     private AmbulanceRequestService ambulanceRequestService;
-    @Autowired
-    private AmbulanceService ambulanceService;
+
     @Autowired
     private AddressService addressService;
     // request from patient dispach
@@ -39,23 +43,20 @@ public class PatientController {
         Address address =new Address();
         address.setLongitude(longitude);
         address.setLatitude(latitude);
-        addressService.save(address);
-//        dispatch according to availablity (enabled ones) ordered according to distance
-        List<Ambulance> filteredAmbulances= addressService.sortAmbulancesByDistance(address,ambulanceService.getAllAmbulances());
-        for (int i = 0; i < 2; i++) {
-            Ambulance A = filteredAmbulances.get(i);
-            AmbulanceRequest AR =new AmbulanceRequest();
-            AR.setAmbulance(A);
-            AR.setService(Ambulanceservice.homeService);
-            AR.setStatus(AmbulanceRequestStatus.PENDING);
-            AR.setSender(userService.getCurrentUser());
-            AR.setCreatedAt(LocalDateTime.now());
-            AR.setPickupaddress(address);
-            ambulanceRequestService.save(AR);
-        }
+        address=addressService.save(address);
+        ambulanceRequestService.dispatchToAvailableNearest(address);
         model.addAttribute("alertMessage", "Request sent successfully!");
         return "redirect:/home";
     }
+
+    @GetMapping("/donateAmbulance")
+    @PreAuthorize("hasAnyAuthority('PATIENT')")
+    public String donateAmbulance(Model model) {
+        model.addAttribute("user", userService.getCurrentUser());
+
+        return "patient/donate";
+    }
+
 
     @Value("${stripe.api.publicKey}")
     private String publicKey;
@@ -69,25 +70,29 @@ public class PatientController {
         return "Stripe/checkout";
     }
 
-
+    @GetMapping("/fullAmbulance_request")
+    @PreAuthorize("hasAnyAuthority('PATIENT','HOSPITAL')")
+    public String FullAmbulanceRequest(Model model) {
+        model.addAttribute("user", userService.getCurrentUser());
+        List<AmbulanceRequest> requests = ambulanceRequestService.findAllAmbulanceRequestsForUserByStatus(userService.getCurrentUser().id, AmbulanceRequestStatus.PENDING);
+        if(!requests.isEmpty())
+            return "account/error";
+        else
+            return "patient/fullARequest";
+    }
 
     // detailed request from patient  dispach based on given location
-//    @GetMapping("/ambulance_detailrequest")
-//    @PreAuthorize("hasAnyAuthority('PATIENT')")
-//    public String submitDetailedRequest(  Model model) {
-////        un comment these where i develop a way to dispatch under location and availability
-////        for (Ambulance A : ambulanceService.getAllAmbulances()) {
-//        AmbulanceRequest AR =new AmbulanceRequest();
-//
-////            AR.setAmbulance(A);
-//        AR.setService(Ambulanceservice.homeService);
-//        AR.setStatus(AmbulanceRequestStatus.PENDING);
-//        AR.setSender(userService.getCurrentUser());
-//        AR.setCreatedAt(LocalDateTime.now());
-//        //add the address(from)
-//        ambulanceRequestService.save(AR);
-////        }
-//        model.addAttribute("alertMessage", "Request sent successfully!");
-//        return "redirect:/home";
-//    }
+    @PostMapping("/ambulance_detailrequest")
+    @PreAuthorize("hasAnyAuthority('PATIENT')")
+    public String submitDetailedRequest(@RequestParam("location") String location, @RequestParam("lat") double latitude, @RequestParam("lon") double longitude, Model model) {
+        Address address =new Address();
+        address.setLongitude(longitude);
+        address.setLatitude(latitude);
+        address.setName(location);
+        address= addressService.save(address);
+        ambulanceRequestService.dispatchToAvailableNearest(address);
+
+        model.addAttribute("alertMessage", "Request sent successfully!");
+        return "redirect:/home";
+    }
 }

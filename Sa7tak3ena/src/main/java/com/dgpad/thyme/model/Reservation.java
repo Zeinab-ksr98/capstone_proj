@@ -50,4 +50,8 @@ public class Reservation {
     @OneToOne
     private AmbulanceCar ambulanceCar;
     private LocalDateTime CreatedAt;
+
+    public Reservation(int bednum) {
+        this.bednum = bednum;
+    }
 }

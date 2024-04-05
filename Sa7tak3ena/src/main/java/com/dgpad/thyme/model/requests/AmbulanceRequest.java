@@ -46,7 +46,7 @@ public class AmbulanceRequest {
     @ManyToOne
     @JoinColumn(name = "ambulance_id")
     private Ambulance ambulance;
-    @OneToOne
+    @ManyToOne
     private Hospital hospital;
 
     private boolean from_hospital;

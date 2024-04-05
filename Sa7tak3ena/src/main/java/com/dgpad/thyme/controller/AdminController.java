@@ -1,6 +1,8 @@
 package com.dgpad.thyme.controller;
 
 import com.dgpad.thyme.Email.EmailService;
+import com.dgpad.thyme.hospital_dataScraping.HospitalRecord;
+import com.dgpad.thyme.hospital_dataScraping.MOHService;
 import com.dgpad.thyme.model.enums.Role;
 import com.dgpad.thyme.model.usercomplements.Address;
 import com.dgpad.thyme.model.usercomplements.AmbulanceAgency;
@@ -22,6 +24,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -31,6 +35,10 @@ public class AdminController {
     private UserService userService;
     @Autowired
     private AmbulanceService ambulanceService;
+    @Autowired
+    private MOHService mohService;
+    @Autowired
+    private FeedbackService feedbackService;
     @Autowired
     private HospitalService hospitalService;
     @Autowired
@@ -86,19 +94,19 @@ public class AdminController {
     if (selectedRole == Role.HOSPITAL) {
         Hospital hospital = new Hospital(userName, publicName, email, passwordEncoder.encode("123"), phone,true);
         hospitalService.save(hospital);
-        emailService.senddetailsEmail(userService.getUserById(hospital.id),1);
+        emailService.senddetailsEmail(userService.getUserById(hospital.id).email,1);
 
     }
     else if (selectedRole == Role.ADMIN) {
         User admin = new User(userName, email, passwordEncoder.encode("123"), phone,Role.ADMIN,false);
         userService.save(admin);
-        emailService.senddetailsEmail(admin,1);
+        emailService.senddetailsEmail(admin.email,1);
     }
     else if (selectedRole == Role.AMBULANCE) {
         Ambulance ambulance = new Ambulance(userName, publicName, email, passwordEncoder.encode("123"), phone,true);
         ambulance.setAgency(agency);
         ambulanceService.save(ambulance);
-        emailService.senddetailsEmail(userService.getUserById(ambulance.getId()),1);
+        emailService.senddetailsEmail(userService.getUserById(ambulance.getId()).email,1);
     }
     return "redirect:/manage-users";
 
@@ -163,6 +171,15 @@ public class AdminController {
     @GetMapping("/Requests")
     @PreAuthorize("hasAuthority('ADMIN')")
     public String manageRequests(Model model) {
+        //role cart distribution
+        Role[] allRoles = Role.values();
+        Map<Role, Double> rolePercentage = userService.calculateRolePercentage(allRoles);
+        model.addAttribute("rolePercentage", rolePercentage);
+
+// Feedback
+        Map<String, Integer> feedbackCount = feedbackService.calculateFeedbackCounts();
+        model.addAttribute("feedbackCount", feedbackCount);
+
         model.addAttribute("requestedaccounts",accountRequestService.getAllRequest());
         model.addAttribute("requestedcategories",bedCategoryRequestService.getAllRequestBedCategories());
         return "Admin/requests";
@@ -181,5 +198,31 @@ public class AdminController {
     public String deleteAccountRequested(@PathVariable int ID) {
         accountRequestService.deleteRequest(ID);
         return "redirect:/Requests";
+    }
+
+    @GetMapping("/manage-feeds")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public String manageFeeds(Model model) {
+        model.addAttribute("userrole",userService.getCurrentUser().getRole().toString());
+        model.addAttribute("feeds",feedbackService.getAllFeeds());
+        return "Admin/manage-feeds";
+    }
+    @GetMapping("/Admin/scrap")
+    @PreAuthorize("hasAuthority('ADMIN')")
+
+    public String scrap(Model model) {
+        HashMap<String, HospitalRecord> hospitalRecords = mohService.getRecords();
+        for (Map.Entry<String, HospitalRecord> entry: hospitalRecords.entrySet()) {
+            String key = entry.getKey();
+            HospitalRecord value = entry.getValue();
+
+            try{
+                System.out.println(mohService.getHospitalData(key,value.detailsLink()));
+            }catch (Exception e){
+                e.printStackTrace();
+                System.out.println("\nError Fetching link : "+value.detailsLink()+" for hospital "+value.name()+"\n");
+            }
+        }
+        return "redirect:/home";
     }
 }

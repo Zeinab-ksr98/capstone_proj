@@ -1,19 +1,17 @@
 package com.dgpad.thyme.controller;
 
+import com.dgpad.thyme.model.enums.AmbulanceRequestStatus;
+import com.dgpad.thyme.model.enums.Ambulanceservice;
 import com.dgpad.thyme.model.enums.Role;
+import com.dgpad.thyme.model.requests.AmbulanceRequest;
 import com.dgpad.thyme.model.requests.RequestBedCategory;
-import com.dgpad.thyme.model.usercomplements.AmbulanceAgency;
-import com.dgpad.thyme.model.usercomplements.BedCategory;
-import com.dgpad.thyme.model.usercomplements.Beds;
-import com.dgpad.thyme.model.usercomplements.HSections;
+import com.dgpad.thyme.model.usercomplements.*;
 import com.dgpad.thyme.model.users.Ambulance;
 import com.dgpad.thyme.model.users.Hospital;
 import com.dgpad.thyme.model.users.User;
+import com.dgpad.thyme.service.AmbulanceService;
 import com.dgpad.thyme.service.HospitalService;
-import com.dgpad.thyme.service.UserComplements.BedCategoryRequestService;
-import com.dgpad.thyme.service.UserComplements.BedCategoryService;
-import com.dgpad.thyme.service.UserComplements.BedsService;
-import com.dgpad.thyme.service.UserComplements.HSectionsService;
+import com.dgpad.thyme.service.UserComplements.*;
 import com.dgpad.thyme.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,12 +43,18 @@ public class HospitalController {
     @Autowired
     private BedCategoryRequestService bedCategoryRequestService;
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private AddressService addressService;
+    @Autowired
+    private AmbulanceService ambulanceservice;
+    @Autowired
+    private AmbulanceRequestService ambulanceRequestService;
 
     @GetMapping(value = "/manage-sections")
     @PreAuthorize("hasAnyAuthority('HOSPITAL')")
     public String hospitalSectionManagement(Model model) {
         User currentuser=userService.getCurrentUser();
+        model.addAttribute("user",currentuser );
+
         model.addAttribute("hospitalSections",hospitalService.getHospitalById(currentuser.getId()).getHospitalSections() );
         return "hospital/manage-hsection";
     }
@@ -87,6 +92,7 @@ public class HospitalController {
     @PreAuthorize("hasAnyAuthority('HOSPITAL')")
     public String bedsManagement(Model model) {
         User currentuser=userService.getCurrentUser();
+        model.addAttribute("user",currentuser );
         model.addAttribute("hospitalbeds",hospitalService.getHospitalById(currentuser.getId()).getAvailableBeds() );
         model.addAttribute("bedCategories",bedCategoryService.getAllBedCategories() );
         return "hospital/manage-beds";
@@ -131,11 +137,44 @@ public class HospitalController {
         bedCategoryRequestService.save(requested);
         return "redirect:/manage-beds";
     }
-    @PostMapping(value = "/create-hospital")
-    @PreAuthorize("hasAnyAuthority('HOSPITAL')")
-    public String CreateBranch(@RequestParam("username") String userName, @RequestParam("publicname") String publicName, @RequestParam("email") String email, @RequestParam("phone") String phone) {
-        Hospital hospital = new Hospital(userName, publicName, email, passwordEncoder.encode("123"), phone,false);
-        hospitalService.save(hospital);
-        return "redirect:/home";
-    }
+//    @PostMapping("/ambulance_detailrequest")
+//    @PreAuthorize("hasAnyAuthority('PATIENT')")
+//    public String submitDetailedRequest(@RequestParam("description") String regin,@RequestParam("name") String name,@RequestParam("phone") String phone,@RequestParam("description") String description,@RequestParam("location") String location,  Model model) {
+//        User cu =userService.getCurrentUser();
+//        Address address =new Address();
+//        address.setName(location);
+//        address.setREGION(regin);
+//        address= addressService.save(address);
+////        dispatch according to availablity (enabled ones) and same region
+//        List<Ambulance> filteredAmbulances= addressService.sortAmbulancesByDistance(address,ambulanceservice.getAllCompletedAmbulances());
+//        for (int i = 0; i < 2; i++) {
+//            Ambulance A = filteredAmbulances.get(i);
+//            AmbulanceRequest AR =new AmbulanceRequest();
+//            AR.setAmbulance(A);
+//            if (cu.getRole() == Role.PATIENT){
+//                AR.setService(Ambulanceservice.homeService);
+//
+//            }
+//            else {
+//                AR.setService(Ambulanceservice.transfer);
+//                AR.setTo(hospitalService.getHospitalById(cu.id).getAddress());
+//            }
+//            AR.setStatus(AmbulanceRequestStatus.PENDING);
+//            AR.setPickupaddress(address);
+//            AR.setDescription(description);
+//            AR.setSender(userService.getCurrentUser());
+//            AR.setCreatedAt(LocalDateTime.now());
+//            ambulanceRequestService.save(AR);
+//        }
+//        model.addAttribute("alertMessage", "Request sent successfully!");
+//        return "redirect:/home";
+//    }
+    //it works but no need for it cause the main and the branch are not connected --> no main that monitor
+//    @PostMapping(value = "/create-hospital")
+//    @PreAuthorize("hasAnyAuthority('HOSPITAL')")
+//    public String CreateBranch(@RequestParam("username") String userName, @RequestParam("publicname") String publicName, @RequestParam("email") String email, @RequestParam("phone") String phone) {
+//        Hospital hospital = new Hospital(userName, publicName, email, passwordEncoder.encode("123"), phone,false);
+//        hospitalService.save(hospital);
+//        return "redirect:/home";
+//    }
 }

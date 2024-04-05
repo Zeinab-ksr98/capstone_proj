@@ -42,7 +42,7 @@ public class Hospital extends User {
     @OneToMany
     private List<AmbulanceRequest> ambulanceRequest;
 
-    @OneToMany
+    @OneToMany(mappedBy = "hospital", cascade = CascadeType.ALL,orphanRemoval = true)
     public List<Reservation> reservations;
 
     @OneToMany

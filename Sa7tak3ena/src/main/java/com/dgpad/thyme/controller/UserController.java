@@ -1,5 +1,6 @@
 package com.dgpad.thyme.controller;
 import com.dgpad.thyme.Email.EmailService;
+import com.dgpad.thyme.Whatsapp.requests.VerifyUserRequest;
 import com.dgpad.thyme.model.enums.Gender;
 import com.dgpad.thyme.model.enums.Role;
 import com.dgpad.thyme.model.users.Hospital;
@@ -8,6 +9,7 @@ import com.dgpad.thyme.model.users.User;
 import com.dgpad.thyme.service.HospitalService;
 import com.dgpad.thyme.service.PatientService;
 import com.dgpad.thyme.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -42,7 +44,7 @@ public class UserController {
 
     }
     @GetMapping(value = "/create-initial-patient")
-    public String createInitialPatient(){
+    public String createInitialPatient() throws Exception {
         System.out.println("hi");
         Patient user = new Patient("zksr","z","ksr","pzksr@gmail.com","123","03010101",Gender.Female);
         Patient patient = patientService.createUser(user);
@@ -60,24 +62,45 @@ public class UserController {
     }
     @PostMapping(value = "/create")
     public String createUser(@ModelAttribute("newuser") Patient user, BindingResult bindingResult, Model model){
+        Patient p = (Patient) userService.findUserByPhone(user.getPhone()).get();
+//        if the he phone already exist and varified--> is being used by a user-->error
+        if(p.getVerifiedPhone()){
+            model.addAttribute("user",user);
+            bindingResult.rejectValue("Phone", "error.user", "Phone already exists");
+            return "account/ReplaceMyaccount";
+        }
+
+
         if(userService.userNameExists(user.getUsername())){
             model.addAttribute("user",user);
             bindingResult.rejectValue("username", "error.user", "Username already exists");
             return "account/SignIn";
         }
+
         if(userService.userEmailExists(user.getEmail())){
             model.addAttribute("user",user);
             bindingResult.rejectValue("email", "error.user", "Email already exists");
             return "account/SignIn";
         }
         try {
-            user.setRole(Role.PATIENT);
-            patientService.createUser(user);
-            return "redirect:/home";
+            //        if the phone already exist and not varified--> created but not varified -->restore it by modifing User details
+
+            if(!p.getVerifiedPhone()){
+//                modify details of the existing one then send a welcoming sms
+                model.addAttribute("user",p);
+                return "account/RestoreMyaccount";
+            }
+            else {
+                user.setRole(Role.PATIENT);
+                patientService.createUser(user);
+                model.addAttribute("num",user.getPhone());
+                return "account/CodeVerification";
+            }
         } catch (Exception e) {
             return "account/SignIn";
         }
     }
+
     @GetMapping(value = "/",  produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<?> getUsers(){
@@ -107,7 +130,7 @@ public class UserController {
     @PreAuthorize("hasAnyAuthority('ADMIN','HOSPITAL','AMBULANCE')")
     public String deActivateUser(@PathVariable("id") String id) throws IOException {
         userService.save(userService.deActivateUser(UUID.fromString(id)));
-        emailService.senddetailsEmail(userService.getUserById(UUID.fromString(id)),2);
+        emailService.senddetailsEmail(userService.getUserById(UUID.fromString(id)).email,2);
         if (userService.getCurrentUser().getRole()==Role.ADMIN)
             return "redirect:/manage-users";
         else
@@ -119,7 +142,7 @@ public class UserController {
     @PreAuthorize("hasAnyAuthority('ADMIN','HOSPITAL','AMBULANCE')")
     public String activateUser(@PathVariable("id") String id) throws IOException {
         userService.save(userService.activate(UUID.fromString(id)));
-        emailService.senddetailsEmail(userService.getUserById(UUID.fromString(id)),3);
+        emailService.senddetailsEmail(userService.getUserById(UUID.fromString(id)).email,3);
         if (userService.getCurrentUser().getRole()== Role.ADMIN)
             return "redirect:/manage-users";
         else

@@ -3,41 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <title>Requests</title>
+
+    <link rel="stylesheet" th:href="@{css/test.css}">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Include Bootstrap JavaScript and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </head>
-<body>
-<th:block th:if="${userrole == 'PATIENT'}">
+<body style="background: #dbe2f4">
+
+<div class="container-fluid">
+    <div class="d-flex">
+
+<th:block th:if="${user.role.toString() == 'PATIENT'}">
     <div th:replace="fragments/Pheader :: header"></div>
 </th:block>
-<th:block th:unless="${userrole == 'PATIENT'}">
-    <div th:replace="fragments/hheader :: header"></div>
+<th:block th:unless="${user.role.toString() == 'PATIENT'}">
+    <div th:replace="fragments/Hheader :: header"></div>
 </th:block>
+        <div class="credits ml-5 mt-5">
+            <div th:fragment="requests">
 
-<div class="container mt-3" >
-    <h5>Requests</h5>
-    <table class="table mb-0">
+            <div class="container-fluid">
+                <h5>Requests</h5>
+    <table class="table table-light mb-0">
         <thead class="small text-uppercase bg-body text-muted">
         <tr>
-            <th th:if="${userrole.toString() == 'HOSPITAL'}">ID</th>
-            <th th:if="${userrole.toString() == 'PATIENT'}">Hospital Name</th>
+            <th th:if="${user.role.toString() == 'HOSPITAL'}">ID</th>
+            <th th:if="${user.role.toString() == 'PATIENT'}">Hospital Name</th>
             <th>Reservation Type</th>
-            <th th:if="${userrole.toString() == 'HOSPITAL'}">Patient Name</th>
+            <th th:if="${user.role.toString() == 'HOSPITAL'}">Patient Name</th>
             <th >Medical Record</th>
-            <th th:if="${userrole.toString() == 'HOSPITAL'}">Need Ambulance</th>
-            <th th:if="${userrole.toString() == 'HOSPITAL'}">Ambulance Agencies</th>
+            <th th:if="${user.role.toString() == 'HOSPITAL'}">Need Ambulance</th>
+            <th th:if="${user.role.toString() == 'HOSPITAL'}">Ambulance Agencies</th>
             <th>Status</th>
             <th>Action</th>
         </tr>
         </thead>
         <tbody>
         <tr class="align-middle" th:each="request : ${requests}"  th:if="${request.status != request.status.RESERVED }" th:unless="${request.status == request.status.Deleted}">
-            <td th:text="${request.id}" th:if="${userrole == 'HOSPITAL'}"></td>
-            <td th:text="${request.hospital.publicName}" th:if="${userrole == 'PATIENT'}"></td>
+            <td th:text="${request.id}" th:if="${user.role.toString() == 'HOSPITAL'}"></td>
+            <td th:text="${request.hospital.publicName}" th:if="${user.role.toString() == 'PATIENT'}"></td>
             <td th:text="${request.reservationType}"></td>
-            <td th:text="${request.patient.username}" th:if="${userrole == 'HOSPITAL'}"></td>
+            <td th:text="${request.patient.username}" th:if="${user.role.toString() == 'HOSPITAL'}"></td>
             <td th:text="${request.medicalRecord}" ></td>
-            <td th:text="${request.needAmbulance}" th:if="${userrole== 'HOSPITAL'}"></td>
-            <td th:if="${userrole == 'HOSPITAL'}">
+            <td th:text="${request.needAmbulance}" th:if="${user.role.toString()== 'HOSPITAL'}"></td>
+            <td th:if="${user.role.toString() == 'HOSPITAL'}">
                 <ul>
                     <li th:each="ambulance : ${request.preferedAmbulance}" th:text="${ambulance.name}"></li>
                 </ul>
@@ -45,14 +59,14 @@
             <td th:text="${request.status}"></td>
             <td>
                 <!-- Show buttons based on userrole and status -->
-                <div th:if="${userrole.toString() == 'PATIENT' and request.status== request.status.ACCEPTED}">
+                <div th:if="${user.role.toString() == 'PATIENT' and request.status== request.status.ACCEPTED}">
                     <a class="btn btn-primary" th:href="@{/reserve-request/{id}(id=${request.id})}">Confirm</a>
                 </div>
-                <div th:if="${userrole.toString() == 'PATIENT' and request.status== request.status.PENDING}">
+                <div th:if="${user.role.toString() == 'PATIENT' and request.status== request.status.PENDING}">
                     <a class="btn btn-primary" th:href="@{/change-requestStatus/{status}/{id}(status=${request.status.Deleted},id=${request.id})}">Delete</a>
                 </div>
 
-                <div th:if="${userrole.toString() == 'HOSPITAL' and request.status == request.status.PENDING}">
+                <div th:if="${user.role.toString() == 'HOSPITAL' and request.status == request.status.PENDING}">
                     <th:block th:if="${request.needAmbulance}">
                         <button class="btn btn-primary" data-toggle="modal" th:attr="data-target='#updateModal'+${request.id}">
                             Accept
@@ -102,10 +116,9 @@
         </div>
     </div>
 </div>
-
-<!-- Include Bootstrap JavaScript and jQuery -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        </div>
+    </div>
+</div>
+</div>
 </body>
 </html>

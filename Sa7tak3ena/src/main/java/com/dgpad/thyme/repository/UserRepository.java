@@ -11,8 +11,12 @@ import java.util.UUID;
 public interface UserRepository extends JpaRepository<User, UUID> {
     @Query(value = "select * from user where username = ?1", nativeQuery = true)
     Optional<User> findUserByUserName(String username);
+    @Query(value = "select * from user where phone = ?1", nativeQuery = true)
+    Optional<User> findUserByPhone(String phone);
 
     boolean existsByUsername(String username);
+    boolean existsByPhone(String Phone);
+
     @Query(value = "select * from user where email = ?1", nativeQuery = true)
     Optional<User> findUserByEmail(String email);
     @Query(value = "SELECT * FROM user WHERE deleted = 0 ORDER BY enabled DESC", nativeQuery = true)

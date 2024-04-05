@@ -19,10 +19,10 @@ import java.io.IOException;
 public class EmailService {
     @Value("${app.sendgrid.key}")
     private String sendGrid;
-    public String  senddetailsEmail( User user, int i) throws IOException {
+    public String  senddetailsEmail( String email, int i) throws IOException {
         Email from = new Email("sa7tak3ena.lb@gmail.com");
         String subject = "Welcome to Sa7tak3ena";
-        Email to = new Email(user.email);
+        Email to = new Email(email);
         Content content;
         switch (i) {
             case 1:

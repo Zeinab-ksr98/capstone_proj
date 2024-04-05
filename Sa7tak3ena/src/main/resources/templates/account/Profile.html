@@ -4,846 +4,422 @@
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>User Profile</title>
+
+    <link rel="stylesheet" th:href="@{css/test.css}">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-<style>
-    body {
-        background: lavender;    }
-</style>
+
 </head>
-<body>
-<!--nav bar-->
-<div th:if="${role == 'PATIENT'}">
-    <div th:replace="fragments/Pheader :: header"></div>
-</div>
-<div th:if="${role == 'AMBULANCE'}">
-    <div th:replace="fragments/Aheader :: header"></div>
-</div>
-<div th:if="${role == 'HOSPITAL'}">
-    <div th:replace="fragments/hheader :: header"></div>
-</div>
-<div th:if="${role == 'ADMIN'}">
-    <div th:replace="fragments/Adimnheader :: header"></div>
-</div>
-
-<div class="container px-4 mt-4" style="border-radius: 5px" >
-    <!-- Account page navigation-->
-    <ul class="nav nav-tabs " id="myTab" role="tablist" >
-        <li class="nav-item" role="presentation">
-            <a aria-controls="profile" aria-selected="true" class="nav-link active" data-toggle="tab" href="#profile" id="profile-tab"
-               of="tab" role>Details</a>
-        </li>
-        <li class="nav-item" role="presentation">
-            <!-- Display "Verify account" for patients who are not verified -->
-            <a aria-controls="Edit" aria-selected="false" class="nav-link" data-toggle="tab" href="#Edit" id="editprofile-tab"
-               role="tab" th:if="${user.role.toString() == 'PATIENT' and !user.verified}">
-                <p>Verify account</p>
-            </a>
-            <a aria-controls="Edit" aria-selected="false" class="nav-link" data-toggle="tab" href="#Edit" id="editprofile-tab"
-               role="tab" th:if="${user.role.toString() != 'PATIENT'}">
-                Edit
-            </a>
-        </li>
-
-        <li class="nav-item" role="presentation">
-            <a aria-controls="security" aria-selected="false" class="nav-link" data-toggle="tab" href="#security" id="security-tab"
-               role="tab">Security</a>
-        </li>
-
-    </ul>
-
-
-    <!--    view each profile-->
-    <div class="tab-content mt-3" id="myTabContent"  >
-        <div aria-labelledby="profile-tab" class="tab-pane fade show active" id="profile" role="tabpanel">
-            <!-- Common Details -->
-            <p><strong>Username:</strong> <span th:text="${user.username}"></span></p>
-            <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
-            <p><strong>Phone:</strong> <span th:text="${user.phone}"></span></p>
-            <br>
-            <div th:if="${user.role.toString() == 'AMBULANCE'}">
-                <p>
-                    <strong>Public Name:</strong>
-                    <span th:if="${user.publicName != null}" th:text="${user.publicName}"></span>
-                    <span th:if="${user.publicName == null}">Not filled yet</span>
-                </p>
-                <p>
-                    <strong>Agency:</strong>
-                    <span th:if="${user.Agency != null}" th:text="${user.Agency.name}"></span>
-                    <span th:if="${user.Agency == null}">Not filled yet</span>
-                </p>
-                <p >
-                    <strong>Address:</strong>
-                    <a th:if="${user.address !=null}" th:href="'https://www.google.com/maps?q=' + ${user.address.latitude} + ',' + ${user.address.longitude}" target="_blank">
-                        View on Map
-                    </a>
-                    <span th:if="${user.address == null}">Not filled yet</span>
-                </p>
-                <button class="btn btn-primary" onclick="getLocation()">
-                    Edit My Location by GPS
-                    <img width="24" height="24" src="https://img.icons8.com/pastel-glyph/64/FFFFFF/location--v2.png" alt="location--v2"/>
-                </button>
-            </div>
-            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-            <script th:inline="javascript">
-                function getLocation() {
-                    if (navigator.geolocation) {
-                        navigator.geolocation.getCurrentPosition(showPosition);
-                    } else {
-                        alert("Geolocation is not supported by this browser.");
-                    }
-                }
-
-                function showPosition(position) {
-                    const latitude = position.coords.latitude;
-                    const longitude = position.coords.longitude;
-
-                    // Construct the URL with latitude and longitude as query parameters
-                    const url = '/gps_location?latitude=' + latitude + '&longitude=' + longitude;
-
-                    // Send a POST request to the constructed URL
-                    fetch(url, {
-                        method: 'POST'
-                    })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Failed to send location data.');
-                            }
-                            console.log('Location data sent successfully.');
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                        });
-                }
-            </script>
-
-
-            <div th:if="${user.role.toString() == 'HOSPITAL'}">
-                <!-- Hospital Details -->
-                <p>
-                    <strong>Public Name:</strong>
-                    <span th:if="${user.publicName != null}" th:text="${user.publicName}"></span>
-                    <span th:if="${user.publicName == null}">Not filled yet</span>
-                </p>
-                <p>
-                    <strong>Manager Name:</strong>
-                    <span th:if="${user.managerName != null}" th:text="${user.managerName}"></span>
-                    <span th:if="${user.managerName == null}">Not filled yet</span>
-                </p>
-                <p>
-                    <strong>Manager Phone:</strong>
-                    <span th:if="${user.managerPhone != null}" th:text="${user.managerPhone}"></span>
-                    <span th:if="${user.managerPhone == null}">Not filled yet</span>
-                </p>
-                <p>
-                    <strong>Supervising Physician Name:</strong>
-                    <span th:if="${user.supervisingPhysicianName != null}"
-                          th:text="${user.supervisingPhysicianName}"></span>
-                    <span th:if="${user.supervisingPhysicianName == null}">Not filled yet</span>
-                </p>
-                <p>
-                    <strong>Supervising Physician Phone:</strong>
-                    <span th:if="${user.supervisingPhysicianPhone != null}"
-                          th:text="${user.supervisingPhysicianPhone}"></span>
-                    <span th:if="${user.supervisingPhysicianPhone == null}">Not filled yet</span>
-                </p>
-                <br>
-                <p>
-                    <strong>Address:</strong>
-
-                    <a th:if="${user.address !=null}" th:href="'https://www.google.com/maps?q=' + ${user.address.latitude} + ',' + ${user.address.longitude}" target="_blank">
-                        View on Map
-                    </a>
-                    <span th:if="${user.address == null}">Not filled yet</span>
-                </p>
-                <button class="btn btn-primary" onclick="getLocation()">
-                    Edit My Location by GPS
-                    <img width="24" height="24" src="https://img.icons8.com/pastel-glyph/64/FFFFFF/location--v2.png" alt="location--v2"/>
-                </button>
-
-            </div>
-            <div th:if="${user.role.toString() == 'PATIENT'}">
-                <!-- Patient Details -->
-                <p>
-                    <strong>First Name:</strong>
-                    <span th:if="${user.firstName != null}" th:text="${user.firstName}"></span>
-                    <span th:if="${user.firstName == null}">Not filled yet</span>
-                </p>
-                <p>
-                    <strong>Last Name:</strong>
-                    <span th:if="${user.lastName != null}" th:text="${user.lastName}"></span>
-                    <span th:if="${user.lastName == null}">Not filled yet</span>
-                </p>
-                <p>
-                    <strong>Identity Card Image:</strong>
-                    <span th:if="${user.identityCardImage != null}" th:text="${user.identityCardImage}"></span>
-                    <span th:if="${user.identityCardImage == null}">Not filled yet</span>
-                </p>
-                <p>
-                    <strong>Age:</strong>
-                    <span th:if="${user.age != null}" th:text="${user.age}"></span>
-                    <span th:if="${user.age == null}">Not filled yet</span>
-                </p>
-                <p>
-                    <strong>Gender:</strong>
-                    <span th:if="${user.gender != null}" th:text="${user.gender}"></span>
-                    <span th:if="${user.gender == null}">Not filled yet</span>
-                </p>
-                <p>
-                    <strong>Nationality:</strong>
-                    <span th:if="${user.nationality != null}" th:text="${user.nationality}"></span>
-                    <span th:if="${user.nationality == null}">Not filled yet</span>
-                </p>
-                <p>
-                    <strong>Insurance:</strong>
-                    <span th:if="${user.insurance != null}" th:text="${user.insurance}"></span>
-                    <span th:if="${user.insurance == null}">Not filled yet</span>
-                </p>
-
-            </div>
-
+<body style="background: #dbe2f4">
+<!--<div class="container-fluid " >-->
+    <div class="d-flex" >
+        <!--sides bar-->
+        <div th:if="${user.role.toString() == 'PATIENT'}">
+            <div th:replace="fragments/Pheader :: header"></div>
         </div>
-        <!--        edit section-->
-        <div aria-labelledby="editprofile-tab" class="tab-pane fade" id="Edit" role="tabpanel">
-            <!-- Profile section content -->
+        <div th:if="${user.role.toString() == 'AMBULANCE'}">
+            <div th:replace="fragments/Aheader :: header"></div>
+        </div>
+        <div th:if="${user.role.toString() == 'HOSPITAL'}">
+            <div th:replace="fragments/hheader :: header"></div>
+        </div>
+        <div th:if="${user.role.toString() == 'ADMIN'}">
+            <div th:replace="fragments/Adimnheader :: header"></div>
+        </div>
+        <div class="row align-items-center">
+            <div class="col-12  m-5 card">
             <div class="row">
-                <th:block th:switch="${role}">
-                    <th:block th:case="'ADMIN'">
-                        <form method="post" th:action="@{/profile-edit-admin}" th:object="${user}">
-                            <!-- Common Fields -->
-                            <label for="username">Username:</label>
-                            <input name="username" required th:field="${user.username}" type="text">
-                            <br>
+                <div class="col-12 ">
 
-                            <label for="email">Email:</label>
-                            <input name="email" required th:field="${user.email}" type="email">
-                            <br>
-                            <label for="phone">Phone:</label>
-                            <input name="phone" required th:field="${user.phone}" type="text">
-                            <br>
-                            <br>
-                            <button type="submit">Save Changes</button>
-                        </form>
-                    </th:block>
-                    <th:block th:case="'PATIENT'">
-                        <!-- Display user data based on the role -->
-                        <form method="post" th:action="@{/profile-edit-patient}" th:object="${user}">
-                            <!-- Common Fields -->
-                            <label for="username">Username:</label>
-                            <input name="username" required th:field="${user.username}" type="text">
-                            <br>
-                            <label for="email">Email:</label>
-                            <input name="email" required id="email" th:field="${user.email}" type="email">
-                            <br>
+                <ul class="nav nav-tabs " id="myTab" role="tablist" >
+                        <li class="nav-item " role="presentation" style="border-radius: 5px" >
+                            <a aria-controls="profile" aria-selected="true" class="nav-link active" data-toggle="tab" href="#profile" id="profile-tab"
+                               of="tab" role>Details</a>
+                        </li>
+                        <li class="nav-item" role="presentation" style="border-radius: 5px">
+                            <!-- Display "Verify account" for patients who are not verified -->
+                            <a aria-controls="Edit" aria-selected="false" class="nav-link" data-toggle="tab" href="#Edit" id="editprofile-tab"
+                               role="tab" th:if="${user.role.toString() == 'PATIENT' and !user.verified}">
+                                <p>Verify account</p>
+                            </a>
+                            <a aria-controls="Edit" aria-selected="false" class="nav-link" data-toggle="tab" href="#Edit" id="editprofile-tab"
+                               role="tab" th:if="${user.role.toString() != 'PATIENT'}">
+                                Edit
+                            </a>
+                        </li>
 
-                            <!-- Patient-specific Fields -->
-                            <label for="firstName">First Name:</label>
-                            <input id="firstName" name="firstName" required th:field="${user.firstName}" type="text">
-                            <br>
+                        <li class="nav-item" role="presentation" style="border-radius: 5px">
+                            <a aria-controls="security" aria-selected="false" class="nav-link" data-toggle="tab" href="#security" id="security-tab"
+                               role="tab">Security</a>
+                        </li>
 
-                            <label for="lastName">Last Name:</label>
-                            <input id="lastName" name="lastName" required th:field="${user.lastName}" type="text">
-                            <br>
-
-                            <label for="identityCardImage">Identity Card Image:</label>
-                            <input id="identityCardImage" name="identityCardImage" required
-                                   th:field="${user.identityCardImage}" type="text">
-                            <br>
-                            <label for="selfie">Selfie:</label>
-                            <input id="selfie" name="selfie" required th:field="${user.selfie}" type="text">
-                            <br>
-
-
-
-                            <label for="age">Age:</label>
-                            <input id="age" name="age" required th:field="${user.age}" type="text">
-                            <br>
-
-
-                            <div class="form-group">
-                                <label for="gender">Gender</label>
-                                <select name="gender" class="form-control" id="gender" required>
-                                    <option th:each="gender : ${T(com.dgpad.thyme.model.enums.Gender).values()}"
-                                            th:value="${gender}" th:field="${user.gender}"  th:text="${gender.name()}">
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="nationality">Nationality:</label>
-                                <select name="nationality" class="form-control" id="nationality" required>
-                                    <option th:each="nationality : ${T(com.dgpad.thyme.model.enums.Nationality).values()}"
-                                            th:value="${nationality}" th:field="${user.nationality}"  th:text="${nationality.name()}">
-                                    </option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="insurance">Insurance:</label>
-                                <select name="insurance" class="form-control" id="insurance" required>
-                                    <option th:each="insurance : ${T(com.dgpad.thyme.model.enums.Insurance).values()}"
-                                            th:value="${insurance}" th:field="${user.insurance}"  th:text="${insurance.name()}">
-                                    </option>
-                                </select>
-                            </div>
-
-
-                            <br>
-                            <button type="submit">Save Changes</button>
-                        </form>
-
-                    </th:block>
-                    <th:block th:case="'HOSPITAL'">
-                        <form method="post" th:action="@{/profile-edit-hospital}" th:object="${user}" >
-                            <label for="username">Username:</label>
-                            <input id="username" name="username" required th:field="${user.username}" type="text">
-                            <br>
-                            <label for="publicName">Public Name:</label>
-                            <input name="publicName" required th:field="${user.publicName}" type="text">
-                            <br>
-                            <label for="phone">Phone:</label>
-                            <input name="phone" required th:field="${user.phone}" type="text">
-                            <br>
-                            <label for="managerName">Manager Name:</label>
-                            <input id="managerName" required name="managerName"  th:field="${user.managerName}" type="text">
-                            <br>
-
-                            <label for="managerPhone">Manager Phone:</label>
-                            <input id="managerPhone" name="managerPhone" required th:field="${user.managerPhone}" type="text">
-                            <br>
-
-                            <label for="supervisingPhysicianName">Supervising Physician Name:</label>
-                            <input id="supervisingPhysicianName" name="supervisingPhysicianName" required th:field="${user.supervisingPhysicianName}" type="text">
-                            <br>
-
-                            <label for="supervisingPhysicianPhone">Supervising Physician Phone:</label>
-                            <input id="supervisingPhysicianPhone" name="supervisingPhysicianPhone" required
-                                   th:field="${user.supervisingPhysicianPhone}" type="text">
-                            <br>
-                            <button type="submit">Save Changes</button>
-                        </form>
-                    </th:block>
-                    <th:block th:case="'AMBULANCE'">
-                        <form method="post" th:action="@{/profile-edit-ambulance}" th:object="${user}">
-                            <!-- Common Fields -->
-                            <label>Username:</label>
-                            <input  name="username" required th:field="${user.username}" type="text">
-                            <br>
-                            <label for="phone">Phone:</label>
-                            <input id="phone" name="phone" required th:field="${user.phone}" type="text">
-                            <br>
-
-                            <!-- Ambulance-specific Fields -->
-                            <label for="publicName">Public Name:</label>
-                            <input id="publicName" name="publicName" required th:field="${user.publicName}" type="text">
-                            <br>
-
-                            <br>
-                            <button type="submit">Save Changes</button>
-                        </form>
-                    </th:block>
-                </th:block>
-
+                    </ul>
             </div>
-        </div>
+            <!--    view each profile-->
+            <div class=" row row-cols-1 row-cols-md-1 row-cols-xl-1">
+                <div class="col">
+            <div class="tab-content mt-3" id="myTabContent" style="background: white" >
+                <div aria-labelledby="profile-tab" class="tab-pane fade show active" id="profile" role="tabpanel">
+                    <!-- Common Details -->
+                    <p><strong>Username:</strong> <span th:text="${user.username}"></span>
+                        <img th:if="${user.role=='PATIENT' and user.isVerified()==true}" width="24" height="24"  src="https://img.icons8.com/pulsar-color/48/737373/instagram-check-mark.png" alt="instagram-check-mark"/>
+                    </p>
 
-
-    <div aria-labelledby="security-tab" class="tab-pane fade" id="security" role="tabpanel">
-        <!-- Security section content -->
-        <div class="row">
-            <div class="col-lg-12">
-                <!-- Change password card-->
-                <div class="card mb-4">
-                    <div class="card-header">Change Password</div>
-                    <div class="card-body">
-                        <form method="post" th:action="@{/change-password}">
-                            <!-- Form Group (current password)-->
-                            <div class="mb-3">
-                                <label class="small mb-1" for="currentPassword">Current Password</label>
-                                <input class="form-control" id="currentPassword" name="currentPassword" placeholder="Enter current password"
-                                       required type="password">
-                            </div>
-                            <!-- Form Group (new password)-->
-                            <div class="mb-3">
-                                <label class="small mb-1" for="newPassword">New Password</label>
-                                <input class="form-control" id="newPassword" name="newPassword" placeholder="Enter new password"
-                                       required type="password">
-                            </div>
-                            <!-- Form Group (confirm password)-->
-                            <div class="mb-3">
-                                <label class="small mb-1" for="confirmPassword">Confirm Password</label>
-                                <input class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm new password"
-                                       required type="password">
-                            </div>
-                            <!-- Display error message if there's an error -->
-                            <p class="text-danger" style="margin-bottom: 10px;" th:if="${param.error}">Invalid current
-                                password or new passwords do not match</p>
-                            <button class="btn btn-primary" type="submit">Save</button>
-                        </form>
+                    <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
+                    <p><strong>Phone:</strong> <span th:text="${user.phone}"></span></p>
+                    <br>
+                    <div th:if="${user.role.toString() == 'AMBULANCE'}">
+                        <p>
+                            <strong>Public Name:</strong>
+                            <span th:if="${user.publicName != null}" th:text="${user.publicName}"></span>
+                            <span th:if="${user.publicName == null}">Not filled yet</span>
+                        </p>
+                        <p>
+                            <strong>Agency:</strong>
+                            <span th:if="${user.Agency != null}" th:text="${user.Agency.name}"></span>
+                            <span th:if="${user.Agency == null}">Not filled yet</span>
+                        </p>
+                        <p >
+                            <strong>Address:</strong>
+                            <a th:if="${user.address !=null}" th:href="'https://www.google.com/maps?q=' + ${user.address.latitude} + ',' + ${user.address.longitude}" target="_blank">
+                                View on Map
+                            </a>
+                            <span th:if="${user.address == null}">Not filled yet</span>
+                        </p>
+                        <button class="btn btn-primary" onclick="getLocation()">
+                            Edit My Location by GPS
+                            <img width="24" height="24" src="https://img.icons8.com/pastel-glyph/64/FFFFFF/location--v2.png" alt="location--v2"/>
+                        </button>
                     </div>
+                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+                    <script th:inline="javascript">
+                        function getLocation() {
+                            if (navigator.geolocation) {
+                                navigator.geolocation.getCurrentPosition(showPosition);
+                            } else {
+                                alert("Geolocation is not supported by this browser.");
+                            }
+                        }
+
+                        function showPosition(position) {
+                            const latitude = position.coords.latitude;
+                            const longitude = position.coords.longitude;
+
+                            // Construct the URL with latitude and longitude as query parameters
+                            const url = '/gps_location?latitude=' + latitude + '&longitude=' + longitude;
+
+                            // Send a POST request to the constructed URL
+                            fetch(url, {
+                                method: 'POST'
+                            })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Failed to send location data.');
+                                    }
+                                    console.log('Location data sent successfully.');
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                });
+                        }
+                    </script>
+
+
+                    <div th:if="${user.role.toString() == 'HOSPITAL'}">
+                        <!-- Hospital Details -->
+                        <p>
+                            <strong>Public Name:</strong>
+                            <span th:if="${user.publicName != null}" th:text="${user.publicName}"></span>
+                            <span th:if="${user.publicName == null}">Not filled yet</span>
+                        </p>
+                        <p>
+                            <strong>Manager Name:</strong>
+                            <span th:if="${user.managerName != null}" th:text="${user.managerName}"></span>
+                            <span th:if="${user.managerName == null}">Not filled yet</span>
+                        </p>
+                        <p>
+                            <strong>Manager Phone:</strong>
+                            <span th:if="${user.managerPhone != null}" th:text="${user.managerPhone}"></span>
+                            <span th:if="${user.managerPhone == null}">Not filled yet</span>
+                        </p>
+                        <p>
+                            <strong>Supervising Physician Name:</strong>
+                            <span th:if="${user.supervisingPhysicianName != null}"
+                                  th:text="${user.supervisingPhysicianName}"></span>
+                            <span th:if="${user.supervisingPhysicianName == null}">Not filled yet</span>
+                        </p>
+                        <p>
+                            <strong>Supervising Physician Phone:</strong>
+                            <span th:if="${user.supervisingPhysicianPhone != null}"
+                                  th:text="${user.supervisingPhysicianPhone}"></span>
+                            <span th:if="${user.supervisingPhysicianPhone == null}">Not filled yet</span>
+                        </p>
+                        <br>
+                        <p>
+                            <strong>Address:</strong>
+
+                            <a th:if="${user.address !=null}" th:href="'https://www.google.com/maps?q=' + ${user.address.latitude} + ',' + ${user.address.longitude}" target="_blank">
+                                View on Map
+                            </a>
+                            <span th:if="${user.address == null}">Not filled yet</span>
+                        </p>
+                        <button class="btn btn-primary" onclick="getLocation()">
+                            Edit My Location by GPS
+                            <img width="24" height="24" src="https://img.icons8.com/pastel-glyph/64/FFFFFF/location--v2.png" alt="location--v2"/>
+                        </button>
+
+                    </div>
+                    <div th:if="${user.role.toString() == 'PATIENT'}">
+                        <!-- Patient Details -->
+                        <p>
+                            <strong>First Name:</strong>
+                            <span th:if="${user.firstName != null}" th:text="${user.firstName}"></span>
+                            <span th:if="${user.firstName == null}">Not filled yet</span>
+                        </p>
+                        <p>
+                            <strong>Last Name:</strong>
+                            <span th:if="${user.lastName != null}" th:text="${user.lastName}"></span>
+                            <span th:if="${user.lastName == null}">Not filled yet</span>
+                        </p>
+                        <p>
+                            <strong>Identity Card Image:</strong>
+                            <span th:if="${user.identityCardImage != null}" th:text="${user.identityCardImage}"></span>
+                            <span th:if="${user.identityCardImage == null}">Not filled yet</span>
+                        </p>
+                        <p>
+                            <strong>Age:</strong>
+                            <span th:if="${user.age != null}" th:text="${user.age}"></span>
+                            <span th:if="${user.age == null}">Not filled yet</span>
+                        </p>
+                        <p>
+                            <strong>Gender:</strong>
+                            <span th:if="${user.gender != null}" th:text="${user.gender}"></span>
+                            <span th:if="${user.gender == null}">Not filled yet</span>
+                        </p>
+                        <p>
+                            <strong>Nationality:</strong>
+                            <span th:if="${user.nationality != null}" th:text="${user.nationality}"></span>
+                            <span th:if="${user.nationality == null}">Not filled yet</span>
+                        </p>
+                        <p>
+                            <strong>Insurance:</strong>
+                            <span th:if="${user.insurance != null}" th:text="${user.insurance}"></span>
+                            <span th:if="${user.insurance == null}">Not filled yet</span>
+                        </p>
+
+                    </div>
+
+                </div>
+                <!--        edit section-->
+                <div aria-labelledby="editprofile-tab" class="tab-pane fade" id="Edit" role="tabpanel">
+                    <div class="row">
+                        <div class="col-12">
+                            <!-- Change password card-->
+                            <div class="card mb-4">
+                                <div class="card-header">Edit Details</div>
+                                <div class="card-body">
+                            <!-- Profile section content -->
+                            <th:block th:switch="${role}">
+                                <th:block th:case="'ADMIN'">
+                                    <form method="post" th:action="@{/profile-edit-admin}" th:object="${user}">
+                                        <!-- Common Fields -->
+                                        <label for="username">Username:</label>
+                                        <input name="username" required th:field="${user.username}" type="text">
+                                        <br>
+
+                                        <label for="email">Email:</label>
+                                        <input name="email" required th:field="${user.email}" type="email">
+                                        <br>
+                                        <label for="phone">Phone:</label>
+                                        <input name="phone" required th:field="${user.phone}" type="text">
+                                        <br>
+                                        <br>
+                                        <button type="submit">Save Changes</button>
+                                    </form>
+                                </th:block>
+                            <th:block th:case="'PATIENT'">
+                                <!-- Display user data based on the role -->
+                                <form method="post" th:action="@{/profile-edit-patient}" th:object="${user}">
+                                    <!-- Common Fields -->
+                                    <label class="small mb-1" for="username">Username:</label>
+                                    <input name="username" required th:field="${user.username}" type="text">
+                                    <br>
+                                    <label class="small mb-1" for="email">Email:</label>
+                                    <input name="email" required id="email" th:field="${user.email}" type="email">
+                                    <br>
+
+                                    <!-- Patient-specific Fields -->
+                                    <div class="row">
+                                        <div class=" col-6">
+                                            <label class="small mb-1" for="firstName">First Name:</label>
+                                            <input id="firstName" name="firstName" required th:field="${user.firstName}" type="text">
+                                        </div>>
+                                        <div class=" col-6">
+
+                                            <label class="small mb-1" for="lastName">Last Name:</label>
+                                            <input id="lastName" name="lastName" required th:field="${user.lastName}" type="text">
+                                        </div>
+                                    </div>
+                                    <label class="small mb-1" for="identityCardImage">Identity Card Image:</label>
+                                    <input id="identityCardImage" name="identityCardImage" required
+                                           th:field="${user.identityCardImage}" type="text">
+                                    <br>
+                                    <label class="small mb-1" for="selfie">Selfie:</label>
+                                    <input id="selfie" name="selfie" required th:field="${user.selfie}" type="text">
+                                    <br>
+
+
+
+                                    <label class="small mb-1" for="age">Age:</label>
+                                    <input id="age" name="age" required th:field="${user.age}" type="text">
+                                    <br>
+
+
+                                    <div class="form-group">
+                                        <label class="small mb-1" for="gender">Gender</label>
+                                        <select name="gender" class="form-control" id="gender" required>
+                                            <option th:each="gender : ${T(com.dgpad.thyme.model.enums.Gender).values()}"
+                                                    th:value="${gender}" th:field="${user.gender}"  th:text="${gender.name()}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="small mb-1" for="nationality">Nationality:</label>
+                                        <select name="nationality" class="form-control" id="nationality" required>
+                                            <option th:each="nationality : ${T(com.dgpad.thyme.model.enums.Nationality).values()}"
+                                                    th:value="${nationality}" th:field="${user.nationality}"  th:text="${nationality.name()}">
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="insurance" class="small mb-1">Insurance:</label>
+                                        <select name="insurance" class="form-control" id="insurance" required>
+                                            <option th:each="insurance : ${T(com.dgpad.thyme.model.enums.Insurance).values()}"
+                                                    th:value="${insurance}" th:field="${user.insurance}"  th:text="${insurance.name()}">
+                                            </option>
+                                        </select>
+                                    </div>
+
+
+                                    <br>
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                </form>
+
+                            </th:block>
+                            <th:block th:case="'HOSPITAL'">
+                                <form method="post" th:action="@{/profile-edit-hospital}" th:object="${user}" >
+                                    <div class="row">
+                                    <div class=" col-6">
+                                    <label class="small mb-1" for="username">Username:</label>
+                                    <input class="form-control" id="username" name="username" required th:field="${user.username}" type="text">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="small mb-1" for="publicName">Public Name:</label>
+                                        <input class="form-control" name="publicName" required th:field="${user.publicName}" type="text">
+                                    </div>
+                                    </div>
+                                    <label class="small mb-1" for="phone">Phone:</label>
+                                    <input class="form-control" name="phone" required th:field="${user.phone}" type="text">
+                                    <br>
+                                    <div class="row">
+                                        <div class=" col-6">
+                                            <label class="small mb-1" for="managerName">Manager Name:</label>
+                                            <input class="form-control" id="managerName" required name="managerName"  th:field="${user.managerName}" type="text">
+                                        </div>
+                                        <div class=" col-6">
+                                            <label class="small mb-1" for="managerPhone">Manager Phone:</label>
+                                            <input class="form-control" id="managerPhone" name="managerPhone" required th:field="${user.managerPhone}" type="text">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class=" col-6">
+                                            <label class="small mb-1" for="supervisingPhysicianName">Supervising Physician Name:</label>
+                                            <input class="form-control" id="supervisingPhysicianName" name="supervisingPhysicianName" required th:field="${user.supervisingPhysicianName}" type="text">
+                                        </div>
+                                        <div class=" col-6">
+
+                                            <label class="small mb-1" for="supervisingPhysicianPhone">Supervising Physician Phone:</label>
+                                            <input class="form-control" id="supervisingPhysicianPhone" name="supervisingPhysicianPhone" required
+                                                   th:field="${user.supervisingPhysicianPhone}" type="text">
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary" type="submit">Save Changes</button>
+                                </form>
+                            </th:block>
+                            <th:block th:case="'AMBULANCE'">
+                                <form method="post" th:action="@{/profile-edit-ambulance}" th:object="${user}">
+                                    <!-- Common Fields -->
+                                    <label class="small mb-1">Username:</label>
+                                    <input class="form-control" name="username" required th:field="${user.username}" type="text">
+                                    <br>
+                                    <label class="small mb-1" for="phone">Phone:</label>
+                                    <input class="form-control" id="phone" name="phone" required th:field="${user.phone}" type="text">
+                                    <br>
+
+                                    <!-- Ambulance-specific Fields -->
+                                    <label class="small mb-1"for="publicName">Public Name:</label>
+                                    <input class="form-control" id="publicName" name="publicName" required th:field="${user.publicName}" type="text">
+                                    <br>
+
+                                    <br>
+                                    <button type="submit"class="btn btn-primary">Save Changes</button>
+                                </form>
+                            </th:block>
+                        </th:block>
+
+                    </div>
+                </div>
+                        </div>
+                    </div>
+                </div>
+
+            <div aria-labelledby="security-tab" class="tab-pane fade" id="security" role="tabpanel">
+                <!-- Security section content -->
+                <div class="row">
+                    <div class="col-12">
+                        <!-- Change password card-->
+                        <div class="card mb-4">
+                            <div class="card-header">Change Password</div>
+                            <div class="card-body">
+                                <form method="post" th:action="@{/change-password}">
+                                    <!-- Form Group (current password)-->
+                                    <div class="mb-3">
+                                        <label class="small mb-1" for="currentPassword">Current Password</label>
+                                        <input class="form-control" id="currentPassword" name="currentPassword" placeholder="Enter current password"
+                                               required type="password">
+                                    </div>
+                                    <!-- Form Group (new password)-->
+                                    <div class="mb-3">
+                                        <label class="small mb-1" for="newPassword">New Password</label>
+                                        <input class="form-control" id="newPassword" name="newPassword" placeholder="Enter new password"
+                                               required type="password">
+                                    </div>
+                                    <!-- Form Group (confirm password)-->
+                                    <div class="mb-3">
+                                        <label class="small mb-1" for="confirmPassword">Confirm Password</label>
+                                        <input class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm new password"
+                                               required type="password">
+                                    </div>
+                                    <!-- Display error message if there's an error -->
+                                    <p class="text-danger" style="margin-bottom: 10px;" th:if="${param.error}">Invalid current
+                                        password or new passwords do not match</p>
+                                    <button class="btn btn-primary" type="submit">Save</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 </div>
             </div>
         </div>
-
+        </div>
+    </div>
     </div>
 </div>
-
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
+        </div>
 </body>
 </html>
 
-
-
-
-
-<!--<!DOCTYPE html>-->
-<!--<html lang="en" xmlns:th="http://www.thymeleaf.org">-->
-<!--<head>-->
-<!--    <meta charset="UTF-8">-->
-<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
-<!--    <title>User Profile</title>-->
-<!--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">-->
-
-<!--</head>-->
-<!--<body>-->
-<!--<div th:if="${role == 'PATIENT'}">-->
-<!--    <div th:replace="fragments/Pheader :: header"></div>-->
-<!--</div>-->
-<!--<div th:if="${role == 'AMBULANCE'}">-->
-<!--    <div th:replace="fragments/Aheader :: header"></div>-->
-<!--</div>-->
-<!--<div th:if="${role == 'HOSPITAL'}">-->
-<!--    <div th:replace="fragments/hheader :: header"></div>-->
-<!--</div>-->
-<!--<div th:if="${role == 'ADMIN'}">-->
-<!--    <div th:replace="fragments/Adimnheader :: header"></div>-->
-<!--</div>-->
-
-<!--<div class="container-xl px-4 mt-4">-->
-<!--    &lt;!&ndash; Account page navigation&ndash;&gt;-->
-<!--    <ul class="nav nav-tabs" id="myTab" role="tablist">-->
-<!--        <li class="nav-item" role="presentation">-->
-<!--            <a class="nav-link active" id="profile-tab" data-toggle="tab" href="#profile" role of="tab" aria-controls="profile" aria-selected="true">Details</a>-->
-<!--        </li>-->
-<!--        <li class="nav-item" role="presentation">-->
-<!--            &lt;!&ndash; Display "Verify account" for patients who are not verified &ndash;&gt;-->
-<!--            <a class="nav-link" id="editprofile-tab" data-toggle="tab" href="#Edit" role="tab" aria-controls="Edit" aria-selected="false" th:if="${user.role.toString() == 'PATIENT' and !user.verified}">-->
-<!--                <p>Verify account</p>-->
-<!--            </a>-->
-<!--            <a class="nav-link" id="editprofile-tab" data-toggle="tab" href="#Edit" role="tab" aria-controls="Edit" aria-selected="false" th:if="${user.role.toString() != 'PATIENT'}">-->
-<!--                Edit-->
-<!--            </a>-->
-<!--        </li>-->
-
-
-<!--        <li class="nav-item" role="presentation">-->
-<!--            <a class="nav-link" id="security-tab" data-toggle="tab" href="#security" role="tab" aria-controls="security" aria-selected="false">Security</a>-->
-<!--        </li>-->
-<!--        <li class="nav-item" role="presentation">-->
-<!--            <a class="nav-link" id="patients-tab" data-toggle="tab" href="#patients" role="tab" aria-controls="patients" aria-selected="false" th:if="${role.toString() == 'HOSPITAL'}">My Patients</a>-->
-<!--        </li>-->
-<!--        <li class="nav-item" role="presentation">-->
-<!--            <a class="nav-link" id="blocked-tab" data-toggle="tab" href="#blocked" role="tab" aria-controls="blocked" aria-selected="false" th:if="${role.toString() == 'HOSPITAL'}">Blocked List</a>-->
-<!--        </li>-->
-<!--    </ul>-->
-<!--    <div class="tab-content mt-3" id="myTabContent">-->
-<!--        <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">-->
-<!--            &lt;!&ndash; Common Details &ndash;&gt;-->
-<!--            <p><strong>Username:</strong> <span th:text="${user.username}"></span></p>-->
-<!--            <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>-->
-<!--            <p><strong>Phone:</strong> <span th:text="${user.phone}"></span></p>-->
-<!--            <br>-->
-<!--            <div th:if="${user.role.toString() == 'AMBULANCE'}">-->
-<!--                <p>-->
-<!--                    <strong>Public Name:</strong>-->
-<!--                    <span th:if="${user.publicName != null}" th:text="${user.publicName}"></span>-->
-<!--                    <span th:if="${user.publicName == null}">Not filled yet</span>-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    <strong>Agency:</strong>-->
-<!--                    <span th:if="${user.Agency != null}" th:text="${user.Agency.name}"></span>-->
-<!--                    <span th:if="${user.Agency == null}">Not filled yet</span>-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    <strong>Address:</strong>-->
-<!--                    <span th:if="${user.address != null}">-->
-<!--                        <span th:text="${user.address.street} + ', '"></span>-->
-<!--                        <span th:text="${user.address.city} + ', '"></span>-->
-<!--                        <span th:text="${user.address.zipCode}"></span>-->
-<!--                    </span>-->
-<!--                    <span th:if="${user.address == null}">Not filled yet</span>-->
-<!--                </p>-->
-<!--            </div>-->
-<!--            <div th:if="${user.role.toString() == 'HOSPITAL'}">-->
-<!--                &lt;!&ndash; Hospital Details &ndash;&gt;-->
-<!--                <p>-->
-<!--                    <strong>Public Name:</strong>-->
-<!--                    <span th:if="${user.publicName != null}" th:text="${user.publicName}"></span>-->
-<!--                    <span th:if="${user.publicName == null}">Not filled yet</span>-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    <strong>Manager Name:</strong>-->
-<!--                    <span th:if="${user.managerName != null}" th:text="${user.managerName}"></span>-->
-<!--                    <span th:if="${user.managerName == null}">Not filled yet</span>-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    <strong>Manager Phone:</strong>-->
-<!--                    <span th:if="${user.managerPhone != null}" th:text="${user.managerPhone}"></span>-->
-<!--                    <span th:if="${user.managerPhone == null}">Not filled yet</span>-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    <strong>Supervising Physician Name:</strong>-->
-<!--                    <span th:if="${user.supervisingPhysicianName != null}" th:text="${user.supervisingPhysicianName}"></span>-->
-<!--                    <span th:if="${user.supervisingPhysicianName == null}">Not filled yet</span>-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    <strong>Supervising Physician Phone:</strong>-->
-<!--                    <span th:if="${user.supervisingPhysicianPhone != null}" th:text="${user.supervisingPhysicianPhone}"></span>-->
-<!--                    <span th:if="${user.supervisingPhysicianPhone == null}">Not filled yet</span>-->
-<!--                </p>-->
-<!--                <br>-->
-<!--                <p>-->
-<!--                    <strong>Address:</strong>-->
-<!--                    <span th:if="${user.address != null}">-->
-<!--                        <span th:text="${user.address.street} + ', '"></span>-->
-<!--                        <span th:text="${user.address.city} + ', '"></span>-->
-<!--                        <span th:text="${user.address.zipCode}"></span>-->
-<!--                    </span>-->
-<!--                    <span th:if="${user.address == null}">Not filled yet</span>-->
-<!--                </p>-->
-
-<!--            </div>-->
-<!--            <div th:if="${user.role.toString() == 'PATIENT'}">-->
-<!--                &lt;!&ndash; Patient Details &ndash;&gt;-->
-<!--                <p>-->
-<!--                    <strong>First Name:</strong>-->
-<!--                    <span th:if="${user.firstName != null}" th:text="${user.firstName}"></span>-->
-<!--                    <span th:if="${user.firstName == null}">Not filled yet</span>-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    <strong>Last Name:</strong>-->
-<!--                    <span th:if="${user.lastName != null}" th:text="${user.lastName}"></span>-->
-<!--                    <span th:if="${user.lastName == null}">Not filled yet</span>-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    <strong>Identity Card Image:</strong>-->
-<!--                    <span th:if="${user.identityCardImage != null}" th:text="${user.identityCardImage}"></span>-->
-<!--                    <span th:if="${user.identityCardImage == null}">Not filled yet</span>-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    <strong>Passport Image:</strong>-->
-<!--                    <span th:if="${user.passportImage != null}" th:text="${user.passportImage}"></span>-->
-<!--                    <span th:if="${user.passportImage == null}">Not filled yet</span>-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    <strong>Age:</strong>-->
-<!--                    <span th:if="${user.age != null}" th:text="${user.age}"></span>-->
-<!--                    <span th:if="${user.age == null}">Not filled yet</span>-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    <strong>Gender:</strong>-->
-<!--                    <span th:if="${user.gender != null}" th:text="${user.gender}"></span>-->
-<!--                    <span th:if="${user.gender == null}">Not filled yet</span>-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    <strong>Nationality:</strong>-->
-<!--                    <span th:if="${user.nationality != null}" th:text="${user.nationality}"></span>-->
-<!--                    <span th:if="${user.nationality == null}">Not filled yet</span>-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    <strong>Insurance:</strong>-->
-<!--                    <span th:if="${user.insurance != null}" th:text="${user.insurance}"></span>-->
-<!--                    <span th:if="${user.insurance == null}">Not filled yet</span>-->
-<!--                </p>-->
-
-<!--            </div>-->
-
-<!--        </div>-->
-<!--        <div class="tab-pane fade" id="Edit" role="tabpanel" aria-labelledby="editprofile-tab">-->
-<!--            &lt;!&ndash; Profile section content &ndash;&gt;-->
-<!--            <div class="row">-->
-<!--                <div class="col-xl-12">-->
-<!--                    &lt;!&ndash; Account details card&ndash;&gt;-->
-<!--                    <div class="card mb-4">-->
-<!--                        <div class="card-header">-->
-<!--                            <p th:if="${role == 'PATIENT'}">Enter Account Details</p>-->
-<!--                            <p th:if="${role != 'PATIENT'}">Edit Account Details</p>-->
-<!--                        </div>-->
-<!--                        <div class="card-body">-->
-<!--                            <form th:action="@{/profile-edit}" th:object="${user}" method="post">-->
-<!--                                <div class="mb-3" th:if="${role.toString() == 'AMBULANCE'}">-->
-<!--                                    <label class="small mb-1" for="inputpublicname">Public Name (how your name will appear to other users on the site)</label>-->
-<!--                                    <input class="form-control" id="inputpublicname" type="text" placeholder="Enter your pubic name" th:field="*{publicName}" th:value="${user.publicName}">-->
-<!--                                </div>-->
-<!--                                <div class="mb-3" th:if="${role.toString() == 'HOSPITAL'}">-->
-<!--                                    <label class="small mb-1" for="inputpublicname">Public Name (how your name will appear to other users on the site)</label>-->
-<!--                                    <input class="form-control" id="inputpublicname" type="text" placeholder="Enter your pubic name" th:field="*{publicName}" th:value="${user.publicName}">-->
-<!--                                </div>-->
-
-<!--                                &lt;!&ndash; Form Row &ndash;&gt;-->
-<!--                                <div class="row gx-3 mb-3" th:if="${role.toString() == 'PATIENT'}">-->
-<!--                                    &lt;!&ndash; Form Group (first name) &ndash;&gt;-->
-<!--                                    <div class="col-md-6">-->
-<!--                                        <label class="small mb-1" for="inputFirstName">First name</label>-->
-<!--                                        <input class="form-control" id="inputFirstName" type="text" placeholder="Enter your first name" th:field="*{firstName}" th:value="${user.firstName}">-->
-<!--                                        <input type="hidden" name="verified" th:field="*{verified}" th:value="true"></div>-->
-<!--                                    &lt;!&ndash; Form Group (last name) &ndash;&gt;-->
-<!--                                    <div class="col-md-6">-->
-<!--                                        <label class="small mb-1" for="inputLastName">Last name</label>-->
-<!--                                        <input class="form-control" id="inputLastName" type="text" placeholder="Enter your last name" th:field="*{lastName}" th:value="${user.lastName}">-->
-<!--                                    </div>-->
-<!--                                    &lt;!&ndash; Form Group (Age) &ndash;&gt;-->
-<!--                                    <div class="col-md-6">-->
-<!--                                        <label class="small mb-1" for="inputbirthday">Birth Date</label>-->
-<!--                                        <input class="form-control" id="inputbirthday" type="text" name="birthday" placeholder="Select your birth date" required>-->
-<!--                                        <input class="form-control" id="inputage"  type="hidden" name="age" placeholder="Age" readonly th:field="*{age}" th:value="${user.age}">-->
-<!--                                    </div>-->
-<!--                                </div>-->
-
-<!--                                &lt;!&ndash; Form Group (email address) &ndash;&gt;-->
-<!--                                <div class="mb-3">-->
-<!--                                    <label class="small mb-1" for="inputEmailAddress">Email address</label>-->
-<!--                                    <input class="form-control" id="inputEmailAddress" type="email" placeholder="Enter your email address" th:field="*{email}" th:value="${user.email}">-->
-<!--                                </div>-->
-<!--                                &lt;!&ndash; Form Row &ndash;&gt;-->
-<!--                                <div class="row gx-3 mb-3">-->
-<!--                                    &lt;!&ndash; Form Group (phone number) &ndash;&gt;-->
-<!--                                    <div class="col-md-6">-->
-<!--                                        <label class="small mb-1" for="inputPhone">Phone number</label>-->
-<!--                                        <input class="form-control" id="inputPhone" type="tel" placeholder="Enter your phone number" th:field="*{phone}" th:value="${user.phone}">-->
-<!--                                    </div>-->
-
-<!--                                    &lt;!&ndash; Include flatpickr library &ndash;&gt;-->
-<!--                                    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">-->
-<!--                                    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>-->
-
-<!--                                    <script>-->
-<!--                                        document.addEventListener('DOMContentLoaded', function () {-->
-<!--                                            // Initialize flatpickr for the birth date input-->
-<!--                                            flatpickr("#inputbirthday", {-->
-<!--                                                dateFormat: "Y-m-d",-->
-<!--                                                maxDate: "today",-->
-<!--                                                onChange: function (selectedDates, dateStr) {-->
-<!--                                                    // Calculate age based on the selected date-->
-<!--                                                    const birthDate = new Date(dateStr);-->
-<!--                                                    const today = new Date();-->
-<!--                                                    const age = today.getFullYear() - birthDate.getFullYear();-->
-
-<!--                                                    // Set the calculated age to the age input field-->
-<!--                                                    document.getElementById("inputage").value = age;-->
-
-<!--                                                }-->
-<!--                                            });-->
-<!--                                        });-->
-<!--                                    </script>-->
-
-<!--                                </div>-->
-<!--                                <div class="row gx-3 mb-3" th:if="${role == 'HOSPITAL'}">-->
-<!--                                    <div class="col-md-6">-->
-<!--                                        <label class="small mb-1" for="inputManagerName">Manager name</label>-->
-<!--                                        <input class="form-control" id="inputManagerName" type="text" placeholder="Enter manager name" th:field="*{managerName}" th:value="${user.managerName}">-->
-<!--                                    </div>-->
-<!--                                    <div class="col-md-6">-->
-<!--                                        <label class="small mb-1" for="inputManagerPhone">Manager number</label>-->
-<!--                                        <input class="form-control" id="inputManagerPhone" type="tel" placeholder="Enter manager phone number" th:field="*{managerPhone}" th:value="${user.managerPhone}">-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                                <div class="row gx-3 mb-3" th:if="${role == 'HOSPITAL'}">-->
-<!--                                    <div class="col-md-6">-->
-<!--                                        <label class="small mb-1" for="inputSupervisingPhysicianName">Supervising Physician name</label>-->
-<!--                                        <input class="form-control" id="inputSupervisingPhysicianName" type="text" placeholder="Enter your supervising Physician Name" th:field="*{supervisingPhysicianName}" th:value="${user.supervisingPhysicianName}">-->
-<!--                                    </div>-->
-<!--                                    <div class="col-md-6">-->
-<!--                                        <label class="small mb-1" for="inputSupervisingPhysicianPhone">Supervising Physician number</label>-->
-<!--                                        <input class="form-control" id="inputSupervisingPhysicianPhone" type="tel" name="supervisingPhysicianNumber" placeholder="Enter Supervising Physician Number" th:field="*{SupervisingPhysicianPhone}" th:value="${user.SupervisingPhysicianPhone}">-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                                <div class="card mb-4" th:if="${role == 'PATIENT'}">-->
-<!--                                    <label for="nationality">Select Nationality:</label>-->
-<!--                                    <select id="nationality" name="nationality">-->
-<!--                                        <option th:each="nationality : ${T(com.dgpad.thyme.model.enums.Nationality).values()}"-->
-<!--                                                th:value="${#strings.toUpperCase(nationality.name())}"-->
-<!--                                                th:text="${nationality}"></option>-->
-<!--                                    </select>-->
-<!--                                    <label for="gender">Select Nationality:</label>-->
-<!--                                    <select id="gender" name="gender">-->
-<!--                                        <option th:each="gender : ${T(com.dgpad.thyme.model.enums.Gender).values()}"-->
-<!--                                                th:value="${#strings.toUpperCase(gender.name())}"-->
-<!--                                                th:text="${gender}"></option>-->
-<!--                                    </select>-->
-<!--                                    <label for="nationality">Select Nationality:</label>-->
-<!--                                    <select id="insurence" name="insurence">-->
-<!--                                        <option th:each="insurence : ${T(com.dgpad.thyme.model.enums.Insurance).values()}"-->
-<!--                                                th:value="${#strings.toUpperCase(insurence.name())}"-->
-<!--                                                th:text="${insurence}"></option>-->
-<!--                                    </select>-->
-<!--                                    <div class="card-body">-->
-<!--                                        <h3 class="h6">id card or passport</h3>-->
-<!--                                        <input class="form-control" type="file" th:field="*{selfie}" th:value="${user.selfie}">-->
-<!--                                    </div>-->
-<!--                                    <div class="card-body">-->
-<!--                                        <h3 class="h6">id card or passport</h3>-->
-<!--                                        <input class="form-control" type="file" th:field="*{identityCardImage}" th:value="${user.identityCardImage}">-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                                &lt;!&ndash; Address &ndash;&gt;-->
-
-<!--                                &lt;!&ndash; Save changes button&ndash;&gt;-->
-<!--                                <button class="btn btn-primary" type="submit" th:if="${role == 'PATIENT'}">Verify my account</button>-->
-<!--                                <button class="btn btn-primary" type="submit" th:if="${role!= 'PATIENT'}">Save changes</button>-->
-<!--                            </form>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-
-<!--        </div>-->
-
-
-<!--        <div class="tab-pane fade" id="security" role="tabpanel" aria-labelledby="security-tab">-->
-<!--            &lt;!&ndash; Security section content &ndash;&gt;-->
-<!--            &lt;!&ndash; Security section content &ndash;&gt;-->
-<!--            <div class="row">-->
-<!--                <div class="col-lg-12">-->
-<!--                    &lt;!&ndash; Change password card&ndash;&gt;-->
-<!--                    <div class="card mb-4">-->
-<!--                        <div class="card-header">Change Password</div>-->
-<!--                        <div class="card-body">-->
-<!--                            <form th:action="@{/change-password}" method="post">-->
-<!--                                &lt;!&ndash; Form Group (current password)&ndash;&gt;-->
-<!--                                <div class="mb-3">-->
-<!--                                    <label class="small mb-1" for="currentPassword">Current Password</label>-->
-<!--                                    <input class="form-control" id="currentPassword" name="currentPassword" type="password" placeholder="Enter current password" required>-->
-<!--                                </div>-->
-<!--                                &lt;!&ndash; Form Group (new password)&ndash;&gt;-->
-<!--                                <div class="mb-3">-->
-<!--                                    <label class="small mb-1" for="newPassword">New Password</label>-->
-<!--                                    <input class="form-control" id="newPassword" name="newPassword" type="password" placeholder="Enter new password" required>-->
-<!--                                </div>-->
-<!--                                &lt;!&ndash; Form Group (confirm password)&ndash;&gt;-->
-<!--                                <div class="mb-3">-->
-<!--                                    <label class="small mb-1" for="confirmPassword">Confirm Password</label>-->
-<!--                                    <input class="form-control" id="confirmPassword" name="confirmPassword" type="password" placeholder="Confirm new password" required>-->
-<!--                                </div>-->
-<!--                                &lt;!&ndash; Display error message if there's an error &ndash;&gt;-->
-<!--                                <p th:if="${param.error}" class="text-danger" style="margin-bottom: 10px;">Invalid current password or new passwords do not match</p>-->
-<!--                                <button class="btn btn-primary" type="submit">Save</button>-->
-<!--                            </form>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-
-<!--        </div>-->
-
-<!--        <div class="tab-pane fade" id="patients" role="tabpanel" aria-labelledby="patients-tab" th:if="${role.toString() == 'HOSPITAL'}">-->
-<!--            &lt;!&ndash; My Patients section content &ndash;&gt;-->
-<!--            <div class="container" th:if="${ role == 'HOSPITAL'}" >-->
-<!--                <div class="row" >-->
-<!--                    <div class="col-12 mb-3 mb-lg-5">-->
-<!--                        <div class="overflow-hidden card table-nowrap table-card">-->
-<!--                            <div class="card-header d-flex justify-content-between align-items-center">-->
-<!--                                <h5 class="mb-0">My patients</h5>-->
-<!--                                <a href="#!" class="btn btn-light btn-sm">View All</a>-->
-<!--                            </div>-->
-<!--                            <div class="table-responsive">-->
-<!--                                <table class="table mb-0">-->
-<!--                                    <thead class="small text-uppercase bg-body text-muted">-->
-<!--                                    <tr>-->
-<!--                                        <th>Name</th>-->
-<!--                                        <th>Email</th>-->
-<!--                                        <th>Phone Number</th>-->
-<!--                                    </tr>-->
-<!--                                    </thead>-->
-<!--                                    <tbody>-->
-<!--                                    <tr class="align-middle">-->
-<!--                                        <td>-->
-<!--                                            <div class="d-flex align-items-center">-->
-<!--                                                <div>-->
-<!--                                                    <div class="h6 mb-0 lh-1">Mark Voldov</div>-->
-<!--                                                </div>-->
-<!--                                            </div>-->
-<!--                                        </td>-->
-<!--                                        <td>mvoges@email.com</td>-->
-<!--                                        <td> <span class="d-inline-block align-middle">Russia</span></td>-->
-<!--                                        <td class="text-end">-->
-<!--                                            <div class="drodown">-->
-<!--                                                <a data-bs-toggle="dropdown" href="#" class="btn p-1" aria-expanded="false">-->
-<!--                                                    <i class="fa fa-bars" aria-hidden="true"></i>-->
-<!--                                                </a>-->
-<!--                                                <div class="dropdown-menu dropdown-menu-end" style="">-->
-<!--                                                    <a href="#!" class="dropdown-item">View Details</a>-->
-<!--                                                    <a href="#!" class="dropdown-item">Delete user</a>-->
-<!--                                                </div>-->
-<!--                                            </div>-->
-<!--                                        </td>-->
-<!--                                    </tr>-->
-<!--                                    </tbody>-->
-<!--                                </table>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div class="tab-pane fade" id="blocked" role="tabpanel" aria-labelledby="blocked-tab" th:if="${role.toString() == 'HOSPITAL'}">-->
-<!--            &lt;!&ndash; Blocked List section content &ndash;&gt;-->
-<!--            <div class="container" th:if="${ role == 'HOSPITAL'}" >-->
-<!--                <div class="row" >-->
-<!--                    <div class="col-12 mb-3 mb-lg-5">-->
-<!--                        <div class="overflow-hidden card table-nowrap table-card">-->
-<!--                            <div class="card-header d-flex justify-content-between align-items-center">-->
-<!--                                <h5 class="mb-0">Blocked list</h5>-->
-<!--                            </div>-->
-<!--                            <div class="table-responsive">-->
-<!--                                <table class="table mb-0">-->
-<!--                                    <thead class="small text-uppercase bg-body text-muted">-->
-<!--                                    <tr>-->
-<!--                                        <th>Name</th>-->
-<!--                                        <th>Email</th>-->
-<!--                                        <th>Phone Number</th>-->
-<!--                                        <th>Action</th>-->
-<!--                                    </tr>-->
-<!--                                    </thead>-->
-<!--                                    <tbody>-->
-<!--                                    <tr class="align-middle">-->
-<!--                                        <td>-->
-<!--                                            <div class="d-flex align-items-center">-->
-<!--                                                <div>-->
-<!--                                                    <div class="h6 mb-0 lh-1">Mark Voldov</div>-->
-<!--                                                </div>-->
-<!--                                            </div>-->
-<!--                                        </td>-->
-<!--                                        <td>mvoges@email.com</td>-->
-<!--                                        <td> <span class="d-inline-block align-middle">Russia</span></td>-->
-<!--                                        <td class="text-end">-->
-<!--                                            <div class="drodown">-->
-<!--                                                <a data-bs-toggle="dropdown" href="#" class="btn p-1" aria-expanded="false">-->
-<!--                                                    <i class="fa fa-bars" aria-hidden="true"></i>-->
-<!--                                                </a>-->
-<!--                                                <div class="dropdown-menu dropdown-menu-end" style="">-->
-<!--                                                    <a href="#!" class="dropdown-item">View Details</a>-->
-<!--                                                    <a href="#!" class="dropdown-item">Delete user</a>-->
-<!--                                                </div>-->
-<!--                                            </div>-->
-<!--                                        </td>-->
-<!--                                        <td></td>-->
-<!--                                    </tr>-->
-<!--                                    </tbody>-->
-<!--                                </table>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
-<!--<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>-->
-<!--<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>-->
-<!--<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>-->
-
-<!--</body>-->
-<!--</html>-->

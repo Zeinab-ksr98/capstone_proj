@@ -23,7 +23,8 @@ public class securityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
         return httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/users/**","/forget_pass","/forgetPage","/Main/**","/assits/**","/css/**", "/js/**","/bundles/**","/Request-Account").permitAll();                    auth.anyRequest().authenticated();
+                    auth.requestMatchers("/users/**","/forget_pass","/forgetPage","/Main/**","/assits/**","/css/**", "/js/**","/bundles/**","/Request-Account","/verify-user","/verify-phone").permitAll();
+                    auth.anyRequest().authenticated();
                 })
                 .formLogin((form) ->{
                     form.loginPage("/SignIn").loginProcessingUrl("/login").defaultSuccessUrl("/home",true).permitAll();
@@ -53,6 +54,4 @@ public class securityConfig {
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
         return daoAuthenticationProvider;
     }
-
-
 }
