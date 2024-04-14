@@ -7,18 +7,27 @@ const port = 3000;
 
 const client = new Client();
 let isClientReady = false;
-let qrCodeDataUrl; // Variable to store QR code data URL
 
 app.get('/qrcode', (req, res) => {
-    // Check if the QR code data URL is available
-    if (qrCodeDataUrl) {
-        // Set the response type to image/png
-        res.type('image/png');
-        // Send the QR code image as a binary response
-        res.send(Buffer.from(qrCodeDataUrl.split('base64,')[1], 'base64'));
-    } else {
-        res.status(404).send('QR code not available yet. Please try again later.');
-    }
+    // Listen for the 'qr' event to receive the QR code string
+    client.on('qr', async (qr) => {
+        try {
+            // Generate QR code as a data URL
+            const qrImage = await qrcode.toDataURL(qr);
+
+            // Set the response type to image/png
+            res.type('image/png');
+
+            // Send the QR code image as a binary response
+            res.send(Buffer.from(qrImage.split('base64,')[1], 'base64'));
+        } catch (error) {
+            console.error('Error generating QR code image:', error);
+            res.status(500).send('Internal Server Error');
+        }
+    });
+
+    // Start the session
+    client.initialize();
 });
 
 app.get('/status', (req, res) => {
@@ -48,23 +57,13 @@ app.get('/send-message', (req, res) => {
     });
 });
 
-client.on('qr', async (qr) => {
-    try {
-        // Generate QR code as a data URL
-        qrCodeDataUrl = await qrcode.toDataURL(qr);
-    } catch (error) {
-        console.error('Error generating QR code image:', error);
-    }
-});
+
 
 client.on('ready', () => {
     // Handle ready event (optional)
     console.log('Client is ready!');
     isClientReady = true;
 });
-
-// Start the session
-client.initialize();
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
