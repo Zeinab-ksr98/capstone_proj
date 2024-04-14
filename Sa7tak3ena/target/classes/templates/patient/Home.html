@@ -27,8 +27,29 @@
                     <img id="callButton" width="130" th:src="@{/assits/call%20buton.png}" alt="external-call-medical-filled-outline-satawat-anukul"/>
                 </a>
             </div>
-            <div th:replace="account/Requests :: requests"></div>
 
+            <div th:replace="account/Requests :: requests"  ></div>
+            <table class="table table-light mb-0" th:if="${(AmbulanceRequests != null and not #lists.isEmpty(AmbulanceRequests))}">
+                <thead class="small text-uppercase bg-body text-muted">
+                <tr>
+                    <th >Ambulance Name</th>
+                    <th>Reservation Type</th>
+                    <th >Medical Record</th>
+                    <th >Need Ambulance</th>
+                    <th >Ambulance Agencies</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="align-middle" th:each="Arequest : ${AmbulanceRequests}" >
+                    <td th:text="${Arequest.ambulance.publicName}" ></td>
+                    <td th:text="${Arequest.hospital}" ></td>
+                    <td th:text="${Arequest.status}"></td>
+                    <td th:text="${Arequest.description}" ></td>
+                    <td th:text="${Arequest.pickupaddress}" ></td>
+                </tr>
+                </tbody>
+            </table>
 
             <!-- Modal -->
             <div class="modal fade" id="requestModal" tabindex="-1" aria-labelledby="requestModalLabel" aria-hidden="true">

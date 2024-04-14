@@ -92,9 +92,6 @@ public class PatientService {
 
         if (user.getIdentityCardImage()!=null)
             currentuser.setIdentityCardImage(user.getIdentityCardImage());
-        if (user.getSelfie()!=null)
-            currentuser.setSelfie(user.getSelfie());
-
 
         currentuser.setVerified(true);
 

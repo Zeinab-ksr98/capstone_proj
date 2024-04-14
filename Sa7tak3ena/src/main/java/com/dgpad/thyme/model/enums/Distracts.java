@@ -1,29 +1,42 @@
 package com.dgpad.thyme.model.enums;
 
 public enum Distracts {
-    Akkar("Halba"),
-    Baalbek("Baalbek"),
-    Hermel("Hermel"),
-    Rashaya("Rashaya"),
-    Zahlé("Zahlé"),
-    Byblos("Byblos"),
-    Keserwan("Jounieh"),
-    Aley("Aley"),
-    Baabda("Baabda"),
-    Chouf("Beiteddine"),
-    Matn("Jdeideh"),
-    BintJbeil("Bint Jbeil"),
-    Hasbaya("Hasbaya"),
-    Marjeyoun("Marjeyoun"),
-    Nabatieh("Nabatieh"),
-    Batroun("Batroun"),
-    Bsharri("Bsharri"),
-    Koura("Koura"),
+
+    Akkar("Akkar"),
+
     Tripoli("Tripoli"),
     Zgharta("Zgharta"),
-    Sidon("Sidon"),
+    Batroun("Batroun"),
+    Bsharre("Bsharre"),
+    Koura("El Koura"),
+    Dennie("El Minieh-Dennie"),
+
+    Baalbek("Baalbek"),
+    Hermel(" El Hermel"),
+
+
+    Zahle("Zahle"),
+    Bekaa("West Bekaa"),
+    Rashaya("Rachaya"),
+
+
+    Hasbaya("Hasbaya"),
+    BintJbeil("Bint Jbeil"),
+    Marjeyoun("Marjeyoun"),
+    Nabatieh("El Nabatieh"),
     Jezzine("Jezzine"),
-    Tyre("Tyre");
+    Saida("Saida"),
+    Tyre("Tyre"),
+
+
+    Chouf("Al Chouf"),
+    Aley("Aley"),
+    Baabda("Baabda"),
+    Beirut("Beirut"),
+    Meten("El Meten"),
+    Keserwan("Kesseroune"),
+    Jbeil("Jbeil");
+
 
     private String value;
 

@@ -135,7 +135,7 @@ public class AmbulanceController {
         analytics.add(cu.getParamedicList().size());
         model.addAttribute("user",cu);
         model.addAttribute("requests", ambulanceRequestService.getAllRequestsForUser(cu.id));
-        model.addAttribute("ambulances", ambulanceService.getAmbulanceByAgency(cu.getAgency()));
+        model.addAttribute("ambulances", ambulanceService.getcompletedAmbulanceByAgency(cu.getAgency()));
         model.addAttribute("analytics",analytics);
         model.addAttribute("admin", cu.isAdministrator());
 

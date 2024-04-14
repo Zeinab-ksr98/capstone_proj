@@ -17,35 +17,68 @@
 
 <body>
     <div class="d-flex">
-        <div th:replace="fragments/Pheader :: header"></div>
-            <div class="container m-3">
-                <div class="card col-6">
-
-                    <img class="card-header p-0" alt="" th:src="@{/assits/Ambulances.jpg}">
+        <div th:replace="fragments/Hheader :: header"></div>
+            <div class="container mt-5">
+                <div class="card col-9">
                     <div class="card-body">
-                        <form class="form" th:action="@{/ambulance_detailrequest}" method="post">
+                        <form class="form" th:action="@{/hospital_detailambulancerequest}" method="post">
                             <div class="row">
-                                <h5 class="text-center text-danger"> You are about to request a Patient Transfer Service to your own location </h5>
-                                <div class="form-group col-md-6">
-                                    <input type="text" name="name" class="form-control" placeholder="Patient Name" required="required">
-                                </div>
-                                <div class="form-group col-md-6">
-                                    <input type="email" name="phone" class="form-control" placeholder="Patient Phone" required="required">
-                                </div>
+                                <h5 class="text-danger mb-4"> You are about to request a Patient Transfer Service </h5>
+                                <div class="col-12 text-center"><h5>transfer details</h5></div>
 
                                 <div class="form-group col-md-6">
-                                    <input type="text" name="Region" class="form-control" placeholder="detailed address" required="required">
+                                    <input type="text" name="name" class="form-control"  placeholder="Patient Name" required="required">
                                 </div>
                                 <div class="form-group col-md-6">
-                                    <input type="text" name="location" class="form-control" placeholder="detailed address" required="required">
+                                    <input type="tel" name="phone" class="form-control" placeholder="Patient Phone" required="required">
+                                </div>
+                                <div class="col-12 mb-1"> Patient Address </div>
+                                <div class="col-6 " >
+                                    <select class="form-select form-control" id="region" name="region" required >
+                                        <option th:each="district : ${T(com.dgpad.thyme.model.enums.Distracts).values()}"
+                                                th:value="${district}" th:text="${district.getValue()}"></option>
+                                    </select>
                                 </div>
                                 <div class="form-group col-md-6">
-                                    <input type="text" name="Ambulancetype" class="form-control" placeholder="type" required="required">
+                                    <input type="text" name="address" class="form-control"  placeholder="detailed address" required="required">
                                 </div>
 
-                                <div class="form-group col-md-12" >
-                                    <textarea rows="5" name="description" class="form-control" placeholder="recommended ambulance type" required="required"></textarea>
+                                <div class="form-check col-md-6  ">
+                                    <label></label>
+
+                                    <div class="ml-3">
+                                        <input class="form-check-input " type="radio" id="toH" name="toH" value="true" checked>
+                                        <label class="form-check-label" for="toH">
+                                            Transfer to my location
+                                        </label>
+                                        <br>
+                                        <input class="form-check-input" type="radio" id="to_patient_address" name="toH" value="false">
+                                        <label class="form-check-label" for="to_patient_address">
+                                            Transfer to patient address
+                                        </label>
+                                    </div>
                                 </div>
+
+
+                                <div class="form-group col-md-6 ">
+                                    <label>Recommended Ambulance type</label>
+
+                                    <select class="form-select form-control" id="Ambulancetype" name="Ambulancetype"  required >
+                                        <option th:each="type : ${T(com.dgpad.thyme.model.enums.Ambulancetypes).values()}"
+                                                th:value="${type}" th:text="${type.name()}"></option>
+                                    </select>
+                                    <small class="position-absolute top-100 start-0 translate-middle-y text-muted"
+                                           style="font-size: 0.8rem;"
+                                           title="Select the recommended ambulance type for the transfer">
+                                        <i class="bi bi-info-circle"> any type will be requested if the one selected is not available </i>
+                                    </small>
+                                </div>
+
+
+                                <div class="form-group col-md-12">
+                                    <textarea rows="5" name="description" class="form-control" placeholder="recommendation while transfer/patient health state" required="required"></textarea>
+                                </div>
+
                                 <!-- Hidden input fields to store latitude and longitude -->
 
                                 <div class="col-md-12 text-center">

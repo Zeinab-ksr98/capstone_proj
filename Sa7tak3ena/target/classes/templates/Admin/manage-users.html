@@ -32,15 +32,19 @@
 <body style="background: silver">
 <div class="container-fluid">
     <div class="d-flex">
-        <div th:if="" th:replace="fragments/Adimnheader :: header"></div>
+        <div  th:replace="fragments/Adimnheader :: header"></div>
         <div class="credits mx-5 ">
             <div class="container-fluid">
-    <div class="d-flex justify-content-end align-items-end" >
-        <button type="button" style="margin: 20px 0 ; background: #155FA9"  class="btn text-light mb-0" data-toggle="modal" data-target="#exampleModalCenter">
-            Create Account
-            <img width="24" height="24" src="https://img.icons8.com/pulsar-line/48/FFFFFF/add-user-male.png" alt="add-user-male"/>
-        </button>
-    </div>
+
+            <div class="d-flex justify-content-end align-items-end" >
+                <button type="button" style="margin: 20px 0 ; background: #155FA9"  class="btn text-light mb-0" data-toggle="modal" data-target="#exampleModalCenter">
+                    Create Account
+                    <img width="24" height="24" src="https://img.icons8.com/pulsar-line/48/FFFFFF/add-user-male.png" alt="add-user-male"/>
+                </button>
+
+            </div>
+
+
     <div class="modal fade mt-1" id="exampleModalCenter" tabindex="-1"
          role="dialog" aria-labelledby="exampleModalCenterTitle"
          aria-hidden="true">
@@ -59,7 +63,17 @@
                             <input type="text" name="username" class="form-control" id="name"  required placeholder="username">
                         </div>
                         <div class="form-check mt-3">
-                            <input type="text" name="email" class="form-control" id="email"  required placeholder="email">
+                            <input type="email" name="email" class="form-control" id="email"  required placeholder="email">
+                        </div>
+                        <div class="form-check mt-3">
+                            <input type="text" name="location" class="form-control" id="location"  required placeholder="city,street,nearby">
+                        </div>
+                        <div class="form-check mt-3">
+                            <label class="form-label fw-bold" for="region">Region:</label><br>
+                            <select class="form-select form-control" id="region" name="region" required >
+                                <option th:each="district : ${T(com.dgpad.thyme.model.enums.Distracts).values()}"
+                                        th:value="${district}" th:text="${district.getValue()}"></option>
+                            </select>
                         </div>
 
                         <div class="form-check mt-3">
@@ -94,6 +108,7 @@
         </div>
     </div>
     <br>
+
     <div class="row rounded border" style="background: white">
         <div class="col-lg-4 col-md-6 col-sm-12 mb-3 mt-3" th:each="user, categoryIndex : ${users}" >
             <div th:classappend="${user.enabled} ? 'active-user' : 'inactive-user'">
@@ -245,6 +260,7 @@
     });
 
 </script>
+
         </div>
     </div>
 </div>

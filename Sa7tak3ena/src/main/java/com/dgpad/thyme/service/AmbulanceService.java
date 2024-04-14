@@ -34,12 +34,24 @@ public class AmbulanceService {
     public List<Ambulance> getAllCompletedAmbulances(){
         return ambulanceRepository.findAllCompleted();
     }
+    public List<Ambulance> getAllCompletedAmbulancesinRegion(String region){
+        return ambulanceRepository.getAllCompletedAmbulancesinRegion(region);
+    }
 
     public Ambulance getAmbulanceById(UUID id){
         return ambulanceRepository.findById(id).orElse(null);
     }
     public List<Ambulance> getAmbulanceByAgency(AmbulanceAgency agency){
         return  ambulanceRepository.findAllAmbulanceForAgency(agency);
+    }
+    public List<Ambulance> getcompletedAmbulanceByAgency(AmbulanceAgency agency){
+        return  ambulanceRepository.findAllCompletedAmbulanceForAgency(agency);
+    }
+    public List<Ambulance> getAmbulanceByAvailableCarType(Ambulancetypes type){
+        return  ambulanceRepository.getAmbulanceByAvailableCarType(type);
+    }
+    public List<Ambulance> getAmbulanceByAvailableCarTypeAndRegion(Ambulancetypes type,String regin){
+        return  ambulanceRepository.getAmbulanceByAvailableCarTypeInRegion(type, regin);
     }
     public List<Ambulance> getAmbulanceByAvailableCarTypeAndAgency(AmbulanceAgency agency,Ambulancetypes type){
         return  ambulanceRepository.getAmbulanceByAvailableCarTypeAndAgency(agency,type);

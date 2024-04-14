@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.dgpad.thyme.model.enums.Role.PATIENT;
+
 @Controller
 
 public class PatientController {
@@ -44,7 +46,7 @@ public class PatientController {
         address.setLongitude(longitude);
         address.setLatitude(latitude);
         address=addressService.save(address);
-        ambulanceRequestService.dispatchToAvailableNearest(address);
+        ambulanceRequestService.dispatchToAvailableNearest(address,null);
         model.addAttribute("alertMessage", "Request sent successfully!");
         return "redirect:/home";
     }
@@ -73,25 +75,30 @@ public class PatientController {
     @GetMapping("/fullAmbulance_request")
     @PreAuthorize("hasAnyAuthority('PATIENT','HOSPITAL')")
     public String FullAmbulanceRequest(Model model) {
-        model.addAttribute("user", userService.getCurrentUser());
+        User user=userService.getCurrentUser();
+        model.addAttribute("user", user);
         List<AmbulanceRequest> requests = ambulanceRequestService.findAllAmbulanceRequestsForUserByStatus(userService.getCurrentUser().id, AmbulanceRequestStatus.PENDING);
         if(!requests.isEmpty())
             return "account/error";
-        else
-            return "patient/fullARequest";
+        else{
+            if(user.getRole()== PATIENT)
+                return "patient/fullARequest";
+            else{
+                return "hospital/fullARequest";
+            }
+        }
     }
 
     // detailed request from patient  dispach based on given location
     @PostMapping("/ambulance_detailrequest")
     @PreAuthorize("hasAnyAuthority('PATIENT')")
-    public String submitDetailedRequest(@RequestParam("location") String location, @RequestParam("lat") double latitude, @RequestParam("lon") double longitude, Model model) {
+    public String submitDetailedRequest(@RequestParam("description") String description,@RequestParam("location") String location, @RequestParam("lat") double latitude, @RequestParam("lon") double longitude, Model model) {
         Address address =new Address();
         address.setLongitude(longitude);
         address.setLatitude(latitude);
         address.setName(location);
         address= addressService.save(address);
-        ambulanceRequestService.dispatchToAvailableNearest(address);
-
+        ambulanceRequestService.dispatchToAvailableNearest(address,description);
         model.addAttribute("alertMessage", "Request sent successfully!");
         return "redirect:/home";
     }

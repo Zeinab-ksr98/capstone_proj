@@ -185,7 +185,7 @@
                         </p>
                         <p>
                             <strong>Identity Card Image:</strong>
-                            <span th:if="${user.identityCardImage != null}" th:text="${user.identityCardImage}"></span>
+                            <span th:if="${user.identityCardImage != null}" th:src="@{'/' + ${user.id} + '/image?type=identityCardImage'}" class="img-thumbnail"></span>
                             <span th:if="${user.identityCardImage == null}">Not filled yet</span>
                         </p>
                         <p>
@@ -221,7 +221,7 @@
                                 <div class="card-header">Edit Details</div>
                                 <div class="card-body">
                             <!-- Profile section content -->
-                            <th:block th:switch="${role}">
+                            <th:block th:switch="${user.role}">
                                 <th:block th:case="'ADMIN'">
                                     <form method="post" th:action="@{/profile-edit-admin}" th:object="${user}">
                                         <!-- Common Fields -->
@@ -241,7 +241,7 @@
                                 </th:block>
                             <th:block th:case="'PATIENT'">
                                 <!-- Display user data based on the role -->
-                                <form method="post" th:action="@{/profile-edit-patient}" th:object="${user}">
+                                <form method="post" th:action="@{/profile-edit-patient}" enctype="multipart/form-data" th:object="${user}">
                                     <!-- Common Fields -->
                                     <label class="small mb-1" for="username">Username:</label>
                                     <input name="username" required th:field="${user.username}" type="text">
@@ -264,13 +264,8 @@
                                     </div>
                                     <label class="small mb-1" for="identityCardImage">Identity Card Image:</label>
                                     <input id="identityCardImage" name="identityCardImage" required
-                                           th:field="${user.identityCardImage}" type="text">
+                                           th:field="${user.identityCardImage}" type="file">
                                     <br>
-                                    <label class="small mb-1" for="selfie">Selfie:</label>
-                                    <input id="selfie" name="selfie" required th:field="${user.selfie}" type="text">
-                                    <br>
-
-
 
                                     <label class="small mb-1" for="age">Age:</label>
                                     <input id="age" name="age" required th:field="${user.age}" type="text">

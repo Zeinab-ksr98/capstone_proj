@@ -81,6 +81,7 @@ public class AddressService {
                 - B / 6 * cos2SigmaM * (-3 + 4 * Math.pow(sinSigma, 2)) * (-3 + 4 * Math.pow(cos2SigmaM, 2))));
 
         double distanceMt = SEMI_MINOR_AXIS_MT * A * (sigma - deltaSigma);
+//        distance is returned by km
         return distanceMt / 1000;
     }
     public List<Hospital> sortHospitalsByDistance(Address pickupAddress, List<Hospital> hospitals) {
@@ -134,6 +135,45 @@ public class AddressService {
         }
 
         return sortedAmbulances;
+    }
+    // Method to filter and sort  ambulances by distance less than the given
+    public List<Ambulance> sortAndFilterAmbulancesByDistance(Address pickupAddress, List<Ambulance> ambulances, double maxDistance) {
+        List<Ambulance> sortedAndFilteredAmbulances = new ArrayList<>();
+
+        for (int i = 0; i < ambulances.size() - 1; i++) {
+            for (int j = i + 1; j < ambulances.size(); j++) {
+                Ambulance ambulance1 = ambulances.get(i);
+                Ambulance ambulance2 = ambulances.get(j);
+
+                double distance1 = calculateDistance(pickupAddress.getLatitude(), pickupAddress.getLongitude(),
+                        ambulance1.getAddress().getLatitude(), ambulance1.getAddress().getLongitude());
+
+                double distance2 = calculateDistance(pickupAddress.getLatitude(), pickupAddress.getLongitude(),
+                        ambulance2.getAddress().getLatitude(), ambulance2.getAddress().getLongitude());
+
+                if (distance1 > distance2) {
+                    // Swap ambulances
+                    Ambulance temp = ambulances.get(i);
+                    ambulances.set(i, ambulances.get(j));
+                    ambulances.set(j, temp);
+                }
+            }
+        }
+
+        // Filter ambulances based on max distance while maintaining sorted order
+        for (Ambulance ambulance : ambulances) {
+            double distance = calculateDistance(pickupAddress.getLatitude(), pickupAddress.getLongitude(),
+                    ambulance.getAddress().getLatitude(), ambulance.getAddress().getLongitude());
+
+            if (distance <= maxDistance) {
+                sortedAndFilteredAmbulances.add(ambulance);
+            } else {
+                // Since ambulances are sorted, once distance exceeds maxDistance, no need to check further
+                break;
+            }
+        }
+
+        return sortedAndFilteredAmbulances;
     }
 
 

@@ -12,7 +12,7 @@ import java.util.UUID;
 
 
 public interface AmbulanceRequestRepository extends JpaRepository<AmbulanceRequest, Long> {
-    @Query("SELECT o FROM AmbulanceRequest o WHERE o.hospital.id =?1 or o.ambulance.id=?1")
+    @Query("SELECT o FROM AmbulanceRequest o WHERE o.hospital.id =?1 or o.ambulance.id=?1 or o.sender.id=?1")
     List<AmbulanceRequest> findAllRequestForUser(@Param("userId") UUID userID);
     @Query("SELECT o FROM AmbulanceRequest o WHERE (o.sender.id =?1 or o.hospital.id=?1 or o.ambulance.id=?1) and o.status=?2")
     List<AmbulanceRequest> findAllRequestsForUserByStatus(@Param("userId") UUID userID, @Param("status") AmbulanceRequestStatus status);

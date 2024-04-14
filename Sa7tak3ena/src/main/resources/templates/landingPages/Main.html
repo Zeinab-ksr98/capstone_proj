@@ -169,29 +169,53 @@
                             </div>
                         </h5>
                         <h5>
-                            <div class="mb-4">
-                                <label class="form-label fw-bold" for="companyName">Company Name:</label>
-                                <input class="form-control" id="companyName" name="companyName" required
-                                       th:field="*{companyName}" type="text">
-                                <div class="invalid-feedback">Please enter the company name.</div>
+                            <div class="row mb-4">
+                                <div class="col-6">
+                                    <label class="form-label fw-bold" for="companyName">Company Name:</label>
+                                    <input class="form-control" id="companyName" name="companyName" required
+                                           th:field="*{companyName}" type="text" placeholder="username">
+                                    <div class="invalid-feedback">Please enter the company name.</div>
+                                </div>
+                                <div class=" col-6">
+
+                                    <label class="form-label fw-bold" for="publicName">Public Name:</label>
+                                    <input class="form-control" id="publicName" name="publicName" required
+                                           th:field="*{publicName}" type="text">
+                                    <div class="invalid-feedback">Please enter the public name.</div>
+                                </div>
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-6">
+                                    <label class="form-label fw-bold" for="location">Address:</label>
+                                    <input class="form-control" id="location" name="location" required th:field="*{location}" placeholder="city,street,nearby" type="text">
+                                    <div class="invalid-feedback">Please enter an address.</div>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label fw-bold" for="region">Region:</label><br>
+                                    <select class="form-select form-control" id="region" name="region" required th:field="*{region}">
+                                        <option th:each="district : ${T(com.dgpad.thyme.model.enums.Distracts).values()}"
+                                                th:value="${district}" th:text="${district.getValue()}"></option>
+                                    </select>
+                                </div>
+
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-6">
+                                    <label class="form-label fw-bold" for="email">Email:</label>
+                                    <input class="form-control" id="email" name="email" required th:field="*{email}"
+                                           type="email">
+                                    <div class="invalid-feedback">Please enter a valid email address.</div>
+                                </div>
+                                <div class=" col-6">
+
+                                    <label class="form-label fw-bold" for="phone">Phone:</label>
+                                    <input class="form-control" id="phone" name="phone" required th:field="*{phone}" maxlength="8" type="tel">
+                                </div>
                             </div>
 
-                            <div class="mb-4">
-                                <label class="form-label fw-bold" for="publicName">Public Name:</label>
-                                <input class="form-control" id="publicName" name="publicName" required
-                                       th:field="*{publicName}" type="text">
-                                <div class="invalid-feedback">Please enter the public name.</div>
-                            </div>
-
-                            <div class="mb-4">
-                                <label class="form-label fw-bold" for="email">Email:</label>
-                                <input class="form-control" id="email" name="email" required th:field="*{email}"
-                                       type="email">
-                                <div class="invalid-feedback">Please enter a valid email address.</div>
-                            </div>
-                            <div class="offset-md-9"> <!-- Aligning button to the right -->
+                                <div class="offset-md-9"> <!-- Aligning button to the right -->
                                 <button class="btn btn-primary btn-lg" type="submit">Submit Request</button> <!-- Making button bigger -->
-                            </div>
+                                </div>
                         </h5>
                     </div>
                 </div>

@@ -14,6 +14,10 @@ import com.dgpad.thyme.model.users.User;
 import com.dgpad.thyme.service.*;
 import com.dgpad.thyme.service.UserComplements.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -21,10 +25,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 //the following controller group out the common functions that are accessed by all the users
 @Controller
@@ -105,7 +106,10 @@ public class accountController {
 
         else if (userService.getCurrentUser().getRole()== Role.PATIENT){
             List<AmbulanceRequest> requests = ambulancerequestService.findAllAmbulanceRequestsForUserByStatus(userService.getCurrentUser().id, AmbulanceRequestStatus.PENDING);
+            model.addAttribute("user", patientService.getPatientById(userService.getCurrentUser().id));
             model.addAttribute("requests_size",requests.size());
+            model.addAttribute("AmbulanceRequests",ambulancerequestService.getAllRequestsForUser(userService.getCurrentUser().id) );
+
             model.addAttribute("requests",requestService.getAllRequestsForUser(userService.getCurrentUser().id) );
             return "patient/Home";
         }
@@ -116,6 +120,7 @@ public class accountController {
             analytics.add(cu.getReservations().size());
             analytics.add(cu.getHospitalSections().size());
             analytics.add(hospitalService.getTotalBeds(cu.getAvailableBeds()));
+            model.addAttribute("AmbulanceRequests",hospitalService.getAllAmbulanceRequestsForCustomerWithin24hs(cu.id) );
 
             model.addAttribute("analytics",analytics);
             List<Hospital> hospitals = hospitalService.getAllHospitalsSortedByReservationSize();
@@ -159,6 +164,24 @@ public class accountController {
 
         return "account/Profile";
     }
+    @GetMapping(value = "/{userId}/image")
+    public ResponseEntity<byte[]> getUserImage(@PathVariable UUID userId, @PathVariable String image) {
+        Patient patient = patientService.getPatientById(userId);
+        byte[] imageBytes = null; // declare the variable outside the if blocks
+
+        if ("identityCardImage".equals(image)) { // Corrected string comparison
+            imageBytes = java.util.Base64.getDecoder().decode(patient.getIdentityCardImage());
+        }
+        if (imageBytes == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_JPEG);
+        return new ResponseEntity<>(imageBytes, headers, HttpStatus.OK);
+    }
+
+
     @PostMapping("/profile-edit-ambulance")
     @PreAuthorize("hasAnyAuthority('AMBULANCE')")
     public String editUserProfile(@ModelAttribute("newuser") Ambulance user) {

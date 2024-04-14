@@ -3,7 +3,9 @@ package com.dgpad.thyme.controller;
 import com.dgpad.thyme.Email.EmailService;
 import com.dgpad.thyme.hospital_dataScraping.HospitalRecord;
 import com.dgpad.thyme.hospital_dataScraping.MOHService;
+import com.dgpad.thyme.model.enums.Distracts;
 import com.dgpad.thyme.model.enums.Role;
+import com.dgpad.thyme.model.usercomplements.AccountRequest;
 import com.dgpad.thyme.model.usercomplements.Address;
 import com.dgpad.thyme.model.usercomplements.AmbulanceAgency;
 import com.dgpad.thyme.model.usercomplements.BedCategory;
@@ -46,6 +48,8 @@ public class AdminController {
     @Autowired
     private AmbulanceAgencyService ambulanceAgencyService;
     @Autowired
+    private AddressService addressService;
+    @Autowired
     private BedCategoryService bedCategoryService;
     @Autowired
     private BedCategoryRequestService bedCategoryRequestService;
@@ -59,7 +63,6 @@ public class AdminController {
         model.addAttribute("userrole", userService.getCurrentUser().getRole().toString());
         model.addAttribute("users", userService.getAllUsersNotBlocked());
         model.addAttribute("agencies", ambulanceAgencyService.getAllAgencies());
-
         return "Admin/manage-users";
     }
     @PostMapping("/edit-account")
@@ -78,9 +81,12 @@ public class AdminController {
         emailService.sendEmail(to, subject,massage);
         return "redirect:/manage-users";
     }
+
     @PostMapping(value = "/admin-create-withRole")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public String createAdmin(@RequestParam("username") String userName,
+                              @RequestParam("location") String location,
+                              @RequestParam("region") Distracts region,
                               @RequestParam(value = "publicname", required = false) String publicName,
                               @RequestParam("email") String email,
                               @RequestParam("phone") String phone,
@@ -91,8 +97,13 @@ public class AdminController {
             return "error-page";
         }
         Role selectedRole = Role.valueOf(role.name());
+        Address address =new Address();
+        address.setREGION(region.toString());
+        address.setName(location);
+        address=addressService.save(address);
     if (selectedRole == Role.HOSPITAL) {
         Hospital hospital = new Hospital(userName, publicName, email, passwordEncoder.encode("123"), phone,true);
+        hospital.setAddress(address);
         hospitalService.save(hospital);
         emailService.senddetailsEmail(userService.getUserById(hospital.id).email,1);
 
@@ -105,12 +116,27 @@ public class AdminController {
     else if (selectedRole == Role.AMBULANCE) {
         Ambulance ambulance = new Ambulance(userName, publicName, email, passwordEncoder.encode("123"), phone,true);
         ambulance.setAgency(agency);
+        ambulance.setAddress(address);
         ambulanceService.save(ambulance);
         emailService.senddetailsEmail(userService.getUserById(ambulance.getId()).email,1);
     }
     return "redirect:/manage-users";
 
 }
+    @PostMapping("/request-account")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public String requesttoaccount(@RequestParam("id") int id,@RequestParam("agency") AmbulanceAgency agency ){
+        try {
+            AccountRequest accountRequest=accountRequestService.getRequestById(id);
+            // Call the createAdmin method
+            String result = createAdmin(accountRequest.getCompanyName(), accountRequest.getLocation(), accountRequest.getRegion(), accountRequest.getPublicName(), accountRequest.getEmail(), accountRequest.getPhone(), accountRequest.getType(), agency, null);
+            // Handle the result if needed
+        } catch (IOException e) {
+            // Handle IOException
+            e.printStackTrace();
+        }
+        return "redirect:/home";
+    }
 
 //agency
     @GetMapping("/manage-agency")

@@ -19,11 +19,6 @@ public class Address {
     private double longitude;
     private String name;
     private String REGION;
-//    private String street;
-//    private String city;
-//    @Enumerated(EnumType.STRING)
-//    private Distracts distract;
-
 
     public Address(String name) {
         this.name = name;

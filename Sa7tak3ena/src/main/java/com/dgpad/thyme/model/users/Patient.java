@@ -25,8 +25,10 @@ import java.util.UUID;
 public class Patient extends User {
     private String FirstName;
     private String LastName;
+    @Lob
+    @Column(columnDefinition = "MEDIUMBLOB")
     private String identityCardImage;//passport or id
-    private String selfie;
+
     private int age;
     private boolean verified;
     private Boolean verifiedPhone;
@@ -51,7 +53,6 @@ public class Patient extends User {
         this.FirstName=firstName;
         this.LastName=Lastname;
         this.identityCardImage=null;
-        this.selfie=null;
         this.age=0;
         this.gender=gender;
         this.nationality=null;

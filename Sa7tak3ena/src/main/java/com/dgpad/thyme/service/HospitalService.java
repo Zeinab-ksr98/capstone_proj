@@ -1,11 +1,15 @@
 package com.dgpad.thyme.service;
 
 
+import com.dgpad.thyme.model.Reservation;
+import com.dgpad.thyme.model.requests.AmbulanceRequest;
 import com.dgpad.thyme.model.usercomplements.Beds;
 import com.dgpad.thyme.model.users.Hospital;
 import com.dgpad.thyme.repository.HospitalRepository;
 import com.dgpad.thyme.service.UserComplements.BedsService;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,14 +39,11 @@ public class HospitalService {
     public List<Hospital> getAllHospitals(){
         return hospitalRepository.findAll();
     }
-    public List<Hospital> getAllHospitalsSortedByReservationSize() {
-        List<Hospital> hospitals = getAllEnabledHospitals();
-        return hospitals.stream()
-                .sorted(Comparator.comparingInt(hospital -> hospital.getReservations().size()))
-                .collect(Collectors.toList());
-    }
     public List<Hospital> getAllEnabledHospitals(){
         return hospitalRepository.getAllEnabledHospitals();
+    }
+    public List<Hospital> getAllHospitalsSortedByReservationSize(){
+        return hospitalRepository.getAllHospitalsSortedByReservationSize();
     }
 
     public Hospital getHospitalById(UUID id){
@@ -69,6 +70,18 @@ public class HospitalService {
     }
     public List<Hospital> findHospitalsWithAvailableEmergencyBeds(String categoryName) {
         return hospitalRepository.findHospitalsWithAvailableEmergencyBeds(categoryName);
+    }
+    public List<AmbulanceRequest> getAllAmbulanceRequestsForCustomerWithin24hs(UUID userId){
+        // Retrieve all reservations for the user
+        List<AmbulanceRequest> allRequest = getHospitalById(userId).getAmbulanceRequest();
+
+        // Filter reservations within the last 24 hours
+        LocalDateTime twentyFourHoursAgo = LocalDateTime.now().minusHours(24);
+        List<AmbulanceRequest> requestsWithin24Hours = allRequest.stream()
+                .filter(reservation -> reservation.getCreatedAt().isAfter(twentyFourHoursAgo))
+                .collect(Collectors.toList());
+        // Add both lists to the model
+        return requestsWithin24Hours;
     }
 
 

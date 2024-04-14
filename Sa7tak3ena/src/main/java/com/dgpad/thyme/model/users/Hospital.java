@@ -40,7 +40,7 @@ public class Hospital extends User {
     @OneToOne
     private Block block;
     @OneToMany
-    private List<AmbulanceRequest> ambulanceRequest;
+    public List<AmbulanceRequest> ambulanceRequest;
 
     @OneToMany(mappedBy = "hospital", cascade = CascadeType.ALL,orphanRemoval = true)
     public List<Reservation> reservations;

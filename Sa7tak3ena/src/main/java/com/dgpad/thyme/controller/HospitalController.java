@@ -1,8 +1,6 @@
 package com.dgpad.thyme.controller;
 
-import com.dgpad.thyme.model.enums.AmbulanceRequestStatus;
-import com.dgpad.thyme.model.enums.Ambulanceservice;
-import com.dgpad.thyme.model.enums.Role;
+import com.dgpad.thyme.model.enums.*;
 import com.dgpad.thyme.model.requests.AmbulanceRequest;
 import com.dgpad.thyme.model.requests.RequestBedCategory;
 import com.dgpad.thyme.model.usercomplements.*;
@@ -137,38 +135,35 @@ public class HospitalController {
         bedCategoryRequestService.save(requested);
         return "redirect:/manage-beds";
     }
-//    @PostMapping("/ambulance_detailrequest")
-//    @PreAuthorize("hasAnyAuthority('PATIENT')")
-//    public String submitDetailedRequest(@RequestParam("description") String regin,@RequestParam("name") String name,@RequestParam("phone") String phone,@RequestParam("description") String description,@RequestParam("location") String location,  Model model) {
-//        User cu =userService.getCurrentUser();
-//        Address address =new Address();
-//        address.setName(location);
-//        address.setREGION(regin);
-//        address= addressService.save(address);
-////        dispatch according to availablity (enabled ones) and same region
-//        List<Ambulance> filteredAmbulances= addressService.sortAmbulancesByDistance(address,ambulanceservice.getAllCompletedAmbulances());
-//        for (int i = 0; i < 2; i++) {
-//            Ambulance A = filteredAmbulances.get(i);
-//            AmbulanceRequest AR =new AmbulanceRequest();
-//            AR.setAmbulance(A);
-//            if (cu.getRole() == Role.PATIENT){
-//                AR.setService(Ambulanceservice.homeService);
-//
-//            }
-//            else {
-//                AR.setService(Ambulanceservice.transfer);
-//                AR.setTo(hospitalService.getHospitalById(cu.id).getAddress());
-//            }
-//            AR.setStatus(AmbulanceRequestStatus.PENDING);
-//            AR.setPickupaddress(address);
-//            AR.setDescription(description);
-//            AR.setSender(userService.getCurrentUser());
-//            AR.setCreatedAt(LocalDateTime.now());
-//            ambulanceRequestService.save(AR);
-//        }
-//        model.addAttribute("alertMessage", "Request sent successfully!");
-//        return "redirect:/home";
-//    }
+    @PostMapping("/hospital_detailambulancerequest")
+    @PreAuthorize("hasAnyAuthority('HOSPITAL')")
+    public String submitDetailedRequest(@RequestParam("toH") boolean toH, @RequestParam("region") Distracts regin,@RequestParam("address") String location, @RequestParam("Ambulancetype") Ambulancetypes Ambulancetype, @RequestParam("name") String name, @RequestParam("phone") String phone, @RequestParam("description") String description,  Model model) {
+        Hospital cu =hospitalService.getHospitalById(userService.getCurrentUser().id);
+        String Region;
+        if (toH)
+            Region = regin.toString();
+        else
+            Region=cu.getAddress().getREGION();
+
+        if (!ambulanceservice.getAllCompletedAmbulancesinRegion(Region).isEmpty()){
+            Address address =new Address();
+            address.setName(location);
+            address.setREGION(regin.toString());
+            address= addressService.save(address);
+    //        dispatch according to availablity (enabled ones) and same region
+    //        address can be eather from or to
+            description=name +" "+phone+"\n"+description ;
+            ambulanceRequestService.hospitalrequestingAmbulance(address,Region,toH,Ambulancetype,description);
+            model.addAttribute("alertMessage", "Request sent successfully!");
+            return "redirect:/home";
+
+        }
+        else{
+            model.addAttribute("alertMessage", "ambulances are out of service near this region!");
+            return "account/regionerror";
+        }
+
+    }
     //it works but no need for it cause the main and the branch are not connected --> no main that monitor
 //    @PostMapping(value = "/create-hospital")
 //    @PreAuthorize("hasAnyAuthority('HOSPITAL')")

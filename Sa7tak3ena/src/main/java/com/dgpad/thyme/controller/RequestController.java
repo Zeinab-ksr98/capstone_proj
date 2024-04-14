@@ -155,7 +155,6 @@ public class RequestController {
             hospitalService.getHospitalById(hospitalId).requests.add(request);
             patientService.save(patient);
             hospitalService.save(hospitalService.getHospitalById(hospitalId));
-
         }
         patientService.save(patient);
         model.addAttribute("alertMessage", "Request sent successfully!");
@@ -166,12 +165,14 @@ public class RequestController {
     public String changeRequestStatus(@PathVariable ReservationStatus status,@PathVariable Long id) {
         requestService.statusRequest(id ,status);
         patientService.statusRequest(id,requestService.getRequestById(id).getPatient().id, status);
+        if(userService.getCurrentUser().getRole() == Role.PATIENT)
+            return "redirect:/home";
         return "redirect:/get-all-requests";
     }
 //    accept request is done by two ways ether only change status (when no need for ambulance)
 //    or by using accept-request where status, ambulance car are modified
     @PostMapping("/accept-request")
-    @PreAuthorize("hasAnyAuthority('PATIENT','HOSPITAL')")
+    @PreAuthorize("hasAnyAuthority('HOSPITAL')")
     public String acceptRequest(@RequestParam Long id, @RequestParam Ambulancetypes type) {
         requestService.acceptRequest(id ,type);
         patientService.acceptRequest(id,requestService.getRequestById(id).getPatient().id,type);
@@ -190,9 +191,10 @@ public class RequestController {
             for (AmbulanceAgency agency : request.getPreferedAmbulance()) {
                 // Filtering ambulances
                 List<Ambulance> filteredAmbulance = ambulanceService.getAmbulanceByAvailableCarTypeAndAgency(agency, request.getCarType());
-                filteredAmbulance = addressService.sortAmbulancesByDistance(request.getPickupAddress(), filteredAmbulance);
+                filteredAmbulance = addressService.sortAndFilterAmbulancesByDistance(request.getPickupAddress(), filteredAmbulance, 80); // Filter by 80 km
+//                filteredAmbulance = addressService.sortAmbulancesByDistance(request.getPickupAddress(), filteredAmbulance);
 
-                for (int i = 0; i < 2 && i < filteredAmbulance.size(); i++) {
+                for (int i = 0;  i < filteredAmbulance.size(); i++) {
                     Ambulance ambulance = filteredAmbulance.get(i);
                     AmbulanceRequest ambulanceRequest = new AmbulanceRequest();
 
@@ -241,7 +243,7 @@ public class RequestController {
         // Update request status
 //        requestService.statusRequest(id, ReservationStatus.RESERVED);
 
-        return "redirect:/get-all-requests";
+        return "redirect:/home";
     }
 
 

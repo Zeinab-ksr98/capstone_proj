@@ -1,5 +1,6 @@
 package com.dgpad.thyme.model.usercomplements;
 
+import com.dgpad.thyme.model.enums.Distracts;
 import com.dgpad.thyme.model.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,9 @@ public class AccountRequest {
     private Role Type;//all roles except patient
     private String companyName;
     private String publicName;
+    private String location;
+    private Distracts Region;
+    private String phone;
     @Email
     @Column(nullable = false, unique = true)
     private String email;
