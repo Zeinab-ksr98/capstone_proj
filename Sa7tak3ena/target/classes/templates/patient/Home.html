@@ -14,39 +14,111 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <style>
-
+        #notificationAlert {
+            position: fixed;
+            bottom: 10px; /* Adjust as needed */
+            right: 10px; /* Adjust as needed */
+            width: 200px; /* Adjust as needed */
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 18px;
+            background-color: #6ea3c4;
+            color: white;
+            z-index: 1000; /* Ensure it's above other elements */
+        }
     </style>
 </head>
 
 <body>
     <div class="d-flex">
         <div th:replace="fragments/Pheader :: header"></div>
+
+
         <div class="container m-5">
+<!--            &lt;!&ndash;  Notification &ndash;&gt;-->
+<!--            <div id="notificationAlert" class="alert alert-warning alert-dismissible fade show" role="alert" th:if="${alertMessage}">-->
+<!--                <span id="notificationMessage" th:text="${alertMessage}"></span>-->
+<!--            </div>-->
+
             <div class="d-flex justify-content-end align-items-end mr-3" >
                 <a th:href="@{/ambulance_request}"  onclick="return showHrefModal(this)">
                     <img id="callButton" width="130" th:src="@{/assits/call%20buton.png}" alt="external-call-medical-filled-outline-satawat-anukul"/>
                 </a>
             </div>
 
-            <div th:replace="account/Requests :: requests"  ></div>
-            <table class="table table-light mb-0" th:if="${(AmbulanceRequests != null and not #lists.isEmpty(AmbulanceRequests))}">
+
+                <table class="table table-light mb-3" th:if="${(requests != null and not #lists.isEmpty(requests))}"  >
+                    <thead class="small text-uppercase bg-body text-muted">
+                    <tr>
+                        <th>Hospital Name</th>
+                        <th>Reservation Type</th>
+                        <th >Medical Record</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="align-middle" th:each="request : ${requests}"  th:if="${request.status != request.status.RESERVED }" th:unless="${request.status == request.status.Deleted}">
+                        <td th:text="${request.hospital.publicName}" th:if="${user.role.toString() == 'PATIENT'}"></td>
+                        <td th:text="${request.reservationType}"></td>
+                        <td>
+                            <a data-toggle="modal" th:attr="data-target='#detailsModal'+${request.id}"> view details</a>
+
+                        </td>
+                        <td th:text="${request.status}"></td>
+                        <td>
+                            <!-- Show buttons based on userrole and status -->
+                            <div th:if="${user.role.toString() == 'PATIENT' and request.status== request.status.ACCEPTED}">
+                                <a class="btn btn-success" th:href="@{/reserve-request/{id}(id=${request.id})}">Confirm</a>
+                            </div>
+                            <div th:if="${user.role.toString() == 'PATIENT' and request.status== request.status.PENDING}">
+                                <a class="btn btn-danger" th:href="@{/change-requestStatus/{status}/{id}(status=${request.status.Deleted},id=${request.id})}">Delete</a>
+                            </div>
+
+
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            <div th:each="request : ${requests}" th:id="'detailsModal'+${request.id}" class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Update Category</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div>
+                            <h5 th:text="${request.medicalRecord}" ></h5>
+                            <div th:each="image :${ request.DoctorReport}" >
+                                <img th:if="${image.id != null}" th:src="@{/image/{imageId}(imageId=${image.id})}" class="img-thumbnail" alt=" Image">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <table class="table table-light " th:if="${(AmbulanceRequests != null and not #lists.isEmpty(AmbulanceRequests))}">
                 <thead class="small text-uppercase bg-body text-muted">
                 <tr>
                     <th >Ambulance Name</th>
                     <th>Reservation Type</th>
-                    <th >Medical Record</th>
-                    <th >Need Ambulance</th>
-                    <th >Ambulance Agencies</th>
                     <th>Status</th>
+                    <th >Medical Record</th>
+                    <th>Pickup address</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr class="align-middle" th:each="Arequest : ${AmbulanceRequests}" >
-                    <td th:text="${Arequest.ambulance.publicName}" ></td>
-                    <td th:text="${Arequest.hospital}" ></td>
+                    <td th:text="${Arequest.getAmbulance().getPublicName()}" ></td>
+                    <td th:text="${Arequest.getService()}" ></td>
                     <td th:text="${Arequest.status}"></td>
                     <td th:text="${Arequest.description}" ></td>
-                    <td th:text="${Arequest.pickupaddress}" ></td>
+                    <td>
+                        <a th:href="'https://www.google.com/maps?q=' + ${Arequest.pickupaddress.latitude} + ',' + ${Arequest.pickupaddress.longitude}" target="_blank">
+                            View on Map
+                        </a>
+                    </td>
                 </tr>
                 </tbody>
             </table>
@@ -68,6 +140,22 @@
                     </div>
                 </div>
             </div>
+            <div class="modal fade" id="detailsIncompleteModal" tabindex="-1" aria-labelledby="detailsIncompleteModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+
+                        <div class="modal-body text-center">
+                            <img width="100" height="100" src="https://img.icons8.com/keek/100/experimental-error-keek.png" alt="experimental-error-keek"/>
+                            <div>
+                                <h5>Your account details are incomplete.</h5><p>Please verify and complete your account information in the profile section.<p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Confirmation Modal -->
             <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
@@ -75,7 +163,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="confirmationModalLabel">Confirmation</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <button  class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"> x</button>
                         </div>
                         <div class="modal-body">
                             Are you sure you want to request?
@@ -92,16 +180,24 @@
             <script th:inline="javascript">
                 function showHrefModal(anchor) {
                     var requestsSize = /*[[${requests_size}]]*/;
-                    if (requestsSize > 0) {
-                        $('#requestModal').modal('show');
+                    var detailsComplete = /*[[${DetailsComplete}]]*/;
+                    if (!detailsComplete) {
+                        // Details are not complete, show an error modal
+                        $('#detailsIncompleteModal').modal('show');
                         return false; // Prevent default anchor behavior
-                    } else if (requestsSize <= 0) {
-                        // Show the confirmation modal
-                        $('#confirmationModal').modal('show');
-                        // Return false to prevent default anchor behavior until the user confirms
-                        return false;
-                    } else {
-                        return true; // Allow default anchor behavior
+                    }
+                    else {
+                        if (requestsSize > 0) {
+                            $('#requestModal').modal('show');
+                            return false; // Prevent default anchor behavior
+                        } else if (requestsSize <= 0) {
+                            // Show the confirmation modal
+                            $('#confirmationModal').modal('show');
+                            // Return false to prevent default anchor behavior until the user confirms
+                            return false;
+                        } else {
+                            return true; // Allow default anchor behavior
+                        }
                     }
                 }
 
@@ -125,14 +221,17 @@
             </script>
         </div>
     </div>
-    <script th:if="${alertMessage}" th:inline="javascript">
-        /*<![CDATA[*/
-        // Display an alert with the message
-        alert([[${alertMessage}]]);
-        window.location.href = '/home';
-        /*]]>*/
-    </script>
+<!--    <script th:inline="javascript">-->
+<!--        $(document).ready(function() {-->
+<!--            $('#notificationAlert').delay(3000).fadeOut();-->
+
+<!--            $('[data-alert="true"]').on('closed.bs.alert', function () {-->
+<!--                 });-->
+
+<!--        });-->
+<!--    </script>-->
     <script th:src="@{/webjars/bootstrap/5.3.1/js/bootstrap.bundle.min.js}"></script>
+
 
 
 </body>

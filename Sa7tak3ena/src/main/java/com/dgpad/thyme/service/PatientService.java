@@ -5,6 +5,7 @@ import com.dgpad.thyme.Whatsapp.PatientDTO;
 import com.dgpad.thyme.Whatsapp.VerificationCodeRepository;
 import com.dgpad.thyme.Whatsapp.VerificationCodes;
 import com.dgpad.thyme.Whatsapp.VerificationSender;
+import com.dgpad.thyme.model.Image;
 import com.dgpad.thyme.model.enums.Ambulancetypes;
 import com.dgpad.thyme.model.enums.Gender;
 import com.dgpad.thyme.model.enums.ReservationStatus;
@@ -13,10 +14,13 @@ import com.dgpad.thyme.model.users.Patient;
 import com.dgpad.thyme.model.users.User;
 import com.dgpad.thyme.repository.PatientRepository;
 import com.dgpad.thyme.repository.UserRepository;
+import com.dgpad.thyme.service.UserComplements.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -33,6 +37,8 @@ public class PatientService {
     private VerificationCodeRepository verificationCodeRepository;
     @Autowired
     private VerificationSender verificationSender;
+    @Autowired
+    private ImageService imageService;
     public Patient save(Patient user){
         return patientRepository.save(user);
     }
@@ -78,20 +84,14 @@ public class PatientService {
         // Convert StringBuilder to String and return
         return randomStringBuilder.toString();
     }
-    public Patient update(Patient currentuser,Patient user){
-        if (user.getUsername()!=null)
-            currentuser.setUsername(user.getUsername());
-        if (user.getEmail()!=null)
-            currentuser.setEmail(user.getEmail());
+    public Patient update(Patient currentuser,Patient user,List<MultipartFile> imageFile) throws IOException {
 
         if (user.getFirstName()!=null)
             currentuser.setFirstName(user.getFirstName());
         if (user.getLastName()!=null)
             currentuser.setLastName(user.getLastName());
-
-
-        if (user.getIdentityCardImage()!=null)
-            currentuser.setIdentityCardImage(user.getIdentityCardImage());
+        List<Image> images = imageService.saveImages(imageFile);
+        currentuser.setIdentityCardImage(images.get(0));
 
         currentuser.setVerified(true);
 

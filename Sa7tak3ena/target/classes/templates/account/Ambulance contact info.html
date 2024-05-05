@@ -1,66 +1,70 @@
+
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
     <!-- Include Bootstrap JavaScript and jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,700;1,300&display=swap"/>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"/>
     <link rel="stylesheet" th:href="@{css/test.css}">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
 </head>
 <body>
 <div class="container-fluid">
-    <div class="d-flex">
-    <div th:if="${user.getRole().toString() == 'PATIENT'}">
-        <div th:replace="fragments/Pheader :: header"></div>
-    </div>
-    <div th:if="${user.getRole().toString() == 'AMBULANCE'}">
-        <div th:replace="fragments/Aheader :: header"></div>
-    </div>
-    <div th:if="${user.getRole().toString() == 'HOSPITAL'}">
-        <div th:replace="fragments/Hheader :: header"></div>
-    </div>
-    <div th:if="${user.getRole().toString() == 'ADMIN'}">
-        <div th:replace="fragments/Adimnheader :: header"></div>
-    </div>
-    <div class="credits  mt-5">
-<!--            <div class="row">-->
-                <div class="col-6">
-                    <div class="contact-map">
-                        <iframe src="https://www.google.com/maps/d/embed?mid=1BZxJcUFEX3U3tZp4tx43YZAbvtA&ehbc=2E312F" width="540" height="480"></iframe>
-                    </div>
-                </div>
-                <div class=" d-flex justify-content-end align-items-end">
-                    <div th:each="ambulance: ${ambulances}" class="col-1">
-                        <div class=" mt-4" th:data-phone="${ambulance.phone}">
-                            <div class="">
-                                <!-- Your content for component-4-child goes here -->
-                            </div>
-                            <div class="call-ambulance" onclick="callAmbulance(this)" th:text="Call+${ambulance.publicName}"></div>
-                            <img width="200px" alt="Agency Screenshot" th:src="@{assits/screenshot-20230412-141018-1@2x.png}" />
+        <div class="d-flex">
+            <div th:if="${user.getRole().toString() == 'PATIENT'}">
+                <div th:replace="fragments/Pheader :: header"></div>
+            </div>
+            <div th:if="${user.getRole().toString() == 'AMBULANCE'}">
+                <div th:replace="fragments/Aheader :: header"></div>
+            </div>
+            <div th:if="${user.getRole().toString() == 'HOSPITAL'}">
+                <div th:replace="fragments/Hheader :: header"></div>
+            </div>
+            <div th:if="${user.getRole().toString() == 'ADMIN'}">
+                <div th:replace="fragments/Adimnheader :: header"></div>
+            </div>
+        <div class="credits  mt-5 ml-3">
+    <div class="row">
+
+        <!-- Ambulances Column -->
+        <div class="col-lg-6">
+            <div class="row">
+                <div th:each="ambulance: ${ambulances}" class="col-6 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${ambulance.publicName}"></h5>
+                            <p class="card-text" th:text="${ambulance.phone}"></p>
+                            <p class="card-text" th:text="${ambulance.address.name}"></p>
+                            <p class="card-text" th:text="${ambulance.address.REGION}"></p>
+                            <button class="btn btn-primary" onclick="callAmbulance(this)" th:attr="data-phone=${ambulance.phone}">Call</button>
                         </div>
                     </div>
                 </div>
-
-                <script>
-                    function callAmbulance(element) {
-                        var phoneNumber = element.getAttribute('data-phone');
-                        alert('Phone number: ' + phoneNumber);
-                    }
-                </script>
-
-
             </div>
         </div>
+        <!-- Map Column -->
+
+        <div class="col-lg-6">
+            <div class="contact-map">
+                <iframe src="https://www.google.com/maps/d/embed?mid=1BZxJcUFEX3U3tZp4tx43YZAbvtA&ehbc=2E312F" width="100%" height="480"></iframe>
+            </div>
         </div>
-    </div>
+
     </div>
 </div>
+
+<script>
+    function callAmbulance(element) {
+        var phoneNumber = element.getAttribute('data-phone');
+        alert('Phone number: ' + phoneNumber);
+    }
+</script>
+        </div>
+</div>
+
 </body>
 </html>

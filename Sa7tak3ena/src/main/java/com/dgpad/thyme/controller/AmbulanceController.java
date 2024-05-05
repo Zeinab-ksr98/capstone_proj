@@ -1,6 +1,7 @@
 package com.dgpad.thyme.controller;
 
 import com.dgpad.thyme.Email.EmailService;
+import com.dgpad.thyme.model.Image;
 import com.dgpad.thyme.model.enums.*;
 import com.dgpad.thyme.model.requests.AmbulanceRequest;
 import com.dgpad.thyme.model.usercomplements.*;
@@ -16,16 +17,21 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class AmbulanceController {
     @Autowired
     private AStaffService aStaffService;
+    @Autowired
+    private EquipmentsService equipmentsService;
     @Autowired
     private UserService userService;
     @Autowired
@@ -35,6 +41,8 @@ public class AmbulanceController {
     private HospitalService hospitalService;
     @Autowired
     private AddressService addressService;
+    @Autowired
+    private ImageService imageService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -53,7 +61,7 @@ public class AmbulanceController {
     }
     @GetMapping(value = "/manage-staff")
     @PreAuthorize("hasAnyAuthority('AMBULANCE')")
-    public String hospitalSectionManagement(Model model) {
+    public String staffManagement(Model model) {
         Ambulance cu = ambulanceService.getAmbulanceById(userService.getCurrentUser().getId());
         model.addAttribute("user",cu);
         model.addAttribute("staff",cu.getParamedicList() );
@@ -62,31 +70,78 @@ public class AmbulanceController {
 
     @PostMapping("/add-staff")
     @PreAuthorize("hasAnyAuthority('AMBULANCE')")
-    public String addStaff(@RequestParam("name") String name,@RequestParam("image") String image) {
+    public String addStaff(@RequestParam("name") String name, @RequestParam("image") List<MultipartFile> imageFile, @RequestParam("phone") String phone) throws IOException {
         Ambulance cu = ambulanceService.getAmbulanceById(userService.getCurrentUser().getId());
         Paramedic staff = new Paramedic() ;
         staff.setName(name);
         staff.setAmbulance(cu);
-        staff.setImage(image);
+        staff.setPhone(phone);
+        List<Image> images = imageService.saveImages(imageFile);
+        staff.setImage(images.get(0));
         aStaffService.save(staff);
         return "redirect:/manage-staff";
     }
 
     @PostMapping("/update-staff")
     @PreAuthorize("hasAnyAuthority('AMBULANCE')")
-    public String updateStaff(@RequestParam("id") Long id, @RequestParam("updatedname") String name){
+    public String updateStaff(@RequestParam("id") Long id, @RequestParam("updatedname") String name ,@RequestParam("image") List<MultipartFile> imageFile,@RequestParam("updatedphone") String phone) throws IOException {
         Ambulance cu = ambulanceService.getAmbulanceById(userService.getCurrentUser().getId());
         Paramedic staff = aStaffService.getStaffById(id);
         staff.setName(name);
+        staff.setPhone(phone);
         staff.setAmbulance(cu);
+        List<Image> images = imageService.saveImages(imageFile);
+        staff.setImage(images.get(0));
         aStaffService.save(staff);
         return "redirect:/manage-staff";
     }
 
-    @GetMapping("/delete-staff/{id}")
+    @GetMapping("/swichactive-staff/{id}")
     @PreAuthorize("hasAnyAuthority('AMBULANCE')")
     public String deleteStaff(@PathVariable Long id) {
-        aStaffService.deleteStaff(id);
+        aStaffService.swichactiveStaff(id);
+        return "redirect:/manage-staff";
+    }
+    @GetMapping(value = "/manage-equipments")
+    @PreAuthorize("hasAnyAuthority('AMBULANCE')")
+    public String equipmentsManagement(Model model) {
+        Ambulance cu = ambulanceService.getAmbulanceById(userService.getCurrentUser().getId());
+        model.addAttribute("user",cu);
+        model.addAttribute("equipments",ambulanceService.getEquipmentsWithinMonthForAmbulance(cu) );
+        model.addAttribute("monthlyequipments", ambulanceService.getTotalEquipmentPricesWithinMonthForAmbulance(cu));
+
+        return "ambulanceAgency/manage-equipments";
+    }
+
+
+    @PostMapping("/add-equipments")
+    @PreAuthorize("hasAnyAuthority('AMBULANCE')")
+    public String addequipments(@RequestParam("name") String name,@RequestParam("price") int price) {
+        Ambulance cu = ambulanceService.getAmbulanceById(userService.getCurrentUser().getId());
+        Equipments equipment = new Equipments() ;
+        equipment.setName(name);
+        equipment.setPrice(price);
+        equipment.setAmbulance(cu);
+        equipment.setCreatedAt(LocalDateTime.now());
+        equipmentsService.save(equipment);
+        return "redirect:/manage-equipments";
+    }
+
+    @PostMapping("/update-equipments")
+    @PreAuthorize("hasAnyAuthority('AMBULANCE')")
+    public String updateEquipments(@RequestParam("id") int id, @RequestParam("updatedname") String name ,@RequestParam("updatedprice") int price){
+        Ambulance cu = ambulanceService.getAmbulanceById(userService.getCurrentUser().getId());
+        Equipments equipments = equipmentsService.getEquipmentById(id);
+        equipments.setName(name);
+        equipments.setPrice(price);
+        equipments.setAmbulance(cu);
+        equipmentsService.save(equipments);
+        return "redirect:/manage-staff";
+    }
+    @GetMapping("/delete-equipments/{id}")
+    @PreAuthorize("hasAnyAuthority('AMBULANCE')")
+    public String deleteEquipments(@PathVariable int id) {
+        equipmentsService.deleteEquipment(id);
         return "redirect:/manage-staff";
     }
     @GetMapping("/manage-car")
@@ -130,14 +185,29 @@ public class AmbulanceController {
     public String request(Model model) {
         Ambulance cu = ambulanceService.getAmbulanceById(userService.getCurrentUser().getId());
         List<Integer> analytics = new ArrayList<>();
-        analytics.add(cu.getAmbulanceRequests().size());
+        analytics.add(ambulanceRequestService.getAmbulanceRankForCurrentUserInCurrentMonth(cu.id));
         analytics.add(ambulanceCarService.findAllUserCarByStatus(AmbulanceStatus.Available, cu.id).size());
         analytics.add(cu.getParamedicList().size());
         model.addAttribute("user",cu);
-        model.addAttribute("requests", ambulanceRequestService.getAllRequestsForUser(cu.id));
+        model.addAttribute("requests", ambulanceRequestService.findAllAmbulanceRequestsForUserByStatus(cu.id, AmbulanceRequestStatus.PENDING));
         model.addAttribute("ambulances", ambulanceService.getcompletedAmbulanceByAgency(cu.getAgency()));
         model.addAttribute("analytics",analytics);
         model.addAttribute("admin", cu.isAdministrator());
+
+        model.addAttribute("equipments", ambulanceService.getTotalEquipmentPricesWithinMonthForAmbulance(cu));
+        Map<Month,Integer> requestsPerMonth = ambulanceRequestService.getRequestsPerMonth(cu.getId());
+        Map<Month,Integer> acceptedrequestsPerMonth = ambulanceRequestService.getAcceptedRequestsPerMonth(cu.getId());
+        Map<Month,Integer> patientsPerMonth = ambulanceRequestService.getPatientsPerMonth(cu.getId());
+        Map<Month, Paramedic> topParamedicPerMonth = ambulanceRequestService.findTopParamedicWithMostRequestsForEachMonthForAmbulance(cu.getId());
+        Month currentMonth = LocalDateTime.now().getMonth();
+        Paramedic topParamedicForCurrentMonth = topParamedicPerMonth.get(currentMonth);
+
+        // Add additional data to the model
+        model.addAttribute("topParamedicForCurrentMonth", topParamedicForCurrentMonth);
+        model.addAttribute("requestsPerMonth", requestsPerMonth);
+        model.addAttribute("acceptedrequestsPerMonth", acceptedrequestsPerMonth);
+
+        model.addAttribute("patientsPerMonth", patientsPerMonth);
 
         return "ambulanceAgency/home";
     }
@@ -172,7 +242,7 @@ public class AmbulanceController {
         Ambulance cu = ambulanceService.getAmbulanceById(userService.getCurrentUser().getId());
         model.addAttribute("newrequest",new AmbulanceRequest());
         model.addAttribute("stafflist",cu.getParamedicList() );
-        model.addAttribute("requests", ambulanceRequestService.getAllAmbulanceRequestsForUserWithin24hs(userService.getCurrentUser().getId()));
+        model.addAttribute("requests", ambulanceRequestService.findRequestsWithin24Hours(userService.getCurrentUser().getId()));
         List<Hospital> hospitals = hospitalService.findHospitalsWithAvailableEmergencyBeds("طوارئ");
         model.addAttribute("hospitals", hospitals);
         model.addAttribute("user",cu );
@@ -192,7 +262,7 @@ public class AmbulanceController {
         model.addAttribute("user",cu );
 
         model.addAttribute("cars", ambulanceCarService.findAllUserCarByStatus(AmbulanceStatus.Available,cu.id));
-        return "ambulanceAgency/Requests";
+        return "ambulanceAgency/HistoryRequests";
     }
     @GetMapping("/manage-nonAppedrequests")
     @PreAuthorize("hasAuthority('AMBULANCE')")
@@ -305,7 +375,7 @@ public class AmbulanceController {
             @RequestParam("emergencystaff") Paramedic paramedic,
             @RequestParam("emergencydescription") String description,
             @RequestParam("emergencyequipment") String equipment
-    ) {
+    ) throws IOException {
         //description is only changed by update details
         AmbulanceRequest r= ambulanceRequestService.update(id,Ambulanceservice.transfer,car.getType(),paramedic,ambulanceRequestService.getRequestById(id).getDescription(),equipment);
         r.setHospital(hospital);

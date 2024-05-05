@@ -1,6 +1,4 @@
 package com.dgpad.thyme.Email;
-
-import com.dgpad.thyme.model.users.User;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
@@ -8,12 +6,12 @@ import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
-import org.hibernate.type.descriptor.sql.internal.Scale6IntervalSecondDdlType;
+import com.twilio.Twilio;
+import com.twilio.type.PhoneNumber;
+import com.twilio.rest.api.v2010.account.Message;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
 import java.io.IOException;
-
 
 @Service
 public class EmailService {
@@ -40,6 +38,15 @@ public class EmailService {
                         "<p style=\"color: #666666; font-size: 16px; line-height: 1.5;\">We regret to inform you that your account has been deactivated.</p>" +
                         "<p style=\"color: #666666; font-size: 16px; line-height: 1.5;\">If you believe this deactivation is a mistake, please contact our support team immediately.</p>" +
                         "<p style=\"color: #666666; font-size: 16px; line-height: 1.5;\">Thank you for your understanding.</p>" +
+                        "<p style=\"color: #666666; font-size: 16px; line-height: 1.5;\">Best regards,<br>The Sa7tak3ena Team</p>" +
+                        "</div>");
+                break;
+            case 3:
+                content = new Content("text/html", "<div style=\"font-family: Arial, sans-serif;\">" +
+                        "<h2 style=\"color: #B03A2E; font-size: 24px; font-weight: bold; margin-bottom: 20px;\">Request Recieved</h2>" +
+                        "<p style=\"color: #666666; font-size: 16px; line-height: 1.5;\">please check your account a request has been recieved</p>" +
+                        "<p style=\"color: #666666; font-size: 16px; line-height: 1.5;\">pending request will be canceled within 10 min</p>" +
+                        "<p style=\"color: #666666; font-size: 16px; line-height: 1.5;\">Thank you for saving lives.</p>" +
                         "<p style=\"color: #666666; font-size: 16px; line-height: 1.5;\">Best regards,<br>The Sa7tak3ena Team</p>" +
                         "</div>");
                 break;
@@ -103,4 +110,8 @@ public class EmailService {
     }
 
 
+
+
 }
+
+

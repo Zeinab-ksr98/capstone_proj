@@ -12,8 +12,9 @@
 
 </head>
 <body style="background: #dbe2f4">
-<!--<div class="container-fluid " >-->
-    <div class="d-flex" >
+<div class="container-fluid">
+<div class="d-flex">
+    <div class="row align-items-center">
         <!--sides bar-->
         <div th:if="${user.role.toString() == 'PATIENT'}">
             <div th:replace="fragments/Pheader :: header"></div>
@@ -27,394 +28,488 @@
         <div th:if="${user.role.toString() == 'ADMIN'}">
             <div th:replace="fragments/Adimnheader :: header"></div>
         </div>
+
+            <div class="credits mx-5 ">
+                <div class="container-fluid">
         <div class="row align-items-center">
             <div class="col-12  m-5 card">
-            <div class="row">
-                <div class="col-12 ">
+                <div class="">
+                    <div class="col-12 ">
 
-                <ul class="nav nav-tabs " id="myTab" role="tablist" >
-                        <li class="nav-item " role="presentation" style="border-radius: 5px" >
-                            <a aria-controls="profile" aria-selected="true" class="nav-link active" data-toggle="tab" href="#profile" id="profile-tab"
-                               of="tab" role>Details</a>
-                        </li>
-                        <li class="nav-item" role="presentation" style="border-radius: 5px">
-                            <!-- Display "Verify account" for patients who are not verified -->
-                            <a aria-controls="Edit" aria-selected="false" class="nav-link" data-toggle="tab" href="#Edit" id="editprofile-tab"
-                               role="tab" th:if="${user.role.toString() == 'PATIENT' and !user.verified}">
-                                <p>Verify account</p>
-                            </a>
-                            <a aria-controls="Edit" aria-selected="false" class="nav-link" data-toggle="tab" href="#Edit" id="editprofile-tab"
-                               role="tab" th:if="${user.role.toString() != 'PATIENT'}">
-                                Edit
-                            </a>
-                        </li>
+                        <ul class="nav nav-tabs " id="myTab" role="tablist">
+                            <li class="nav-item " role="presentation" style="border-radius: 5px">
+                                <a aria-controls="profile" aria-selected="true" class="nav-link active"
+                                   data-toggle="tab" href="#profile" id="profile-tab"
+                                   of="tab" role>Details</a>
+                            </li>
+                            <li class="nav-item" role="presentation" style="border-radius: 5px">
+                                <!-- Display "Verify account" for patients who are not verified -->
+                                <a aria-controls="Edit" aria-selected="false" class="nav-link" data-toggle="tab"
+                                   href="#Edit" id="editprofile-tab"
+                                   role="tab" th:if="${user.role.toString() == 'PATIENT' and !user.isVerified()}">
+                                    <p>Verify account</p>
+                                </a>
+                                <a aria-controls="Edit" aria-selected="false" class="nav-link" data-toggle="tab"
+                                   href="#Edit" id="editprofile-tab"
+                                   role="tab" th:if="${user.role.toString() != 'PATIENT'}">
+                                    Edit
+                                </a>
+                            </li>
 
-                        <li class="nav-item" role="presentation" style="border-radius: 5px">
-                            <a aria-controls="security" aria-selected="false" class="nav-link" data-toggle="tab" href="#security" id="security-tab"
-                               role="tab">Security</a>
-                        </li>
+                            <li class="nav-item" role="presentation" style="border-radius: 5px">
+                                <a aria-controls="security" aria-selected="false" class="nav-link" data-toggle="tab"
+                                   href="#security" id="security-tab"
+                                   role="tab">Security</a>
+                            </li>
 
-                    </ul>
-            </div>
-            <!--    view each profile-->
-            <div class=" row row-cols-1 row-cols-md-1 row-cols-xl-1">
-                <div class="col">
-            <div class="tab-content mt-3" id="myTabContent" style="background: white" >
-                <div aria-labelledby="profile-tab" class="tab-pane fade show active" id="profile" role="tabpanel">
-                    <!-- Common Details -->
-                    <p><strong>Username:</strong> <span th:text="${user.username}"></span>
-                        <img th:if="${user.role=='PATIENT' and user.isVerified()==true}" width="24" height="24"  src="https://img.icons8.com/pulsar-color/48/737373/instagram-check-mark.png" alt="instagram-check-mark"/>
-                    </p>
-
-                    <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
-                    <p><strong>Phone:</strong> <span th:text="${user.phone}"></span></p>
-                    <br>
-                    <div th:if="${user.role.toString() == 'AMBULANCE'}">
-                        <p>
-                            <strong>Public Name:</strong>
-                            <span th:if="${user.publicName != null}" th:text="${user.publicName}"></span>
-                            <span th:if="${user.publicName == null}">Not filled yet</span>
-                        </p>
-                        <p>
-                            <strong>Agency:</strong>
-                            <span th:if="${user.Agency != null}" th:text="${user.Agency.name}"></span>
-                            <span th:if="${user.Agency == null}">Not filled yet</span>
-                        </p>
-                        <p >
-                            <strong>Address:</strong>
-                            <a th:if="${user.address !=null}" th:href="'https://www.google.com/maps?q=' + ${user.address.latitude} + ',' + ${user.address.longitude}" target="_blank">
-                                View on Map
-                            </a>
-                            <span th:if="${user.address == null}">Not filled yet</span>
-                        </p>
-                        <button class="btn btn-primary" onclick="getLocation()">
-                            Edit My Location by GPS
-                            <img width="24" height="24" src="https://img.icons8.com/pastel-glyph/64/FFFFFF/location--v2.png" alt="location--v2"/>
-                        </button>
+                        </ul>
                     </div>
-                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-                    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-                    <script th:inline="javascript">
-                        function getLocation() {
-                            if (navigator.geolocation) {
-                                navigator.geolocation.getCurrentPosition(showPosition);
-                            } else {
-                                alert("Geolocation is not supported by this browser.");
-                            }
-                        }
+                    <!--    view each profile-->
+                    <div class=" row ">
+                        <div class="col-10 mx-5 mb-3">
+                            <div class="tab-content mt-3" id="myTabContent" style="background: white">
+                                <div aria-labelledby="profile-tab" class="tab-pane fade show active" id="profile"
+                                     role="tabpanel">
+                                    <!-- Common Details -->
+                                    <p><strong>Username:</strong> <span th:text="${user.username}"></span>
+                                        <img alt="instagram-check-mark" height="24"
+                                             src="https://img.icons8.com/pulsar-color/48/737373/instagram-check-mark.png"
+                                             th:if="${user.role=='PATIENT' and user.isVerified()==true}"
+                                             width="24"/>
+                                    </p>
 
-                        function showPosition(position) {
-                            const latitude = position.coords.latitude;
-                            const longitude = position.coords.longitude;
+                                    <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
+                                    <p><strong>Phone:</strong> <span th:text="${user.phone}"></span></p>
+                                    <br>
+                                    <div th:if="${user.role.toString() == 'AMBULANCE'}">
+                                        <p>
+                                            <strong>Public Name:</strong>
+                                            <span th:if="${user.publicName != null}"
+                                                  th:text="${user.publicName}"></span>
+                                            <span th:if="${user.publicName == null}">Not filled yet</span>
+                                        </p>
+                                        <p>
+                                            <strong>Agency:</strong>
+                                            <span th:if="${user.Agency != null}" th:text="${user.Agency.name}"></span>
+                                            <span th:if="${user.Agency == null}">Not filled yet</span>
+                                        </p>
+                                        <p>
+                                            <strong>Distract:</strong>
+                                            <span th:text="${user.address.REGION}"></span>
+                                        </p>
 
-                            // Construct the URL with latitude and longitude as query parameters
-                            const url = '/gps_location?latitude=' + latitude + '&longitude=' + longitude;
+                                        <p>
+                                            <strong>Address:</strong>
+                                        <span th:text="${user.address.name}"></span>
+                                        </p>
+                                        <p>
+                                            <strong>GPS location:</strong>
 
-                            // Send a POST request to the constructed URL
-                            fetch(url, {
-                                method: 'POST'
-                            })
-                                .then(response => {
-                                    if (!response.ok) {
-                                        throw new Error('Failed to send location data.');
-                                    }
-                                    console.log('Location data sent successfully.');
-                                })
-                                .catch(error => {
-                                    console.error('Error:', error);
-                                });
-                        }
-                    </script>
+                                            <a target="_blank"
+                                               th:href="'https://www.google.com/maps?q=' + ${user.address.latitude} + ',' + ${user.address.longitude}"
+                                               th:if="${user.address.latitude != 0 && user.address.longitude!=0}">
+                                                View on Map
+                                            </a>
+                                            <span th:if="${user.address.latitude == 0 && user.address.longitude==0}">Not filled yet</span>
+                                        </p>
+                                        <button class="btn btn-primary" onclick="getLocation()">
+                                            Edit My Location by GPS
+                                            <img alt="location--v2" height="24"
+                                                 src="https://img.icons8.com/pastel-glyph/64/FFFFFF/location--v2.png"
+                                                 width="24"/>
+                                        </button>
+                                    </div>
+                                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                                    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+                                    <script th:inline="javascript">
+                                        function getLocation() {
+                                            if (navigator.geolocation) {
+                                                navigator.geolocation.getCurrentPosition(showPosition);
+                                            } else {
+                                                alert("Geolocation is not supported by this browser.");
+                                            }
+                                        }
+
+                                        function showPosition(position) {
+                                            const latitude = position.coords.latitude;
+                                            const longitude = position.coords.longitude;
+
+                                            // Construct the URL with latitude and longitude as query parameters
+                                            const url = '/gps_location?latitude=' + latitude + '&longitude=' + longitude;
+
+                                            // Send a POST request to the constructed URL
+                                            fetch(url, {
+                                                method: 'POST'
+                                            })
+                                                .then(response => {
+                                                    if (!response.ok) {
+                                                        throw new Error('Failed to send location data.');
+                                                    }
+                                                    console.log('Location data sent successfully.');
+                                                })
+                                                .catch(error => {
+                                                    console.error('Error:', error);
+                                                });
+                                        }
+                                    </script>
 
 
-                    <div th:if="${user.role.toString() == 'HOSPITAL'}">
-                        <!-- Hospital Details -->
-                        <p>
-                            <strong>Public Name:</strong>
-                            <span th:if="${user.publicName != null}" th:text="${user.publicName}"></span>
-                            <span th:if="${user.publicName == null}">Not filled yet</span>
-                        </p>
-                        <p>
-                            <strong>Manager Name:</strong>
-                            <span th:if="${user.managerName != null}" th:text="${user.managerName}"></span>
-                            <span th:if="${user.managerName == null}">Not filled yet</span>
-                        </p>
-                        <p>
-                            <strong>Manager Phone:</strong>
-                            <span th:if="${user.managerPhone != null}" th:text="${user.managerPhone}"></span>
-                            <span th:if="${user.managerPhone == null}">Not filled yet</span>
-                        </p>
-                        <p>
-                            <strong>Supervising Physician Name:</strong>
-                            <span th:if="${user.supervisingPhysicianName != null}"
-                                  th:text="${user.supervisingPhysicianName}"></span>
-                            <span th:if="${user.supervisingPhysicianName == null}">Not filled yet</span>
-                        </p>
-                        <p>
-                            <strong>Supervising Physician Phone:</strong>
-                            <span th:if="${user.supervisingPhysicianPhone != null}"
-                                  th:text="${user.supervisingPhysicianPhone}"></span>
-                            <span th:if="${user.supervisingPhysicianPhone == null}">Not filled yet</span>
-                        </p>
-                        <br>
-                        <p>
-                            <strong>Address:</strong>
-
-                            <a th:if="${user.address !=null}" th:href="'https://www.google.com/maps?q=' + ${user.address.latitude} + ',' + ${user.address.longitude}" target="_blank">
-                                View on Map
-                            </a>
-                            <span th:if="${user.address == null}">Not filled yet</span>
-                        </p>
-                        <button class="btn btn-primary" onclick="getLocation()">
-                            Edit My Location by GPS
-                            <img width="24" height="24" src="https://img.icons8.com/pastel-glyph/64/FFFFFF/location--v2.png" alt="location--v2"/>
-                        </button>
-
-                    </div>
-                    <div th:if="${user.role.toString() == 'PATIENT'}">
-                        <!-- Patient Details -->
-                        <p>
-                            <strong>First Name:</strong>
-                            <span th:if="${user.firstName != null}" th:text="${user.firstName}"></span>
-                            <span th:if="${user.firstName == null}">Not filled yet</span>
-                        </p>
-                        <p>
-                            <strong>Last Name:</strong>
-                            <span th:if="${user.lastName != null}" th:text="${user.lastName}"></span>
-                            <span th:if="${user.lastName == null}">Not filled yet</span>
-                        </p>
-                        <p>
-                            <strong>Identity Card Image:</strong>
-                            <span th:if="${user.identityCardImage != null}" th:src="@{'/' + ${user.id} + '/image?type=identityCardImage'}" class="img-thumbnail"></span>
-                            <span th:if="${user.identityCardImage == null}">Not filled yet</span>
-                        </p>
-                        <p>
-                            <strong>Age:</strong>
-                            <span th:if="${user.age != null}" th:text="${user.age}"></span>
-                            <span th:if="${user.age == null}">Not filled yet</span>
-                        </p>
-                        <p>
-                            <strong>Gender:</strong>
-                            <span th:if="${user.gender != null}" th:text="${user.gender}"></span>
-                            <span th:if="${user.gender == null}">Not filled yet</span>
-                        </p>
-                        <p>
-                            <strong>Nationality:</strong>
-                            <span th:if="${user.nationality != null}" th:text="${user.nationality}"></span>
-                            <span th:if="${user.nationality == null}">Not filled yet</span>
-                        </p>
-                        <p>
-                            <strong>Insurance:</strong>
-                            <span th:if="${user.insurance != null}" th:text="${user.insurance}"></span>
-                            <span th:if="${user.insurance == null}">Not filled yet</span>
-                        </p>
-
-                    </div>
-
-                </div>
-                <!--        edit section-->
-                <div aria-labelledby="editprofile-tab" class="tab-pane fade" id="Edit" role="tabpanel">
-                    <div class="row">
-                        <div class="col-12">
-                            <!-- Change password card-->
-                            <div class="card mb-4">
-                                <div class="card-header">Edit Details</div>
-                                <div class="card-body">
-                            <!-- Profile section content -->
-                            <th:block th:switch="${user.role}">
-                                <th:block th:case="'ADMIN'">
-                                    <form method="post" th:action="@{/profile-edit-admin}" th:object="${user}">
-                                        <!-- Common Fields -->
-                                        <label for="username">Username:</label>
-                                        <input name="username" required th:field="${user.username}" type="text">
+                                    <div th:if="${user.role.toString() == 'HOSPITAL'}">
+                                        <!-- Hospital Details -->
+                                        <p>
+                                            <strong>Public Name:</strong>
+                                            <span th:if="${user.publicName != null}"
+                                                  th:text="${user.publicName}"></span>
+                                            <span th:if="${user.publicName == null}">Not filled yet</span>
+                                        </p>
+                                        <p>
+                                            <strong>Manager Name:</strong>
+                                            <span th:if="${user.managerName != null}"
+                                                  th:text="${user.managerName}"></span>
+                                            <span th:if="${user.managerName == null}">Not filled yet</span>
+                                        </p>
+                                        <p>
+                                            <strong>Manager Phone:</strong>
+                                            <span th:if="${user.managerPhone != null}"
+                                                  th:text="${user.managerPhone}"></span>
+                                            <span th:if="${user.managerPhone == null}">Not filled yet</span>
+                                        </p>
+                                        <p>
+                                            <strong>Supervising Physician Name:</strong>
+                                            <span th:if="${user.supervisingPhysicianName != null}"
+                                                  th:text="${user.supervisingPhysicianName}"></span>
+                                            <span th:if="${user.supervisingPhysicianName == null}">Not filled yet</span>
+                                        </p>
+                                        <p>
+                                            <strong>Supervising Physician Phone:</strong>
+                                            <span th:if="${user.supervisingPhysicianPhone != null}"
+                                                  th:text="${user.supervisingPhysicianPhone}"></span>
+                                            <span th:if="${user.supervisingPhysicianPhone == null}">Not filled yet</span>
+                                        </p>
                                         <br>
+                                        <p>
+                                            <strong>Address:</strong>
 
-                                        <label for="email">Email:</label>
-                                        <input name="email" required th:field="${user.email}" type="email">
-                                        <br>
-                                        <label for="phone">Phone:</label>
-                                        <input name="phone" required th:field="${user.phone}" type="text">
-                                        <br>
-                                        <br>
-                                        <button type="submit">Save Changes</button>
-                                    </form>
-                                </th:block>
-                            <th:block th:case="'PATIENT'">
-                                <!-- Display user data based on the role -->
-                                <form method="post" th:action="@{/profile-edit-patient}" enctype="multipart/form-data" th:object="${user}">
-                                    <!-- Common Fields -->
-                                    <label class="small mb-1" for="username">Username:</label>
-                                    <input name="username" required th:field="${user.username}" type="text">
-                                    <br>
-                                    <label class="small mb-1" for="email">Email:</label>
-                                    <input name="email" required id="email" th:field="${user.email}" type="email">
-                                    <br>
+                                            <a target="_blank"
+                                               th:href="'https://www.google.com/maps?q=' + ${user.address.latitude} + ',' + ${user.address.longitude}"
+                                               th:if="${user.address !=null}">
+                                                View on Map
+                                            </a>
+                                            <span th:if="${user.address == null}">Not filled yet</span>
+                                        </p>
+                                        <button class="btn btn-primary" onclick="getLocation()">
+                                            Edit My Location by GPS
+                                            <img alt="location--v2" height="24"
+                                                 src="https://img.icons8.com/pastel-glyph/64/FFFFFF/location--v2.png"
+                                                 width="24"/>
+                                        </button>
 
-                                    <!-- Patient-specific Fields -->
+                                    </div>
+                                    <div th:if="${user.role.toString() == 'PATIENT'}">
+
+                                        <!-- Patient Details -->
+                                        <p>
+                                            <strong>First Name:</strong>
+                                            <span th:if="${user.firstName != null}" th:text="${user.firstName}"></span>
+                                            <span th:if="${user.firstName == null}">Not filled yet</span>
+                                        </p>
+                                        <p>
+                                            <strong>Last Name:</strong>
+                                            <span th:if="${user.lastName != null}" th:text="${user.lastName}"></span>
+                                            <span th:if="${user.lastName == null}">Not filled yet</span>
+                                        </p>
+
+                                        <p>
+                                            <strong>Age:</strong>
+                                            <span th:if="${user.age != null}" th:text="${user.age}"></span>
+                                            <span th:if="${user.age == null}">Not filled yet</span>
+                                        </p>
+                                        <p>
+                                            <strong>Gender:</strong>
+                                            <span th:if="${user.gender != null}" th:text="${user.gender}"></span>
+                                            <span th:if="${user.gender == null}">Not filled yet</span>
+                                        </p>
+                                        <p>
+                                            <strong>Nationality:</strong>
+                                            <span th:if="${user.nationality != null}"
+                                                  th:text="${user.nationality}"></span>
+                                            <span th:if="${user.nationality == null}">Not filled yet</span>
+                                        </p>
+                                        <p>
+                                            <strong>Insurance:</strong>
+                                            <span th:if="${user.insurance != null}" th:text="${user.insurance}"></span>
+                                            <span th:if="${user.insurance == null}">Not filled yet</span>
+                                        </p>
+                                    </div>
+
+                                </div>
+
+                                <!--        edit section-->
+                                <div aria-labelledby="editprofile-tab" class="tab-pane fade" id="Edit" role="tabpanel">
+                                    <div class="row ">
+                                        <div class="col-12 mb-3">
+                                            <!-- Change password card-->
+                                                    <!-- Profile section content -->
+                                                    <th:block th:switch="${user.role.toString()}">
+                                                        <th:block th:case="'ADMIN'">
+                                                            <form method="post" th:action="@{/profile-edit-admin}"
+                                                                  th:object="${user}">
+                                                                <!-- Common Fields -->
+                                                                <label for="username">Username:</label>
+                                                                <input name="username" required
+                                                                       th:field="${user.username}" type="text">
+                                                                <br>
+
+                                                                <label for="email">Email:</label>
+                                                                <input name="email" required th:field="${user.email}"
+                                                                       type="email">
+                                                                <br>
+                                                                <label for="phone">Phone:</label>
+                                                                <input name="phone" required th:field="${user.phone}"
+                                                                       type="text">
+                                                                <br>
+                                                                <br>
+                                                                <button type="submit">Save Changes</button>
+                                                            </form>
+                                                        </th:block>
+                                                        <th:block th:case="'PATIENT'" th:if="${ user.isVerified()== false}">
+                                                            <!-- Display user data based on the role -->
+                                                            <form enctype="multipart/form-data" method="post"
+                                                                  th:action="@{/profile-edit-patient}" th:object="${user}">
+                                                                <!-- Common Fields -->
+<!--                                                                <label class="small mb-1"-->
+<!--                                                                       for="username">Username:</label>-->
+<!--                                                                <input name="username" required-->
+<!--                                                                       th:field="${user.username}" type="text">-->
+<!--                                                                <br>-->
+<!--                                                                <label class="small mb-1" for="email">Email:</label>-->
+<!--                                                                <input id="email" name="email" required-->
+<!--                                                                       th:field="${user.email}" type="email">-->
+<!--                                                                <br>-->
+
+                                                                <!-- Patient-specific Fields -->
+                                                                <div class="row">
+                                                                    <div class=" col-5">
+                                                                        <label class="small " for="firstName">First
+                                                                            Name:</label>
+                                                                        <input id="firstName" name="firstName" required
+                                                                               th:field="${user.firstName}" type="text">
+                                                                    </div>
+
+                                                                    <div class=" col-5">
+                                                                        <label class="small " for="lastName">Last
+                                                                            Name:</label>
+                                                                        <input id="lastName" name="lastName" required th:field="${user.lastName}" type="text">
+                                                                    </div>
+                                                                </div>
+                                                                <label class="small mb-1" for="image">Identity Card Image:</label>
+                                                                <input type="file" class="form-control" id="image" name="image" accept="image/*"  required>
+                                                                <br>
+
+                                                                <label class="small mb-1" for="age">Age:</label>
+                                                                <input id="age" name="age" required
+                                                                       th:field="${user.age}" type="text">
+                                                                <br>
+
+
+                                                                <div class="form-group">
+                                                                    <label class="small mb-1"
+                                                                           for="gender">Gender</label>
+                                                                    <select class="form-control" id="gender"
+                                                                            name="gender" required>
+                                                                        <option th:each="gender : ${T(com.dgpad.thyme.model.enums.Gender).values()}"
+                                                                                th:field="${user.gender}"
+                                                                                th:text="${gender.name()}"
+                                                                                th:value="${gender}">
+                                                                        </option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="small mb-1" for="nationality">Nationality:</label>
+                                                                    <select class="form-control" id="nationality"
+                                                                            name="nationality" required>
+                                                                        <option th:each="nationality : ${T(com.dgpad.thyme.model.enums.Nationality).values()}"
+                                                                                th:field="${user.nationality}"
+                                                                                th:text="${nationality.name()}"
+                                                                                th:value="${nationality}">
+                                                                        </option>
+                                                                    </select>
+                                                                </div>
+
+                                                                <div class="form-group">
+                                                                    <label class="small mb-1"
+                                                                           for="insurance">Insurance:</label>
+                                                                    <select class="form-control" id="insurance"
+                                                                            name="insurance" required>
+                                                                        <option th:each="insurance : ${T(com.dgpad.thyme.model.enums.Insurance).values()}"
+                                                                                th:field="${user.insurance}"
+                                                                                th:text="${insurance.name()}"
+                                                                                th:value="${insurance}">
+                                                                        </option>
+                                                                    </select>
+                                                                </div>
+
+
+                                                                <br>
+                                                                <button class="btn btn-primary" type="submit">Save
+                                                                    Changes
+                                                                </button>
+
+                                                            </form>
+
+                                                        </th:block>
+
+                                                        <th:block th:case="'HOSPITAL'">
+                                                            <form method="post" th:action="@{/profile-edit-hospital}"
+                                                                  th:object="${user}">
+                                                                <div class="row">
+                                                                    <div class=" col-6">
+                                                                        <label class="small mb-1" for="username">Username:</label>
+                                                                        <input class="form-control" id="username"
+                                                                               name="username" required
+                                                                               th:field="${user.username}" type="text">
+                                                                    </div>
+                                                                    <div class="col-6">
+                                                                        <label class="small mb-1" for="publicName">Public
+                                                                            Name:</label>
+                                                                        <input class="form-control" name="publicName"
+                                                                               required th:field="${user.publicName}"
+                                                                               type="text">
+                                                                    </div>
+                                                                </div>
+                                                                <label class="small mb-1" for="phone">Phone:</label>
+                                                                <input class="form-control" name="phone" required th:field="${user.phone}" type="text">
+                                                                <br>
+                                                                <div class="row">
+                                                                    <div class=" col-6">
+                                                                        <label class="small mb-1" for="managerName">Manager Name:</label>
+                                                                        <input class="form-control" id="managerName"
+                                                                               name="managerName" required
+                                                                               th:field="${user.managerName}"
+                                                                               type="text">
+                                                                    </div>
+                                                                    <div class=" col-6">
+                                                                        <label class="small mb-1" for="managerPhone">Manager
+                                                                            Phone:</label>
+                                                                        <input class="form-control" id="managerPhone"
+                                                                               name="managerPhone" required
+                                                                               th:field="${user.managerPhone}"
+                                                                               type="text">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class=" col-6">
+                                                                        <label class="small mb-1"
+                                                                               for="supervisingPhysicianName">Supervising
+                                                                            Physician Name:</label>
+                                                                        <input class="form-control"
+                                                                               id="supervisingPhysicianName"
+                                                                               name="supervisingPhysicianName" required
+                                                                               th:field="${user.supervisingPhysicianName}"
+                                                                               type="text">
+                                                                    </div>
+                                                                    <div class=" col-6">
+
+                                                                        <label class="small mb-1"
+                                                                               for="supervisingPhysicianPhone">Supervising
+                                                                            Physician Phone:</label>
+                                                                        <input class="form-control"
+                                                                               id="supervisingPhysicianPhone"
+                                                                               name="supervisingPhysicianPhone" required
+                                                                               th:field="${user.supervisingPhysicianPhone}"
+                                                                               type="text">
+                                                                    </div>
+                                                                </div>
+                                                                <button class="btn btn-primary" type="submit">Save
+                                                                    Changes
+                                                                </button>
+                                                            </form>
+                                                        </th:block>
+                                                        <th:block th:case="'AMBULANCE'">
+                                                            <form method="post" th:action="@{/profile-edit-ambulance}"
+                                                                  th:object="${user}">
+                                                                <!-- Common Fields -->
+                                                                <label>Username:</label>
+                                                                <input class="form-control" name="username" required
+                                                                       th:field="${user.username}" type="text">
+                                                                <label  for="phone">Phone:</label>
+                                                                <input class="form-control" id="phone" name="phone"
+                                                                       required th:field="${user.phone}" type="text">
+
+                                                                <!-- Ambulance-specific Fields -->
+                                                                <label  for="publicName">Public
+                                                                    Name:</label>
+                                                                <input class="form-control" id="publicName"
+                                                                       name="publicName" required
+                                                                       th:field="${user.publicName}" type="text">
+                                                                <button class="btn btn-primary" type="submit">Save
+                                                                    Changes
+                                                                </button>
+                                                            </form>
+                                                        </th:block>
+                                                    </th:block>
+<!--                                                </div>-->
+<!--                                            </div>-->
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div aria-labelledby="security-tab" class="tab-pane fade" id="security" role="tabpanel">
+                                    <!-- Security section content -->
                                     <div class="row">
-                                        <div class=" col-6">
-                                            <label class="small mb-1" for="firstName">First Name:</label>
-                                            <input id="firstName" name="firstName" required th:field="${user.firstName}" type="text">
-                                        </div>>
-                                        <div class=" col-6">
+                                        <div class="col-12 ml-3 mb-3">
+                                            <!-- Change password card-->
 
-                                            <label class="small mb-1" for="lastName">Last Name:</label>
-                                            <input id="lastName" name="lastName" required th:field="${user.lastName}" type="text">
-                                        </div>
-                                    </div>
-                                    <label class="small mb-1" for="identityCardImage">Identity Card Image:</label>
-                                    <input id="identityCardImage" name="identityCardImage" required
-                                           th:field="${user.identityCardImage}" type="file">
-                                    <br>
-
-                                    <label class="small mb-1" for="age">Age:</label>
-                                    <input id="age" name="age" required th:field="${user.age}" type="text">
-                                    <br>
-
-
-                                    <div class="form-group">
-                                        <label class="small mb-1" for="gender">Gender</label>
-                                        <select name="gender" class="form-control" id="gender" required>
-                                            <option th:each="gender : ${T(com.dgpad.thyme.model.enums.Gender).values()}"
-                                                    th:value="${gender}" th:field="${user.gender}"  th:text="${gender.name()}">
-                                            </option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="small mb-1" for="nationality">Nationality:</label>
-                                        <select name="nationality" class="form-control" id="nationality" required>
-                                            <option th:each="nationality : ${T(com.dgpad.thyme.model.enums.Nationality).values()}"
-                                                    th:value="${nationality}" th:field="${user.nationality}"  th:text="${nationality.name()}">
-                                            </option>
-                                        </select>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="insurance" class="small mb-1">Insurance:</label>
-                                        <select name="insurance" class="form-control" id="insurance" required>
-                                            <option th:each="insurance : ${T(com.dgpad.thyme.model.enums.Insurance).values()}"
-                                                    th:value="${insurance}" th:field="${user.insurance}"  th:text="${insurance.name()}">
-                                            </option>
-                                        </select>
-                                    </div>
-
-
-                                    <br>
-                                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                                </form>
-
-                            </th:block>
-                            <th:block th:case="'HOSPITAL'">
-                                <form method="post" th:action="@{/profile-edit-hospital}" th:object="${user}" >
-                                    <div class="row">
-                                    <div class=" col-6">
-                                    <label class="small mb-1" for="username">Username:</label>
-                                    <input class="form-control" id="username" name="username" required th:field="${user.username}" type="text">
-                                    </div>
-                                    <div class="col-6">
-                                        <label class="small mb-1" for="publicName">Public Name:</label>
-                                        <input class="form-control" name="publicName" required th:field="${user.publicName}" type="text">
-                                    </div>
-                                    </div>
-                                    <label class="small mb-1" for="phone">Phone:</label>
-                                    <input class="form-control" name="phone" required th:field="${user.phone}" type="text">
-                                    <br>
-                                    <div class="row">
-                                        <div class=" col-6">
-                                            <label class="small mb-1" for="managerName">Manager Name:</label>
-                                            <input class="form-control" id="managerName" required name="managerName"  th:field="${user.managerName}" type="text">
-                                        </div>
-                                        <div class=" col-6">
-                                            <label class="small mb-1" for="managerPhone">Manager Phone:</label>
-                                            <input class="form-control" id="managerPhone" name="managerPhone" required th:field="${user.managerPhone}" type="text">
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class=" col-6">
-                                            <label class="small mb-1" for="supervisingPhysicianName">Supervising Physician Name:</label>
-                                            <input class="form-control" id="supervisingPhysicianName" name="supervisingPhysicianName" required th:field="${user.supervisingPhysicianName}" type="text">
-                                        </div>
-                                        <div class=" col-6">
-
-                                            <label class="small mb-1" for="supervisingPhysicianPhone">Supervising Physician Phone:</label>
-                                            <input class="form-control" id="supervisingPhysicianPhone" name="supervisingPhysicianPhone" required
-                                                   th:field="${user.supervisingPhysicianPhone}" type="text">
-                                        </div>
-                                    </div>
-                                    <button class="btn btn-primary" type="submit">Save Changes</button>
-                                </form>
-                            </th:block>
-                            <th:block th:case="'AMBULANCE'">
-                                <form method="post" th:action="@{/profile-edit-ambulance}" th:object="${user}">
-                                    <!-- Common Fields -->
-                                    <label class="small mb-1">Username:</label>
-                                    <input class="form-control" name="username" required th:field="${user.username}" type="text">
-                                    <br>
-                                    <label class="small mb-1" for="phone">Phone:</label>
-                                    <input class="form-control" id="phone" name="phone" required th:field="${user.phone}" type="text">
-                                    <br>
-
-                                    <!-- Ambulance-specific Fields -->
-                                    <label class="small mb-1"for="publicName">Public Name:</label>
-                                    <input class="form-control" id="publicName" name="publicName" required th:field="${user.publicName}" type="text">
-                                    <br>
-
-                                    <br>
-                                    <button type="submit"class="btn btn-primary">Save Changes</button>
-                                </form>
-                            </th:block>
-                        </th:block>
-
-                    </div>
-                </div>
-                        </div>
-                    </div>
-                </div>
-
-            <div aria-labelledby="security-tab" class="tab-pane fade" id="security" role="tabpanel">
-                <!-- Security section content -->
-                <div class="row">
-                    <div class="col-12">
-                        <!-- Change password card-->
-                        <div class="card mb-4">
-                            <div class="card-header">Change Password</div>
-                            <div class="card-body">
-                                <form method="post" th:action="@{/change-password}">
-                                    <!-- Form Group (current password)-->
-                                    <div class="mb-3">
-                                        <label class="small mb-1" for="currentPassword">Current Password</label>
-                                        <input class="form-control" id="currentPassword" name="currentPassword" placeholder="Enter current password"
-                                               required type="password">
-                                    </div>
-                                    <!-- Form Group (new password)-->
-                                    <div class="mb-3">
-                                        <label class="small mb-1" for="newPassword">New Password</label>
-                                        <input class="form-control" id="newPassword" name="newPassword" placeholder="Enter new password"
-                                               required type="password">
-                                    </div>
-                                    <!-- Form Group (confirm password)-->
-                                    <div class="mb-3">
-                                        <label class="small mb-1" for="confirmPassword">Confirm Password</label>
-                                        <input class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm new password"
-                                               required type="password">
-                                    </div>
-                                    <!-- Display error message if there's an error -->
-                                    <p class="text-danger" style="margin-bottom: 10px;" th:if="${param.error}">Invalid current
-                                        password or new passwords do not match</p>
-                                    <button class="btn btn-primary" type="submit">Save</button>
-                                </form>
+                                                    <form method="post" th:action="@{/change-password}">
+                                                        <!-- Form Group (current password)-->
+                                                        <div class="mb-3">
+                                                            <label class="small mb-1" for="currentPassword">Current
+                                                                Password</label>
+                                                            <input class="form-control" id="currentPassword"
+                                                                   name="currentPassword"
+                                                                   placeholder="Enter current password"
+                                                                   required type="password">
+                                                        </div>
+                                                        <!-- Form Group (new password)-->
+                                                        <div class="mb-3">
+                                                            <label class="small mb-1" for="newPassword">New
+                                                                Password</label>
+                                                            <input class="form-control" id="newPassword"
+                                                                   name="newPassword" placeholder="Enter new password"
+                                                                   required type="password">
+                                                        </div>
+                                                        <!-- Form Group (confirm password)-->
+                                                        <div class="mb-3">
+                                                            <label class="small mb-1" for="confirmPassword">Confirm
+                                                                Password</label>
+                                                            <input class="form-control" id="confirmPassword"
+                                                                   name="confirmPassword"
+                                                                   placeholder="Confirm new password"
+                                                                   required type="password">
+                                                        </div>
+                                                        <!-- Display error message if there's an error -->
+                                                        <p class="text-danger" style="margin-bottom: 10px;"
+                                                           th:if="${param.error}">Invalid current
+                                                            password or new passwords do not match</p>
+                                                        <button class="btn btn-primary" type="submit">Save</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                </div>
             </div>
         </div>
-        </div>
+
     </div>
+            </div>
     </div>
 </div>
-        </div>
+</div>
+
 </body>
 </html>
 

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -137,7 +138,7 @@ public class HospitalController {
     }
     @PostMapping("/hospital_detailambulancerequest")
     @PreAuthorize("hasAnyAuthority('HOSPITAL')")
-    public String submitDetailedRequest(@RequestParam("toH") boolean toH, @RequestParam("region") Distracts regin,@RequestParam("address") String location, @RequestParam("Ambulancetype") Ambulancetypes Ambulancetype, @RequestParam("name") String name, @RequestParam("phone") String phone, @RequestParam("description") String description,  Model model) {
+    public String submitDetailedRequest(@RequestParam("toH") boolean toH, @RequestParam("region") Distracts regin,@RequestParam("address") String location, @RequestParam("Ambulancetype") Ambulancetypes Ambulancetype, @RequestParam("name") String name, @RequestParam("phone") String phone, @RequestParam("description") String description,  Model model) throws IOException {
         Hospital cu =hospitalService.getHospitalById(userService.getCurrentUser().id);
         String Region;
         if (toH)

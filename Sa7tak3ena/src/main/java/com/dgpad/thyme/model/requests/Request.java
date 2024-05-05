@@ -1,5 +1,6 @@
 package com.dgpad.thyme.model.requests;
 
+import com.dgpad.thyme.model.Image;
 import com.dgpad.thyme.model.enums.Ambulancetypes;
 import com.dgpad.thyme.model.enums.ReservationStatus;
 import com.dgpad.thyme.model.enums.ReservationType;
@@ -32,6 +33,8 @@ public class Request {
     @Enumerated(EnumType.STRING)
     private ReservationStatus status;
     private String MedicalRecord;
+    @ManyToMany
+    public List<Image> DoctorReport;
     @ManyToOne
     private Address pickupAddress;
 

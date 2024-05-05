@@ -12,6 +12,8 @@
 
     <link rel="stylesheet" th:href="@{css/test.css}">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
      <style>
         .radius-10 {
             border-radius: 10px !important;
@@ -91,12 +93,11 @@
                             <div class="card-body">
                                 <div class="d-flex align-items-center">
                                     <div>
-                                        <p class="mb-0 text-secondary">Total Requests</p>
+                                        <p class="mb-0 text-secondary">Rank</p>
                                         <h4 class="my-1 text-info" th:text="${analytics.get(0)}"></h4>
                                     </div>
-                                    <div class="widgets-icons-2 rounded-circle  text-white ms-auto">
-                                        <img width="100" height="100" src="https://img.icons8.com/bubbles/100/patient-care.png" alt="patient-care"/>
-                                    </div>
+                                    <div class="widgets-icons-2 rounded-circle  text-white ms-auto border-info">
+                                        <img width="100" height="100" src="https://img.icons8.com/bubbles/100/leaderboard.png" alt="leaderboard"/>                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -137,7 +138,7 @@
                                 <div class="d-flex align-items-center">
                                     <div>
                                         <p class="mb-0 text-secondary">Top Paramedic</p>
-                                        <h4 class=" text-success">Ali Reda</h4>
+                                        <h4 class="text-success" th:text="${topParamedicForCurrentMonth != null} ? ${topParamedicForCurrentMonth.name} : 'N/A'"></h4>
                                     </div>
                                     <div class="widgets-icons-2 rounded-circle  text-white ms-auto">
                                         <img width="100" height="100" src="https://img.icons8.com/bubbles/100/medal2-1.png" alt="medal2-1"/>                        </div>
@@ -155,17 +156,21 @@
                                 <th scope="col">Request type</th>
                                 <th scope="col">Sender Name</th>
                                 <th scope="col">Sender Phone</th>
+                                <th scope="col">Description</th>
                                 <th scope="col">From</th>
                                 <th scope="col">To</th>
-                                <th scope="col">Created At</th>
-                                <th scope="col">Accept</th>
+                                <th scope="col">Created at</th>
+
+                                <th scope="col"> Activity</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="request : ${requests}" th:if="${request.status == request.status.PENDING}">
+                            <tr th:each="request : ${requests}" >
                                 <td th:text="${request.service}"></td>
                                 <td th:text="${request.getSender().username}"></td>
                                 <td th:text="${request.getSender().phone}"></td>
+                                <td th:text="${request.description}"></td>
+
                                 <td>
                                     <a th:if="${request.pickupaddress != null and request.pickupaddress.latitude != null and request.pickupaddress.longitude != null}"
                                        th:href="'https://www.google.com/maps?q=' + ${request.pickupaddress.latitude} + ',' + ${request.pickupaddress.longitude}"
@@ -188,7 +193,7 @@
                                 </td>
 
 
-                                <td th:text="${request.createdAt}"></td>
+                                <td th:text="${request.getCreatedAt().hour+':'+ request.getCreatedAt().minute}"></td>
                                 <td>
                                     <a class="btn btn-primary" th:href="@{/acceptRequest(id=${request.id})}">
                                         Accept
@@ -202,10 +207,114 @@
                         </table>
                     </div>
                 </div>
+                <div class="row row-cols-1 row-cols-md-1 row-cols-xl-2">
+                    <div class="col" style="background: whitesmoke">
+                        <canvas id="equipmentPricesChart" width="600" height="300"></canvas>
+                    </div>
+                    <div class="col" style="background: whitesmoke">
+                        <canvas id="RequestsChart" width="600" height="300"></canvas>
+
+                    </div>
+                </div>
 
             </div>
         </div>
     </div>
 </div>
+<script th:inline="javascript">
+    $(document).ready(function () {
+        var ctx = document.getElementById('equipmentPricesChart').getContext('2d');
+        var totalPrices = /*[[${equipments.values()}]]*/ [];
+        var months = /*[[${equipments.keySet()}]]*/ [];
+
+        var chartData = {
+            labels: months,
+            datasets: [{
+                label: 'Total Equipment Prices',
+                data: totalPrices,
+                borderColor: 'blue',
+                backgroundColor: 'rgba(0, 0, 255, 0.1)', // Optional background color
+                borderWidth: 1
+            }]
+        };
+
+        var options = {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true // Start y-axis from zero
+                    }
+                }]
+            }
+        };
+
+        var myLineChart = new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: options
+        });
+    });
+</script>
+<script th:inline="javascript">
+    $(document).ready(function () {
+        var ctx = document.getElementById('RequestsChart').getContext('2d');
+        var acceptedrequestsPerMonthData = /*[[${requestsPerMonth}]]*/ []; // Map<Month, Integer>
+        var requestsPerMonthData = /*[[${acceptedrequestsPerMonth}]]*/ []; // Map<Month, Integer>
+
+        var patientsPerMonthData = /*[[${patientsPerMonth}]]*/ []; // Map<Month, Integer>
+
+        // Extracting months and data from the maps
+        var months = Object.keys(requestsPerMonthData);
+        var requestsPerMonth = Object.values(requestsPerMonthData);
+        var acceptedrequestsPerMonth = Object.values(acceptedrequestsPerMonthData);
+
+        var patientsPerMonth = Object.values(patientsPerMonthData);
+        var chartData = {
+            labels: months,
+            datasets: [ {
+                label: 'Requests',
+                data: requestsPerMonth,
+                borderColor: 'rgb(122,157,246)',
+                backgroundColor: 'rgb(122,157,246)', // Optional background color
+                borderWidth: 1
+            },{
+                label: 'AcceptedRequests',
+                data: acceptedrequestsPerMonth,
+                borderColor: 'rgb(75,201,118)',
+                backgroundColor: 'rgb(75,201,118)', // Optional background color
+                borderWidth: 1
+            }, {
+                label: 'Patients',
+                data: patientsPerMonth,
+                borderColor: 'orange',
+                backgroundColor: 'rgba(255, 165, 0, 0.1)', // Optional background color
+                borderWidth: 1
+            }]
+        };
+
+        var options = {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true // Start y-axis from zero
+                    }
+                }]
+            }
+        };
+
+        var myLineChart = new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: options
+        });
+    });
+</script>
+
+
+
 </body>
 </html>

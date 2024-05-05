@@ -1,4 +1,5 @@
 package com.dgpad.thyme.model.users;
+import com.dgpad.thyme.model.Image;
 import com.dgpad.thyme.model.Reservation;
 import com.dgpad.thyme.model.enums.Gender;
 import com.dgpad.thyme.model.enums.Insurance;
@@ -25,9 +26,8 @@ import java.util.UUID;
 public class Patient extends User {
     private String FirstName;
     private String LastName;
-    @Lob
-    @Column(columnDefinition = "MEDIUMBLOB")
-    private String identityCardImage;//passport or id
+    @ManyToOne
+    public Image identityCardImage;//passport or id
 
     private int age;
     private boolean verified;

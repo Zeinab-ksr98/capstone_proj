@@ -13,21 +13,81 @@
 
     <link rel="stylesheet" th:href="@{css/test.css}">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+<style>
+    .card {
+        width: 230px;
+        height: 254px;
+        background-image: linear-gradient(144deg, #0816b4, #2f5bed 60%, #6f84da);
+        border: none;
+        border-radius: 10px;
+        /*padding: 10px;*/
+        position: relative;
+        /*margin: auto;*/
+        font-family: inherit;
+    }
 
+    .card span {
+        font-weight: 600;
+        color: white;
+        text-align: center;
+        display: block;
+        padding-top: 10px;
+        font-size: 1.3em;
+    }
+
+    .card .job {
+        font-weight: 400;
+        color: white;
+        display: block;
+        text-align: center;
+        padding-top: 5px;
+        font-size: 1em;
+    }
+
+    .card .img {
+        width: 70px;
+        height: 70px;
+        background: #e8e8e8;
+        border-radius: 100%;
+        margin: auto;
+        margin-top: 20px;
+    }
+
+    .card button {
+        padding: 8px 25px;
+        display: block;
+        margin: auto;
+        border-radius: 8px;
+        border: none;
+        margin-top: 30px;
+        background: #e8e8e8;
+        color: #111111;
+        font-weight: 600;
+    }
+
+    .card button:hover {
+        background: #212121;
+        color: #ffffff;
+    }
+</style>
 </head>
 <body>
 <div class="container-fluid">
     <div class="d-flex">
         <div th:replace="fragments/Aheader :: header"></div>
+
         <div class="credits ml-5 mt-5">
+
             <div class="container-fluid">
+
     <button type="button" style="margin: 20px 0" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">Add Paramedic</button>
-    <div class="modal fade" id="exampleModalCenter" tabindex="-1"
+
+                <div class="modal fade" id="exampleModalCenter" tabindex="-1"
          role="dialog" aria-labelledby="exampleModalCenterTitle"
          aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
-                <form th:action="@{/add-staff}" method="post">
+                <form enctype="multipart/form-data" th:action="@{/add-staff}" method="post">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLongTitle">Add New Paramedics</h5>
                         <button type="button" class="close" data-dismiss="modal"
@@ -39,9 +99,13 @@
                         <input type="text" name="name" class="form-control"
                                id="name" th:value="${name}" required placeholder="name">
                     </div>
+                    <div class="modal-body text-center">
+                        <input type="tel" name="phone" class="form-control"
+                               id="phone" th:value="${phone}" required placeholder="phone">
+                    </div>
                     <div class="modal-body ">
-                        <input type="image" name="image" class="form-control"
-                               id="image" th:value="${image}" required placeholder="upload">
+                            <label for="image" class="form-label">Image</label>
+                            <input type="file" class="form-control" id="image" name="image" accept="image/*"  required>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary"
@@ -51,38 +115,35 @@
                 </form>
             </div>
         </div>
-    </div><br>
+    </div>
 
-    <table class="table table-light table-responsive">
-        <thead class="thead-light">
-        <tr>
-            <th scope="col">SN</th>
-            <th scope="col">Staff Name</th>
-            <th scope="col">Delete</th>
-            <th scope="col">Update</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="astaff, sectionIndex : ${staff}">
-            <td th:text="${sectionIndex.index + 1}"></td>
-            <td th:text="${astaff.image}" th:if="${astaff.image==null}">
-            </td>
-            <td  th:unless="${astaff.image==null}">
-                <img width="64" height="64" src="https://img.icons8.com/external-victoruler-linear-colour-victoruler/64/external-paramedic-medical-staff-characters-victoruler-linear-colour-victoruler-1.png" alt="external-paramedic-medical-staff-characters-victoruler-linear-colour-victoruler-1"/>
-            </td>
-            <td th:text="${astaff.name}"></td>
-            <td>
-                <a class="btn btn-danger" th:href="@{/delete-staff/{id}(id=${astaff.id})}">
-                    Delete
-                </a>
-            </td>
-            <td>
-                <button class="btn btn-primary" data-toggle="modal" th:attr="data-target='#updateModal'+${astaff.id}">
-                    Update
-                </button>
-            </td>
-        </tbody>
-    </table>
+                <div class="row rounded border" >
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3 mt-3 rounded border" th:each="astaff, sectionIndex : ${staff}">
+                            <div class="card-body rounded border text-center " style="background: whitesmoke">
+                                <div class="card-text">
+                                    <th:block th:if="${astaff.image != null}">
+                                        <th:block th:if="${astaff.image.id != null}">
+                                            <img  th:src="@{/image/{imageId}(imageId=${astaff.image.id})}" class="img-thumbnail" alt=" Image">
+                                        </th:block>
+                                    </th:block>
+
+                                    <p th:text="${astaff.name+ '|'+astaff.phone}"> </p>
+                                </div>
+                                <a th:class="${astaff.inactive} ? 'btn btn-success' : 'btn btn-danger'" th:href="@{/swichactive-staff/{id}(id=${astaff.id})}">
+                                    <span th:if="${astaff.isInactive()}">Activate</span>
+                                    <span th:unless="${astaff.isInactive()}">Deactivate</span>
+                                </a>
+
+
+                                <button class="btn btn-primary" data-toggle="modal" th:attr="data-target='#updateModal'+${astaff.id}">
+                                        Update
+                                    </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
 
     <!--    update modal-->
     <div th:each="astaff : ${staff}" th:id="'updateModal'+${astaff.id}" class="modal fade" tabindex="-1" role="dialog">
@@ -95,14 +156,22 @@
                     </button>
                 </div>
                 <!-- Input fields for updating data -->
-                <form th:action="@{/update-staff}" method="post">
+                <form enctype="multipart/form-data" th:action="@{/update-staff}" method="post">
                     <div class="modal-body">
                         <div class="form-group">
                             <input class="form-control" type="text" name="id" id="id" th:value="${astaff.id}" readonly>
                         </div>
                         <div class="form-group">
-                            <label for="updatedname">New Staff Name:</label>
-                            <input type="text" class="form-control" id="updatedname" name="updatedname" th:value="${astaff.name}" placeholder="Section Name" required>
+                            <label for="updatedname">New Paramedic Name:</label>
+                            <input type="text" class="form-control" id="updatedname" name="updatedname" th:value="${astaff.name}" placeholder="Paramedic Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="updatedphone">New Paramedic Number:</label>
+                            <input type="text" class="form-control" id="updatedphone" name="updatedphone" th:value="${astaff.phone}" placeholder="Paramedic Name" required>
+                        </div>
+                        <div class="form-group ">
+                            <label for="image" class="form-label">Image</label>
+                            <input type="file" class="form-control" id="image" name="image" accept="image/*"  required>
                         </div>
                     </div>
                     <div class="modal-footer">

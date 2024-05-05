@@ -37,6 +37,9 @@
                         <th>ambulances</th>
 
                         <th th:if="${user.role.toString() == 'HOSPITAL'}">Medical Record</th>
+
+                        <th>Bed</th>
+
                         <th>Date</th>
                     </tr>
                     </thead>
@@ -45,35 +48,28 @@
                         <td th:text="${reservation.id}" th:if="${user.role.toString() == 'HOSPITAL'}"></td>
                         <td th:text="${reservation.hospital.publicName}" th:if="${user.role.toString() == 'PATIENT'}"></td>
                         <td th:text="${reservation.reservationType}"></td>
-                        <td th:if="${reservation.patient?.username == null and user.getRole().toString() == 'HOSPITAL' }">reserved by ambulance</td>
-                        <td th:text="${reservation.patient.firstName}+${reservation.patient.lastName}" th:unless="${reservation.patient?.username == null and user.getRole().toString() == 'HOSPITAL' }"></td>
+
+                        <td th:if="${user.role.toString() == 'HOSPITAL' && reservation.patient?.username == null}">reserved by ambulance</td>
+                        <td th:if="${user.role.toString() == 'HOSPITAL' && reservation.patient?.username != null}" th:text="${reservation.patient.firstName + ' ' + reservation.patient.lastName}"></td>
 
                         <td>
-                            <th:block th:if="${#lists.isEmpty(reservation.ambulanceRequests)}">
-                                no ambulance required
-                            </th:block>
-                            <th:block th:unless="${#lists.isEmpty(reservation.ambulanceRequests)}">
-                                <span th:with="allRejected=true">
-                                    <span th:each="request : ${reservation.ambulanceRequests}">
-                                        <span th:if="${request.status != 'REJECTED'}">
-                                            <span th:with="allRejected=false"></span>
-                                        </span>
-                                    </span>
-                                    <span th:if="${allRejected}">
-                                            All requests are declined. Your ambulances are out of service.
-                                    </span>
-                                    <span th:unless="${allRejected}">
-                                        <span th:each="request : ${reservation.ambulanceRequests}">
-                                            <span th:if="${request.status == 'ACCEPTED'}">Accepted: <span th:text="${request.ambulance.publicName}"></span></span>
-                                            <span th:if="${request.status == 'PENDING'}">Pending: <span th:text="${request.ambulance.publicName}"></span></span>
-                                            <span th:if="${request.status == 'REJECTED'}">Rejected</span>
-                                        </span>
-                                    </span>
-                                </span>
-                            </th:block>
+                            <div  th:if="${#lists.isEmpty(reservation.ambulanceRequests)}">
+                                no ambulance required/available
+                            </div>
+                            <div th:each="request : ${reservation.getAmbulanceRequests()}">
+                                <p th:text="${request.ambulance.publicName} + ${ request.status}"></p>
+                            </div>
                         </td>
+
                         <td th:text="${reservation.medicalRecord}" th:if="${user.role.toString() == 'HOSPITAL'}"></td>
-                        <td th:text="${reservation.createdAt}" ></td>
+                        <td th:text="${reservation.bednum != null && reservation.floornum != null ? reservation.bednum + reservation.floornum : 'N/A'}"></td>
+
+                        <td th:text="${#temporals.format(reservation.createdAt, 'dd-MM-yyyy HH:mm')}" ></td>
+                        <td>
+                            <button class="btn btn-primary" data-toggle="modal" th:if="${user.role.toString() == 'HOSPITAL'}" th:attr="data-target='#updateModal'+${reservation.id}">
+                                Update
+                            </button>
+                        </td>
                     </tr>
                     </tbody>
                 </table>
@@ -81,5 +77,37 @@
         </div>
     </div>
 </div>
+<!--    update modal-->
+<div th:each="reservation : ${reservations}" th:id="'updateModal'+${reservation.id}" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update reservation details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <!-- Input fields for updating data -->
+            <form th:action="@{/update-reservation}" method="post">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input class="form-control" type="text" name="id" id="id" th:value="${reservation.id}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="bed"> bed number:</label>
+                        <input type="text" class="form-control" id="bed" name="bed" th:value="${reservation.bednum}" placeholder="Paramedic Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="floor">floor number:</label>
+                        <input type="number" max="20" min="1" class="form-control" id="floor" name="floor" th:value="${reservation.floornum}" placeholder="Paramedic Name" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

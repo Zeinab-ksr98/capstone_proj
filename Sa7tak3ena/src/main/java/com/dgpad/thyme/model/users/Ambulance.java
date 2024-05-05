@@ -30,6 +30,9 @@ public class Ambulance extends User {
     @OneToMany(mappedBy = "ambulance")
     private List<Paramedic> ParamedicList;
 
+    @OneToMany(mappedBy = "ambulance")
+    public List<Equipments> equipmentsList ;
+
     @OneToMany(mappedBy = "ambulance", cascade = CascadeType.ALL)
     private List<AmbulanceCar> ambulanceCars;
     //there was an array of ambulanceAgency type but i do not know for what it is

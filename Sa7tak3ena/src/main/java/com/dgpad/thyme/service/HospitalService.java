@@ -2,9 +2,11 @@ package com.dgpad.thyme.service;
 
 
 import com.dgpad.thyme.model.Reservation;
+import com.dgpad.thyme.model.enums.Gender;
 import com.dgpad.thyme.model.requests.AmbulanceRequest;
 import com.dgpad.thyme.model.usercomplements.Beds;
 import com.dgpad.thyme.model.users.Hospital;
+import com.dgpad.thyme.model.users.Patient;
 import com.dgpad.thyme.repository.HospitalRepository;
 import com.dgpad.thyme.service.UserComplements.BedsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +29,7 @@ public class HospitalService {
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
-    private BedsService bedsService;
+    private UserService userService;
 
     public Hospital save(Hospital user){
         return hospitalRepository.save(user);
@@ -71,19 +73,44 @@ public class HospitalService {
     public List<Hospital> findHospitalsWithAvailableEmergencyBeds(String categoryName) {
         return hospitalRepository.findHospitalsWithAvailableEmergencyBeds(categoryName);
     }
-    public List<AmbulanceRequest> getAllAmbulanceRequestsForCustomerWithin24hs(UUID userId){
-        // Retrieve all reservations for the user
-        List<AmbulanceRequest> allRequest = getHospitalById(userId).getAmbulanceRequest();
 
-        // Filter reservations within the last 24 hours
-        LocalDateTime twentyFourHoursAgo = LocalDateTime.now().minusHours(24);
-        List<AmbulanceRequest> requestsWithin24Hours = allRequest.stream()
-                .filter(reservation -> reservation.getCreatedAt().isAfter(twentyFourHoursAgo))
-                .collect(Collectors.toList());
-        // Add both lists to the model
-        return requestsWithin24Hours;
+    public List<Patient> findPatientsByHospital(){
+            return hospitalRepository.findPatientsByHospital(userService.getCurrentUser().id);
+    }
+    public int[] calculateAgeDistribution() {
+        List<Patient> patientList=findPatientsByHospital();
+        if (patientList == null)
+                return null;
+        int[] ageCounts = new int[4];
+
+        for (Patient patient : patientList) {
+            if (patient.getAge() < 18) {
+                ageCounts[0]++;
+            } else if (patient.getAge() >= 18 && patient.getAge() <= 30) {
+                ageCounts[1]++;
+            } else if (patient.getAge() > 30 && patient.getAge() <= 50) {
+                ageCounts[2]++;
+            } else {
+                ageCounts[3]++;
+            }
+        }
+        return ageCounts;
     }
 
+    public int[] calculateGenderDistribution() {
+        List<Patient> patientList=findPatientsByHospital();
+        if (patientList == null)
+            return null;
+        int maleCount = 0, femaleCount = 0;
+        for (Patient patient : patientList) {
+            if (patient.getGender()== Gender.Male) {
+                maleCount++;
+            } else if (patient.getGender() == Gender.Female) {
+                femaleCount++;
+            }
+        }
+        return new int[]{maleCount, femaleCount};
+    }
 
     public Hospital update(Hospital currentuser,Hospital user){
         if(user.getUsername()!=null)

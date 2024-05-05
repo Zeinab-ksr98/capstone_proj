@@ -40,7 +40,7 @@ public class Reservation {
 
     private String MedicalRecord;
     //entered by the hospital after reservation
-    private int bednum;
+    private String bednum;
     private int floornum;
 
     @ManyToMany
@@ -50,8 +50,4 @@ public class Reservation {
     @OneToOne
     private AmbulanceCar ambulanceCar;
     private LocalDateTime CreatedAt;
-
-    public Reservation(int bednum) {
-        this.bednum = bednum;
-    }
 }

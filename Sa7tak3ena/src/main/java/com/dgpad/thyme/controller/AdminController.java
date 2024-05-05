@@ -3,6 +3,7 @@ package com.dgpad.thyme.controller;
 import com.dgpad.thyme.Email.EmailService;
 import com.dgpad.thyme.hospital_dataScraping.HospitalRecord;
 import com.dgpad.thyme.hospital_dataScraping.MOHService;
+import com.dgpad.thyme.model.enums.AmbulanceRequestStatus;
 import com.dgpad.thyme.model.enums.Distracts;
 import com.dgpad.thyme.model.enums.Role;
 import com.dgpad.thyme.model.usercomplements.AccountRequest;
@@ -26,15 +27,17 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 
 @Controller
 public class AdminController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private AmbulanceRequestService ambulanceRequestService;
+    @Autowired
+    private ReservationService reservationService;
     @Autowired
     private AmbulanceService ambulanceService;
     @Autowired
@@ -49,6 +52,7 @@ public class AdminController {
     private AmbulanceAgencyService ambulanceAgencyService;
     @Autowired
     private AddressService addressService;
+    
     @Autowired
     private BedCategoryService bedCategoryService;
     @Autowired
@@ -81,6 +85,7 @@ public class AdminController {
         emailService.sendEmail(to, subject,massage);
         return "redirect:/manage-users";
     }
+
 
     @PostMapping(value = "/admin-create-withRole")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
@@ -205,6 +210,11 @@ public class AdminController {
 // Feedback
         Map<String, Integer> feedbackCount = feedbackService.calculateFeedbackCounts();
         model.addAttribute("feedbackCount", feedbackCount);
+        List<Integer> analytics = new ArrayList<>();
+        analytics.add(reservationService.getAllReservations().size());
+        analytics.add(ambulanceRequestService.findAllRequestbystatus(AmbulanceRequestStatus.ACCEPTED).size());
+//        analytics.add(cu.getHospitalSections().size());
+        model.addAttribute("analytics",analytics);
 
         model.addAttribute("requestedaccounts",accountRequestService.getAllRequest());
         model.addAttribute("requestedcategories",bedCategoryRequestService.getAllRequestBedCategories());
@@ -251,4 +261,5 @@ public class AdminController {
         }
         return "redirect:/home";
     }
+
 }

@@ -11,6 +11,7 @@ import com.dgpad.thyme.repository.HospitalRepository;
 import com.dgpad.thyme.repository.PatientRepository;
 import com.dgpad.thyme.repository.UserRepository;
 import com.dgpad.thyme.security.UserInfoDetails;
+import com.dgpad.thyme.service.UserComplements.AmbulanceAgencyService;
 import com.dgpad.thyme.service.UserComplements.FeedbackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -27,8 +28,7 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private FeedbackService feedbackService;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
     public Map<Role, Double> calculateRolePercentage(Role[] allRoles) {
@@ -135,6 +135,7 @@ public class UserService {
                 .filter(user -> user.getRole() == role)
                 .collect(Collectors.toList());
     }
+
 
 
 

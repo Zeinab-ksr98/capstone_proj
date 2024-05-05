@@ -35,6 +35,7 @@ public class AmbulanceRequest {
     @ManyToOne
     @JoinColumn(name = "staff_id")
     public Paramedic staff;
+    @Enumerated(EnumType.STRING)
     public AmbulanceRequestStatus status;
     @Column(name = "service_type")
     public Ambulanceservice service;

@@ -1,14 +1,17 @@
 package com.dgpad.thyme.Stripe;
 
+import com.dgpad.thyme.service.UserService;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
 import com.stripe.param.PaymentIntentCreateParams;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class PaymentController {
+
     @PostMapping("/create-payment-intent")
 
     public StripeResponse createPaymentIntent(@RequestBody StripeRequest request)
@@ -23,5 +26,7 @@ public class PaymentController {
         PaymentIntent intent = PaymentIntent.create(params);
 
         return new StripeResponse(intent.getId(), intent.getClientSecret());
+
     }
+
 }

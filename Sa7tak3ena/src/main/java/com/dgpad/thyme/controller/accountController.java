@@ -2,8 +2,10 @@ package com.dgpad.thyme.controller;
 
 import com.dgpad.thyme.hospital_dataScraping.HospitalRecord;
 import com.dgpad.thyme.hospital_dataScraping.MOHService;
+import com.dgpad.thyme.model.Image;
 import com.dgpad.thyme.model.enums.*;
 import com.dgpad.thyme.model.requests.AmbulanceRequest;
+import com.dgpad.thyme.model.requests.Request;
 import com.dgpad.thyme.model.usercomplements.AccountRequest;
 import com.dgpad.thyme.model.usercomplements.Address;
 import com.dgpad.thyme.model.usercomplements.Feedback;
@@ -23,11 +25,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
 import java.util.*;
 
-//the following controller group out the common functions that are accessed by all the users
 @Controller
 public class accountController {
     @Autowired
@@ -48,6 +51,8 @@ public class accountController {
     @Autowired
     private RequestService requestService;
     @Autowired
+    private ReservationService reservationService;
+    @Autowired
     private AddressService addressService;
 
     @Autowired
@@ -57,6 +62,8 @@ public class accountController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private ImageService imageService;
 
     @GetMapping(value = "/Main")
     public String home(Model model) {
@@ -108,9 +115,16 @@ public class accountController {
             List<AmbulanceRequest> requests = ambulancerequestService.findAllAmbulanceRequestsForUserByStatus(userService.getCurrentUser().id, AmbulanceRequestStatus.PENDING);
             model.addAttribute("user", patientService.getPatientById(userService.getCurrentUser().id));
             model.addAttribute("requests_size",requests.size());
-            model.addAttribute("AmbulanceRequests",ambulancerequestService.getAllRequestsForUser(userService.getCurrentUser().id) );
+            model.addAttribute("DetailsComplete",requestService.AreUserDetailsComplete());
+            model.addAttribute("AmbulanceRequests",ambulancerequestService.getAllRequestsForUserWith24hours(userService.getCurrentUser().id) );
+            List<Request> requests1= requestService.getAllRequestsForUserWithin24hrs(userService.getCurrentUser().id);
+            for (Request r:requests1) {
+                for (Image i: r.getDoctorReport()) {
+                    i.setImage("");
+                }
+            }
+            model.addAttribute("requests",requests1 );
 
-            model.addAttribute("requests",requestService.getAllRequestsForUser(userService.getCurrentUser().id) );
             return "patient/Home";
         }
         else if (userService.getCurrentUser().getRole()== Role.HOSPITAL) {
@@ -120,9 +134,17 @@ public class accountController {
             analytics.add(cu.getReservations().size());
             analytics.add(cu.getHospitalSections().size());
             analytics.add(hospitalService.getTotalBeds(cu.getAvailableBeds()));
-            model.addAttribute("AmbulanceRequests",hospitalService.getAllAmbulanceRequestsForCustomerWithin24hs(cu.id) );
+//            model.addAttribute("AmbulanceRequests",hospitalService.getAllForCustomerWithin24hs(cu.id ) );
 
             model.addAttribute("analytics",analytics);
+            model.addAttribute("patientlist", hospitalService.findPatientsByHospital());
+
+            model.addAttribute("genderStat", hospitalService.calculateGenderDistribution());
+            model.addAttribute("agestat", hospitalService.calculateAgeDistribution());
+
+            Map<ReservationType, Long> reservationTypeDistribution = reservationService.calculateReservationTypeDistribution();
+            model.addAttribute("reservationTypeDistribution", reservationTypeDistribution);
+
             List<Hospital> hospitals = hospitalService.getAllHospitalsSortedByReservationSize();
             model.addAttribute("hospitals", hospitals);
             return "hospital/Home";
@@ -137,6 +159,7 @@ public class accountController {
 //    profile
     @GetMapping("/profile")
     public String userProfile(Model model) {
+
         // Get the current user
         User user = userService.getCurrentUser();
         switch (user.getRole()) {
@@ -164,23 +187,20 @@ public class accountController {
 
         return "account/Profile";
     }
-    @GetMapping(value = "/{userId}/image")
-    public ResponseEntity<byte[]> getUserImage(@PathVariable UUID userId, @PathVariable String image) {
-        Patient patient = patientService.getPatientById(userId);
-        byte[] imageBytes = null; // declare the variable outside the if blocks
 
-        if ("identityCardImage".equals(image)) { // Corrected string comparison
-            imageBytes = java.util.Base64.getDecoder().decode(patient.getIdentityCardImage());
+    @GetMapping("/error_page")
+    public String error(Model model) {
+
+        User user = userService.getCurrentUser();
+        if (user.getRole() == Role.PATIENT){
+                return "account/error-profilenotcompleted_patient";
         }
-        if (imageBytes == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        else {
+            return "account/error-profilenotcompleted";
+
         }
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_JPEG);
-        return new ResponseEntity<>(imageBytes, headers, HttpStatus.OK);
     }
-
 
     @PostMapping("/profile-edit-ambulance")
     @PreAuthorize("hasAnyAuthority('AMBULANCE')")
@@ -196,8 +216,9 @@ public class accountController {
     }
     @PostMapping("/profile-edit-patient")
     @PreAuthorize("hasAnyAuthority('PATIENT')")
-    public String editUserProfile(@ModelAttribute("newuser") Patient user) {
-        patientService.update(patientService.getPatientById(userService.getCurrentUser().getId()),user);
+    public String editUserProfile(@ModelAttribute("newuser") Patient user, @RequestParam("image") List<MultipartFile> imageFile) throws IOException {
+
+        patientService.update(patientService.getPatientById(userService.getCurrentUser().getId()),user,imageFile);
         return "redirect:/profile";
     }
 //    edit admin details
@@ -319,5 +340,9 @@ public class accountController {
         return "redirect:/home";
 
     }
+
+
+
+
 
 }

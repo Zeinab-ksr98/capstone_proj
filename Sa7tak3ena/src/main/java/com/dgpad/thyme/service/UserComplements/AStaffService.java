@@ -24,8 +24,13 @@ public class AStaffService {
         return staffRepository.findAll();
     }
 
-    public void deleteStaff(long id) {
-        staffRepository.deleteById(id);
+    public void swichactiveStaff(long id) {
+        Paramedic paramedic=getStaffById(id);
+        if (paramedic.isInactive())
+            paramedic.setInactive(false);
+        else
+            paramedic.setInactive(true);
+        staffRepository.save(getStaffById(id));
     }
 }
 

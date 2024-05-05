@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Equipments</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Include Bootstrap JavaScript and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" th:href="@{css/test.css}">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+</head>
+<body>
+<div class="container-fluid">
+    <div class="d-flex">
+        <div th:replace="fragments/Aheader :: header"></div>
+        <div class="credits ml-5 mt-5">
+            <div class="container-fluid">
+
+    <button type="button" style="margin: 20px 0" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">Add Equipment</button>
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1"
+         role="dialog" aria-labelledby="exampleModalCenterTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form th:action="@{/add-equipments}" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Add New Equipment</h5>
+                        <button type="button" class="close" data-dismiss="modal"
+                                aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <input type="text" name="name" class="form-control"
+                               id="name" th:value="${name}" required placeholder="name">
+                    </div>
+                    <div class="modal-body text-center">
+                        <input type="number" name="price" class="form-control"
+                               id="phone" th:value="${price}" required placeholder="$">
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                                data-dismiss="modal">Close</button>
+                        <input type="submit" value="Save Changes" class="btn btn-primary">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div><br>
+
+    <table class="table table-light table-responsive">
+        <thead class="thead-light">
+        <tr>
+            <th >SN</th>
+            <th ></th>
+
+            <th>Equipment Name</th>
+            <th >Price $</th>
+            <th > time</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="equipment, sectionIndex : ${equipments}">
+            <td th:text="${sectionIndex.index + 1}"></td>
+            <td th:text="${equipment.getName()}"></td>
+            <td th:text="${equipment.getPrice()}"></td>
+            <td th:text="${equipment.getCreatedAt().hour+':'+ equipment.getCreatedAt().minute}"></td>
+
+            <td>
+                <a class="btn btn-danger" th:href="@{/delete-equipments/{id}(id=${equipment.getId()})}">
+                    Delete
+                </a>
+                <button class="btn btn-primary" data-toggle="modal" th:attr="data-target='#updateModal'+${equipment.getId()}">
+                    Update
+                </button>
+            </td>
+        </tr>
+            </tbody>
+    </table>
+
+    <!--    update modal-->
+    <div th:each="equipment : ${equipments}" th:id="'updateModal'+${equipment.id}" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Equipment Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <!-- Input fields for updating data -->
+                <form th:action="@{/update-equipments}" method="post">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <input class="form-control" type="text" name="id" id="id" th:value="${equipment.id}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="updatedname">New Paramedic Name:</label>
+                            <input type="text" class="form-control" id="updatedname" name="updatedname" th:value="${equipment.name}" placeholder="Paramedic Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="updatedprice">New Price :</label>
+                            <input type="number" min="1"  class="form-control" id="updatedprice" name="updatedprice" th:value="${equipment.price}" placeholder="Paramedic Name" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

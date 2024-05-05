@@ -1,10 +1,13 @@
 package com.dgpad.thyme.model.usercomplements;
 
+import com.dgpad.thyme.model.Image;
 import com.dgpad.thyme.model.users.Ambulance;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -17,7 +20,9 @@ public class Paramedic {
     private int id;
     private String name;
     private String phone;
-    private String image;
+    @ManyToOne
+    public Image image;
+    boolean inactive ;
     @ManyToOne
     @JoinColumn(name = "ambulance_id")
     private Ambulance ambulance;

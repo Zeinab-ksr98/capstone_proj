@@ -92,7 +92,7 @@
                             <h2>Request Form</h2>
                             <img th:src="@{/assits/underline1.png}">
                         </div>
-                        <form method="post" th:action="@{/submit2}" th:object="${grequest}">
+                        <form method="post" enctype="multipart/form-data" th:action="@{/submit2}" th:object="${grequest}">
                             <div class="form-check mt-3">
                                 <label class="form-check-label">Reserve bed:</label>
                                 <div th:each="type, status : ${T(com.dgpad.thyme.model.enums.ReservationType).values()}">
@@ -140,6 +140,11 @@
                                 <input class="form-control" name="location" placeholder="detailed address" required="required"
                                        type="text">
                             </div>
+                            <div >
+                                <label for="images" class="form-label">Doctor Report</label>
+                                <input type="file" class="form-control" id="images" name="images" accept="image/*" multiple required>
+                            </div>
+
                             <div class="form-group mt-3">
                                 <label for="medicalRecord">Medical Record:</label>
                                 <textarea class="form-control" id="medicalRecord" name="medicalRecord" rows="3"
@@ -196,6 +201,22 @@
 
             // Call getLocation function when the page loads
             window.onload = getLocation;
+        </script>
+        <script th:inline="javascript">
+            $(document).ready(function() {
+                // Toggle image upload field based on request type
+                $('#request_reservationType').change(function() {
+                    var requestType = $(this).val();
+                    if (requestType === 'EMERGENCY') {
+                        $('#images').hide();
+                    } else {
+                        $('#images').show();
+                    }
+                });
+
+                // Trigger change event on page load to initially hide/show image upload field
+                $('#request_reservationType').change();
+            });
         </script>
     </div>
 </div>

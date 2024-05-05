@@ -39,9 +39,11 @@
                     <div class="modal-body text-center">
                         <select name="cartype" class="form-control" id="type" required>
                             <option th:each="type : ${T(com.dgpad.thyme.model.enums.Ambulancetypes).values()}"
+                                    th:unless="${type == T(com.dgpad.thyme.model.enums.Ambulancetypes).any}"
                                     th:value="${type}" th:text="${type.name()}">
                             </option>
                         </select>
+
                         <label>Number of cars</label>
                         <input type="number" name="num" class="form-control" id="num" th:value="${num}" required min="1" max="30" >
 

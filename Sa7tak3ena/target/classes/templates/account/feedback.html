@@ -27,8 +27,8 @@
         <div th:replace="fragments/hheader :: header"></div>
     </div>
 <div class="container">
-            <div class="row">
-                <div class="col-md-6">
+            <div class="row mt-5">
+                <div class="col-md-6 mt-5">
                     <form id="feedbackForm" method="post" th:action="@{/saveFeedback}" class="modal-body ">
                         <div class="text-center">
                             <h6 >Your opinion matters</h6>
@@ -45,15 +45,14 @@
                         <div class=" mt-3">
                             <h5>What could we improve?</h5>
                         </div>
-                        <textarea name="feedbackMessage" id="feedbackMessage" placeholder="Your Message" rows="3" class="form-control"></textarea>
+                        <textarea name="feedbackMessage" id="feedbackMessage" required placeholder="Your Message" rows="3" class="form-control"></textarea>
                         <!-- Modal Footer-->
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-info">Send <i class="fa fa-paper-plane"></i></button>
-                            <button type="button" class="btn btn-outline-info" data-dismiss="modal">Cancel</button>
                         </div>
                     </form>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6 mt-5">
                     <div class="text-center">
                         <img th:src="@{/assits/feed.png}" class="img-fluid mb-3" alt="Feedback Image">
                     </div>

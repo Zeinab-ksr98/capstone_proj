@@ -13,8 +13,10 @@ body {
     min-height: 600px;
     position: relative;
     /*#155FA9*/
-    background: linear-gradient(to bottom,rgb(177, 177, 177),#155FA9 );
-    box-shadow: 0 12px 15px 0 rgba(0, 0, 0, .24), 0 17px 50px 0 rgba(0, 0, 0, .19);
+    background: rgb(177, 177, 177);
+
+    /*background: linear-gradient(to bottom,rgb(177, 177, 177),#155FA9 );*/
+    box-shadow: 0 12px 15px 0 rgba(0, 5, 110, 0.24), 0 17px 50px 0 rgba(10, 18, 110, 0.19);
 }
 
 .login-snip {
@@ -96,7 +98,7 @@ body {
 }
 
 .login-space .group .label {
-    color: #b3b3b3;
+    color: whitesmoke;
     font-size: 12px;
 }
 
@@ -185,5 +187,5 @@ a {
 }
 
 ::placeholder {
-    color: #b3b3b3;
+    color: black;
 }

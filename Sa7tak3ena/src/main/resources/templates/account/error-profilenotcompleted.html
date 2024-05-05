@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Error</title>
+    <!-- Add Bootstrap CSS link -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Include Bootstrap JavaScript and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" th:href="@{css/test.css}">
+    <link rel="stylesheet" th:href="@{css/error.css}">
+
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+</head>
+<body>
+<div id="error-page">
+    <div class="content">
+        <h3 class="header" data-text="Opps!">
+            Opps!</h3>
+        <h5 data-text=" Cann't submit multiple request at a time">
+            Cann't submit request </h5>
+        <p>
+            Sorry,You shull complete your profile by filling missing data and GPS Location
+        </p>
+        <div class="btns">
+            <a th:href="@{/home}">return home</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -20,7 +20,10 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     List<Request> findAllRequestsForUserByStatus(@Param("userId") UUID userID, @Param("status")ReservationStatus status);
     @Query("SELECT o FROM Request o WHERE (o.patient.id=?1) and o.status!=?2")
     List<Request> findAllRequestsForUserExceptStatus(@Param("userId") UUID userID, @Param("status")ReservationStatus status);
-    @Query("SELECT a FROM AmbulanceRequest a WHERE a.status = ?1 AND a.createdAt < ?2")
-    List<Request> findByStatusAndCreatedAtBefore(ReservationStatus status, LocalDateTime timestamp);
+    @Query("SELECT a FROM Request a WHERE a.status = com.dgpad.thyme.model.enums.ReservationStatus.PENDING AND a.CreatedAt < :timestamp")
+    List<Request> findByStatusAndCreatedAtBefore(@Param("timestamp") LocalDateTime timestamp);
+    @Query("SELECT ar FROM Request ar WHERE ar.patient.id=?1 or ar.hospital.id=?1  and  ar.CreatedAt >=?2")
+    List<Request> findRequestsByStatusWithin24Hours(@Param("userId") UUID userID,@Param("twentyFourHoursAgo") LocalDateTime twentyFourHoursAgo);
+
 
 }

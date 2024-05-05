@@ -1,5 +1,7 @@
 package com.dgpad.thyme.controller;
 
+import com.dgpad.thyme.Email.EmailService;
+import com.dgpad.thyme.model.Image;
 import com.dgpad.thyme.model.Reservation;
 import com.dgpad.thyme.model.enums.*;
 import com.dgpad.thyme.model.requests.AmbulanceRequest;
@@ -7,6 +9,7 @@ import com.dgpad.thyme.model.requests.GRequest;
 import com.dgpad.thyme.model.usercomplements.Address;
 import com.dgpad.thyme.model.usercomplements.AmbulanceAgency;
 import com.dgpad.thyme.model.usercomplements.Beds;
+import com.dgpad.thyme.model.usercomplements.Paramedic;
 import com.dgpad.thyme.model.users.Ambulance;
 import com.dgpad.thyme.model.users.Patient;
 import com.dgpad.thyme.service.UserComplements.*;
@@ -23,7 +26,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -35,6 +40,8 @@ import java.util.UUID;
 public class RequestController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private EmailService emailService;
 
     @Autowired
     private HospitalService hospitalService;
@@ -49,7 +56,8 @@ public class RequestController {
     private RequestService requestService;
     @Autowired
     private AmbulanceRequestService ambulanceRequestService;
-
+    @Autowired
+    private ImageService imageService;
     @Autowired
     private ReservationService reservationService;
     @Autowired
@@ -59,63 +67,68 @@ public class RequestController {
     @GetMapping(value = "/get-all-reservations")
     @PreAuthorize("hasAnyAuthority('HOSPITAL','PATIENT')")
     public String displayReservations(Model model) {
-        User cu=userService.getCurrentUser();
-        model.addAttribute("user",cu);
-        model.addAttribute("reservations",reservationService.getAllReservationForCustomerWithin24hs(cu.id) );
+        User cu = userService.getCurrentUser();
+        model.addAttribute("user", cu);
+        model.addAttribute("reservations", reservationService.getAllReservationForCustomerWithin24hs(cu.id));
 
         return "account/Reservation";
     }
+
     @GetMapping(value = "/get-history-reservations")
     @PreAuthorize("hasAnyAuthority('HOSPITAL','PATIENT')")
     public String displayHistoryReservations(Model model) {
-        User cu=userService.getCurrentUser();
-        model.addAttribute("user",cu);
-        model.addAttribute("reservations",reservationService.getAllReservationForCustomerOutside24hs(cu.id) );
+        User cu = userService.getCurrentUser();
+        model.addAttribute("user", cu);
+        model.addAttribute("reservations", reservationService.getAllReservationForCustomerOutside24hs(cu.id));
 
-        return "account/Reservation";
+        return "account/HistoryReservation";
     }
+
     //requests
     @GetMapping(value = "/get-all-requests")
-    @PreAuthorize("hasAnyAuthority('HOSPITAL','PATIENT')")
+    @PreAuthorize("hasAnyAuthority('HOSPITAL')")
     public String displayRequests(Model model) {
-        User cu=userService.getCurrentUser();
-        model.addAttribute("user",cu);
-        model.addAttribute("requests",requestService.getAllRequestsForUser(cu.id) );
+        User cu = userService.getCurrentUser();
+        model.addAttribute("user", cu);
+        model.addAttribute("requests", requestService.getAllRequestsForUser(cu.id));
         return "account/Requests";
     }
+
     //sending (for user)
     @GetMapping("/request-form2")
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     public String showRequestForm2(@RequestParam("lat") double latitude, @RequestParam("lon") double longitude, Model model) {
 //        order the Enabled hospital list according to distance
-        Address address =new Address();
+        Address address = new Address();
         address.setLongitude(longitude);
         address.setLatitude(latitude);
         addressService.save(address);
-        List<Hospital> sortedHospitals = addressService.sortHospitalsByDistance(address,hospitalService.getAllEnabledHospitals());
+        List<Hospital> sortedHospitals = addressService.sortHospitalsByDistance(address, hospitalService.getAllEnabledHospitals());
         model.addAttribute("availablehospitals", sortedHospitals);
         model.addAttribute("fromhospitals", hospitalService.getAllHospitals());
         model.addAttribute("availableagencies", ambulanceAgencyService.getAllAgencies());
         model.addAttribute("grequest", new GRequest());
-        model.addAttribute("user",userService.getCurrentUser());
+        model.addAttribute("user", userService.getCurrentUser());
 
 //        when initially no requests and when there is requests and one of the requests is confirmed
         List<Request> requestsLength = requestService.getAllRequestsForUser(userService.getCurrentUser().id);
-        List<Request> requests = requestService.findAllRequestsForUserByStatus(userService.getCurrentUser().id,ReservationStatus.CONFIRMED);
-        boolean allow= requestsLength.isEmpty() || (requestsLength.size()>0 && requests.size() ==0);
-        if (allow)
+        List<Request> requests = requestService.findAllRequestsForUserByStatus(userService.getCurrentUser().id, ReservationStatus.CONFIRMED);
+        boolean allow = requestsLength.isEmpty() || (requestsLength.size() > 0 && requests.size() == 0);
+        if (allow && requestService.AreUserDetailsComplete())
             return "patient/create request2";
+        else if (!requestService.AreUserDetailsComplete())
+            return "redirect:/error_page";
         else
             return "account/error";
     }
 
     @PostMapping("/submit2")
-    public String submitRequest2(@RequestParam("location") String location,@RequestParam("lat") double latitude, @RequestParam("lon")double longitude,@ModelAttribute GRequest grequest, Model model) {
-        Address address =new Address();
+    public String submitRequest2(@RequestParam("location") String location, @RequestParam("lat") double latitude, @RequestParam("lon") double longitude, @ModelAttribute GRequest grequest, @RequestParam("images") List<MultipartFile> imageFile, Model model) throws IOException {
+        Address address = new Address();
         address.setLongitude(longitude);
         address.setLatitude(latitude);
         address.setName(location);
-        address= addressService.save(address);
+        address = addressService.save(address);
         System.out.println(grequest.getPreferedhospitals());
         String[] hospitalIDsArray = grequest.getPreferedhospitals().split(",");
         // Creating an ArrayList to store UUIDs
@@ -126,7 +139,7 @@ public class RequestController {
         }
         ArrayList<AmbulanceAgency> ambulanceAgencies = null;
 
-        if(grequest.getPreferedagencies() != null) {
+        if (grequest.getPreferedagencies() != null) {
             String[] agenciesIDsArray = grequest.getPreferedagencies().split(",");
             // Creating an ArrayList to store UUIDs
             ArrayList<Integer> agenciesIDs = new ArrayList<>();
@@ -140,47 +153,57 @@ public class RequestController {
                 ambulanceAgencies.add(ambulanceAgencyService.getAmbulanceAgencyId(agencyId));
             }
         }
-        Patient patient=patientService.getPatientById(userService.getCurrentUser().getId());
+        if (grequest.getRequest().getReservationType() != ReservationType.EMERGENCY) {
+            List<Image> images = imageService.saveImages(imageFile);
+            grequest.getRequest().setDoctorReport(images);
+        }
+        Patient patient = patientService.getPatientById(userService.getCurrentUser().getId());
         for (UUID hospitalId : hospitalsIDs) {
             Request r = new Request();
             BeanUtils.copyProperties(grequest.getRequest(), r, "id");
             r.setCreatedAt(LocalDateTime.now());
             r.setHospital(hospitalService.getHospitalById(hospitalId));
+
             r.setPickupAddress(address);
             r.setPatient(patient);
             r.setPreferedAmbulance(ambulanceAgencies);
             r.setStatus(ReservationStatus.PENDING);
-            Request request=requestService.save(r);
+            Request request = requestService.save(r);
             patient.requests.add(request);
             hospitalService.getHospitalById(hospitalId).requests.add(request);
             patientService.save(patient);
             hospitalService.save(hospitalService.getHospitalById(hospitalId));
+            emailService.senddetailsEmail(hospitalService.getHospitalById(hospitalId).email, 3);
+
         }
         patientService.save(patient);
         model.addAttribute("alertMessage", "Request sent successfully!");
         return "redirect:/home";
     }
+
     @GetMapping("/change-requestStatus/{status}/{id}")
     @PreAuthorize("hasAnyAuthority('PATIENT','HOSPITAL')")
-    public String changeRequestStatus(@PathVariable ReservationStatus status,@PathVariable Long id) {
-        requestService.statusRequest(id ,status);
-        patientService.statusRequest(id,requestService.getRequestById(id).getPatient().id, status);
-        if(userService.getCurrentUser().getRole() == Role.PATIENT)
+    public String changeRequestStatus(@PathVariable ReservationStatus status, @PathVariable Long id) {
+        requestService.statusRequest(id, status);
+        patientService.statusRequest(id, requestService.getRequestById(id).getPatient().id, status);
+        if (userService.getCurrentUser().getRole() == Role.PATIENT)
             return "redirect:/home";
         return "redirect:/get-all-requests";
     }
-//    accept request is done by two ways ether only change status (when no need for ambulance)
+
+    //    accept request is done by two ways ether only change status (when no need for ambulance)
 //    or by using accept-request where status, ambulance car are modified
     @PostMapping("/accept-request")
     @PreAuthorize("hasAnyAuthority('HOSPITAL')")
     public String acceptRequest(@RequestParam Long id, @RequestParam Ambulancetypes type) {
-        requestService.acceptRequest(id ,type);
-        patientService.acceptRequest(id,requestService.getRequestById(id).getPatient().id,type);
+        requestService.acceptRequest(id, type);
+        patientService.acceptRequest(id, requestService.getRequestById(id).getPatient().id, type);
         return "redirect:/get-all-requests";
     }
+
     @GetMapping("/reserve-request/{id}")
     @PreAuthorize("hasAnyAuthority('PATIENT')")
-    public String reserveRequest(@PathVariable Long id) {
+    public String reserveRequest(@PathVariable Long id) throws IOException {
         Request request = requestService.getRequestById(id);
         requestService.statusRequest(id, ReservationStatus.RESERVED);
 
@@ -190,11 +213,16 @@ public class RequestController {
         if (request.isNeedAmbulance()) {
             for (AmbulanceAgency agency : request.getPreferedAmbulance()) {
                 // Filtering ambulances
-                List<Ambulance> filteredAmbulance = ambulanceService.getAmbulanceByAvailableCarTypeAndAgency(agency, request.getCarType());
+                List<Ambulance> filteredAmbulance = new ArrayList<>();
+                if (request.getCarType() != Ambulancetypes.any)
+                    filteredAmbulance = ambulanceService.getAmbulanceByAvailableCarTypeAndAgency(agency, request.getCarType());
+                else
+                    filteredAmbulance = ambulanceService.getcompletedAmbulanceByAgency(agency);
+
                 filteredAmbulance = addressService.sortAndFilterAmbulancesByDistance(request.getPickupAddress(), filteredAmbulance, 80); // Filter by 80 km
 //                filteredAmbulance = addressService.sortAmbulancesByDistance(request.getPickupAddress(), filteredAmbulance);
 
-                for (int i = 0;  i < filteredAmbulance.size(); i++) {
+                for (int i = 0; i < filteredAmbulance.size(); i++) {
                     Ambulance ambulance = filteredAmbulance.get(i);
                     AmbulanceRequest ambulanceRequest = new AmbulanceRequest();
 
@@ -210,11 +238,15 @@ public class RequestController {
                     ambulanceRequest.setCreatedAt(LocalDateTime.now());
                     ambulanceRequest.setFrom_hospital(true);
 
-                    ambulanceRequest=ambulanceRequestService.save(ambulanceRequest);
+                    ambulanceRequest = ambulanceRequestService.save(ambulanceRequest);
                     reservation.getAmbulanceRequests().add(ambulanceRequest);
+                    emailService.senddetailsEmail(ambulance.email, 3);
+
                 }
+
             }
         }
+
 //        modify rest details
         reservation.setReservationType(request.getReservationType());
         reservation.setStatus(ReservationStatus.RESERVED);
@@ -246,38 +278,13 @@ public class RequestController {
         return "redirect:/home";
     }
 
-
-
-
-//    private boolean areUserDetailsComplete(User user) {
-//        return !user.getAddresses().isEmpty() && user.getPhone() != null && user.getUsername() != null;
-//    }
-//    @PostMapping("/update-status")
-//   ------------ public String updateStatus(@RequestParam("id") Long id, @RequestParam("updatedStatus") OrderStatus status){
-//        System.out.println(id + " "+status);
-//        OnlineOrders order = orderService.getOrderById(id);
-//        order.setStatus(status);
-//        orderService.updateOrder(order);
-//        return "redirect:/get-all-orders";
-//    }
-
-//    @GetMapping(value="/cartToOrder")
-//    public String CartToOrder() {
-//        User user=userService.getUserById(userService.getCurrentUser().id);
-//
-//            Cart c=user.getCart();
-//            OnlineOrders order= new OnlineOrders();
-//            order.setUser(user);
-//            order.setStatus(OrderStatus.IN_PROCESS);
-//            order.setTotalPrice(c.getTotalPrice());
-//            order.setOrdersList(new ArrayList<CartItem>(c.getCartItemList()));
-//            orderService.createOrder(order);
-//            c.setTotalPrice(0.0);
-//            c.setCartItemList(new ArrayList<>());
-//            cartService.save(c);
-//            return "redirect:/display-cart";
-//
-//        }
-//
-//    }
+    @PostMapping("/update-reservation")
+    @PreAuthorize("hasAnyAuthority('HOSPITAL')")
+    public String updateReservation(@RequestParam("id") Long id, @RequestParam("bed") String bed, @RequestParam("floor") int floor) {
+        Reservation r = reservationService.getReservationById(id);
+        r.setBednum(bed);
+        r.setFloornum(floor);
+        reservationService.save(r);
+        return "redirect:/get-all-reservations";
+    }
 }
