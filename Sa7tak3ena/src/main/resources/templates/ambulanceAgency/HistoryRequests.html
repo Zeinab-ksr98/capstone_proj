@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Requests</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Include Bootstrap JavaScript and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" th:href="@{css/test.css}">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="d-flex">
+        <div th:replace="fragments/Aheader :: header"></div>
+        <div class="credits ml-5 mt-5">
+            <div class="container-fluid">
+
+            <div class=" mt-3" >
+                <h5>Hospital Requests</h5>
+                <table class="table table-light">
+                    <thead class="thead-light">
+                    <tr>
+                        <th scope="col">Request type</th>
+                        <th scope="col">sender Name</th>
+                        <th scope="col">sender Phone</th>
+                        <th scope="col">from</th>
+                        <th scope="col">To</th>
+                        <th scope="col">Car Type</th>
+                        <th scope="col">status</th>
+                        <th scope="col">staff</th>
+                        <th scope="col">created at</th>
+                        <th scope="col"> description</th>
+                        <th scope="col"></th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="request : ${requests}" th:if="${request.isFrom_hospital() && request.status != request.status.PENDING}" >
+                        <td th:text="${request.getService()}"></td>
+                        <td th:text="${request.getSender().username}"></td>
+                        <td th:text="${request.getSender().phone}"></td>
+                        <td>
+                            <th:block th:if="${request.pickupaddress != null and request.pickupaddress.latitude != null and request.pickupaddress.longitude != null and request.pickupaddress.REGION != null}">
+                                <a th:text="${request.hospital.publicName}"></a>
+                            </th:block>
+                            <th:block th:else="">
+                                <th:block th:if="${request.pickupaddress != null and request.pickupaddress.latitude != null and request.pickupaddress.longitude != null}">
+                                    <a th:href="'https://www.google.com/maps?q=' + ${request.pickupaddress.latitude} + ',' + ${request.pickupaddress.longitude}" target="_blank">
+                                        View on Map
+                                    </a>
+                                </th:block>
+                            </th:block>
+                        </td>
+                        <td>
+                            <th:block th:if="${request.to != null and request.to.latitude != null and request.to.longitude != null and request.to.REGION != null}">
+                                <a th:text="${request.hospital.publicName}"></a>
+                            </th:block>
+                            <th:block th:else="">
+                                <th:block th:if="${request.to != null and request.to.latitude != null and request.to.longitude != null}">
+                                    <a th:href="'https://www.google.com/maps?q=' + ${request.to.latitude} + ',' + ${request.to.longitude}" target="_blank">
+                                        View on Map
+                                    </a>
+                                </th:block>
+                            </th:block>
+                        </td>
+
+                        <td th:text="${request.car_type}"></td>
+
+                        <td th:text="${request.status}"></td>
+                        <td th:text="${request.staff != null ? request.staff.name : 'N/A'}"></td>
+                        <td th:text="${request.getCreatedAt().hour}+ 'h:'+${request.getCreatedAt().minute}+'m'"></td>
+                        <td th:text="${request.description != null ? request.description : 'N/A'}"></td>
+
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+        <h5>Patients Requests</h5>
+        <table class="table table-light table-responsive">
+            <thead class="thead-light">
+            <tr>
+                <th scope="col">Request type</th>
+                <th scope="col">sender Name</th>
+                <th scope="col">sender Phone</th>
+                <th scope="col">from</th>
+                <th scope="col">To</th>
+                <th scope="col">status</th>
+                <th scope="col">staff</th>
+                <th scope="col">created at</th>
+                <th scope="col"> description</th>
+                <th scope="col"></th>
+
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="request : ${requests}" th:if="${!request.isFrom_hospital() && (request.status == request.status.Done or request.status == request.status.ACCEPTED) && request.getSender().getRole().toString() != 'AMBULANCE'}">
+                <td th:text="${request.service}"></td>
+                <td th:text="${request.getSender().username}"></td>
+                <td th:text="${request.getSender().phone}"></td>
+
+                <td>
+                    <th:block th:if="${request.to != null and request.to.latitude != null and request.to.longitude != null and request.to.REGION != null}">
+                        <a th:text="${request.hospital.publicName}"></a>
+                    </th:block>
+                    <th:block th:else="">
+                        <th:block th:if="${request.to != null and request.to.latitude != null and request.to.longitude != null}">
+                            <a th:href="'https://www.google.com/maps?q=' + ${request.to.latitude} + ',' + ${request.to.longitude}" target="_blank">
+                                View on Map
+                            </a>
+                        </th:block>
+                    </th:block>
+                </td>
+
+                <td th:text="${request.status}"></td>
+                <td th:text="${request.staff != null ? request.staff.name : 'N/A'}"></td>
+                <td th:text="${request.getCreatedAt().hour}+ '/'+${request.getCreatedAt().minute}"></td>
+                <td th:text="${request.description}"></td>
+
+            </tr>
+            </tbody>
+        </table>
+            </div>
+        </div>
+</div>
+    </div>
+</body>
+</html>
