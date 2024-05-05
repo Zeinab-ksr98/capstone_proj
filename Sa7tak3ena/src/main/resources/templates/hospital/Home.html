@@ -9,10 +9,10 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <link rel="stylesheet" th:href="@{css/test.css}">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
 
     <style>
         .radius-10 {
@@ -101,7 +101,9 @@
                     </div>
                 </div>
             </div>
-            
+
+
+
             <div class=" mt-1 row row-cols-1 row-cols-md-1 row-cols-xl-1 mr-1">
             <table class="table table-light table-responsive text-muted">
                 <thead class="small text-uppercase bg-body text-info">
@@ -154,10 +156,150 @@
                     </tbody>
                 </table>
             </div>
+            <div class="row row-cols-1 row-cols-md-1 row-cols-xl-2">
+                <div class="col"  style="background: white">
+                    <canvas id="genderDistributionChart" width="250" height="150" ></canvas>
+                </div>
+
+                <div class="col" style="background: white">
+                    <canvas id="ageDistributionChart" width="250" height="150"></canvas>
+                </div>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-1 row-cols-xl-2 my-3 " >
+                <div class="col text-center" style="background: white">
+
+                    <div class="col">
+                        <canvas id="reservationTypeChart" width="150" height="150"></canvas>
+                    </div>
+
+                </div>
+<!--                <div class="col text-center" style="background: white">-->
+
+<!--                    <div class="col">-->
+<!--                        <canvas id="reservationTypeChart" width="150" height="150"></canvas>-->
+<!--                    </div>-->
+
+<!--                </div>-->
+
+            </div>
+
         </div>
     </div>
     </div>
 </div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
+    var genderData = /*[[${genderStat}]]*/ [];
+    var ageData = /*[[${agestat}]]*/ [];
+
+    // Create gender distribution chart
+    var genderChart = new Chart(document.getElementById('genderDistributionChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Male', 'Female'],
+            datasets: [{
+                label: 'Gender Distribution',
+                data: genderData,
+                backgroundColor: ['rgba(255, 99, 132, 0.5)', 'rgba(54, 162, 235, 0.5)'],
+                borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+
+    // var ageData = /*[[${ageStat}]]*/ [];
+    var ageLabels = ['Under 18', '18-30', '31-50', 'Over 50'];
+
+    // Define shades of blue for each age group
+    var ageBlueShades = [
+        'rgba(0, 0, 255, 0.5)',     // Light blue shade
+        'rgba(30, 144, 255, 0.5)',  // Dodger blue shade
+        'rgba(65, 105, 225, 0.5)',  // Royal blue shade
+        'rgba(0, 0, 205, 0.5)'      // Medium blue shade
+    ];
+
+    // Create age distribution chart
+    var ageChart = new Chart(document.getElementById('ageDistributionChart'), {
+        type: 'bar',
+        data: {
+            labels: ageLabels,
+            datasets: [{
+                label: 'Age Distribution',
+                data: ageData,
+                backgroundColor: ageBlueShades,
+                borderColor: ageBlueShades.map(color => color.replace(/[\d.]+\)$/g, '1)')), // Solid version of each color
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+
+    /*]]>*/
+</script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    // Get data from Thymeleaf
+    var reservationTypeDistribution = /*[[${reservationTypeDistribution}]]*/ {};
+
+    // Extract labels (reservation types) and counts
+    var labels = Object.keys(reservationTypeDistribution);
+    var counts = Object.values(reservationTypeDistribution);
+
+    // Create pie chart
+    var ctx = document.getElementById('reservationTypeChart').getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Reservation Type Distribution',
+                data: counts,
+                backgroundColor: [
+                    'rgba(255,234,99,0.5)',
+                    'rgba(54, 162, 235, 0.5)',
+                    'rgba(255,86,86,0.5)',
+                    'rgba(157,210,210,0.5)',
+                    'rgba(153, 102, 255, 0.5)',
+                    'rgba(255, 159, 64, 0.5)'
+                ],
+                borderColor: [
+                    'rgb(255,234,99)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgb(255,86,86)',
+                    'rgb(181,217,217)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            // Add any additional options here
+        }
+    });
+    /*]]>*/
+</script>
+
 </body>
 
 </html>

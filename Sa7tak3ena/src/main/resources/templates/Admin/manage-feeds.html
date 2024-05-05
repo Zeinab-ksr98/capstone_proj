@@ -15,39 +15,57 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <style>
-        .chat-box {
-            background-color: #ffffff;
-            border-radius: 8px;
-            padding: 10px;
-            margin-bottom: 10px;
-            max-width: 80%;
+        .card {
+            background-color: white;
+            transition: background-color 0.3s ease;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            height: 100%;
         }
 
-        .user-chat {
-            background-color: lavender;
-            align-self: flex-start;
+        .rating-verygood:hover { background-color: #B4F7A4; }
+        .rating-good:hover { background-color: #A3D8F2; }
+        .rating-mediocre:hover { background-color: #FEE08B; }
+        .rating-bad:hover { background-color: #FFABAB; }
+        .rating-verybad:hover { background-color: #FFABAB; }
+
+
+        /* Remove padding from row */
+        .no-gutters {
+            margin-right: 0;
+            margin-left: 0;
+        }
+
+        /* Reduce margin between columns */
+        .col {
+            margin-bottom: 10px; /* Adjust as needed */
+        }
+
+        /* Set width of cards */
+        .card {
+            width: 250px; /* Adjust as needed */
         }
     </style>
 </head>
 <body style="background: silver">
 <div class="d-flex">
-
-<div th:replace="fragments/Adimnheader :: header"></div>
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-8">
-            <div class="d-flex flex-column align-items-start">
-                <div th:each="feed, feedIndex : ${feeds}" class="chat-box user-chat">
-
-                    <p><span> <img width="16" height="16" src="https://img.icons8.com/office/16/user.png" alt="user"/>
-                        </span> <span th:text="${feed.user.username}"></span></p>
-                    <p>Rating: <span th:text="${feed.rate}"></span></p>
-                    <p th:if="${feed.improvement != null}" th:text="${feed.improvement}"></p>
+    <div th:replace="fragments/Adimnheader :: header"></div>
+    <div class="container mt-5">
+        <!--'no-gutters' class to remove gaps -->
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-2 bg-light no-gutters">
+            <div class="col mb-4" th:each="feed, feedIndex : ${feeds}">
+                <div class="card bg-white" th:class="'rating-' + ${feed.rate.toString().toLowerCase()}">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <img width="28" height="28" src="https://img.icons8.com/pulsar-line/48/user.png" alt="user"/>                            <span th:text="${feed.user.username}"></span>
+                        </h5>
+                        <p class="card-text">Rating: <span th:text="${feed.rate}"></span></p>
+                        <p class="card-text" th:if="${feed.improvement != null}" th:text="${feed.improvement}"></p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 </div>
 </body>
 </html>

@@ -18,55 +18,44 @@
 <div class="container-fluid">
     <div class="d-flex">
 
-<th:block th:if="${user.role.toString() == 'PATIENT'}">
-    <div th:replace="fragments/Pheader :: header"></div>
-</th:block>
-<th:block th:unless="${user.role.toString() == 'PATIENT'}">
+
     <div th:replace="fragments/Hheader :: header"></div>
-</th:block>
         <div class="credits ml-5 mt-5">
             <div th:fragment="requests" th:if="${(requests != null and not #lists.isEmpty(requests))}" >
-
             <div class="container-fluid" th:if="${(requests != null and not #lists.isEmpty(requests))}">
                 <h5>Requests</h5>
     <table class="table table-light mb-0" >
         <thead class="small text-uppercase bg-body text-muted">
         <tr>
-            <th th:if="${user.role.toString() == 'HOSPITAL'}">ID</th>
-            <th th:if="${user.role.toString() == 'PATIENT'}">Hospital Name</th>
+            <th >ID</th>
             <th>Reservation Type</th>
-            <th th:if="${user.role.toString() == 'HOSPITAL'}">Patient Name</th>
+            <th>Patient Name</th>
             <th >Medical Record</th>
-            <th th:if="${user.role.toString() == 'HOSPITAL'}">Need Ambulance</th>
-            <th th:if="${user.role.toString() == 'HOSPITAL'}">Ambulance Agencies</th>
+            <th >Need Ambulance</th>
+            <th >Ambulance Agencies</th>
             <th>Status</th>
             <th>Action</th>
         </tr>
         </thead>
         <tbody>
         <tr class="align-middle" th:each="request : ${requests}"  th:if="${request.status != request.status.RESERVED }" th:unless="${request.status == request.status.Deleted}">
-            <td th:text="${request.id}" th:if="${user.role.toString() == 'HOSPITAL'}"></td>
-            <td th:text="${request.hospital.publicName}" th:if="${user.role.toString() == 'PATIENT'}"></td>
+            <td th:text="${request.id}" ></td>
             <td th:text="${request.reservationType}"></td>
-            <td th:text="${request.patient.username}" th:if="${user.role.toString() == 'HOSPITAL'}"></td>
-            <td th:text="${request.medicalRecord}" ></td>
-            <td th:text="${request.needAmbulance}" th:if="${user.role.toString()== 'HOSPITAL'}"></td>
-            <td th:if="${user.role.toString() == 'HOSPITAL'}">
+            <td th:text="${request.patient.username}" ></td>
+            <td>
+                <a data-toggle="modal" th:attr="data-target='#detailsModal'+${request.id}"> view details</a>
+
+            </td>
+            <td th:text="${request.needAmbulance}" ></td>
+            <td >
                 <ul>
                     <li th:each="ambulance : ${request.preferedAmbulance}" th:text="${ambulance.name}"></li>
                 </ul>
             </td>
             <td th:text="${request.status}"></td>
             <td>
-                <!-- Show buttons based on userrole and status -->
-                <div th:if="${user.role.toString() == 'PATIENT' and request.status== request.status.ACCEPTED}">
-                    <a class="btn btn-success" th:href="@{/reserve-request/{id}(id=${request.id})}">Confirm</a>
-                </div>
-                <div th:if="${user.role.toString() == 'PATIENT' and request.status== request.status.PENDING}">
-                    <a class="btn btn-danger" th:href="@{/change-requestStatus/{status}/{id}(status=${request.status.Deleted},id=${request.id})}">Delete</a>
-                </div>
 
-                <div th:if="${user.role.toString() == 'HOSPITAL' and request.status == request.status.PENDING}">
+                <div th:if="${ request.status == request.status.PENDING}">
                     <th:block th:if="${request.needAmbulance}">
                         <button class="btn btn-primary" data-toggle="modal" th:attr="data-target='#updateModal'+${request.id}">
                             Accept
@@ -83,6 +72,30 @@
         </tbody>
     </table>
 </div>
+                <div th:each="request : ${requests}" th:id="'detailsModal'+${request.id}" class="modal fade" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Update Category</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div>
+                                <h5 th:text="${request.patient.phone + ' ' + request.patient.insurance}"></h5>
+                                <h5 th:text="${request.patient.age + ' ' + request.patient.gender}"></h5>
+                                <h5 th:text="${request.patient.nationality}"></h5>
+
+                                <img th:if="${request.patient.identityCardImage.id != null}" th:src="@{/image/{imageId}(imageId=${request.patient.identityCardImage.id})}" class="img-thumbnail" alt=" Image">
+
+                                <h5 th:text="${request.medicalRecord}" ></h5>
+                                <div th:each="image :${ request.DoctorReport}" >
+                                    <img th:if="${image.id != null}" th:src="@{/image/{imageId}(imageId=${image.id})}" class="img-thumbnail" alt=" Image">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 <div th:each="request : ${requests}" th:id="'updateModal'+${request.id}" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
