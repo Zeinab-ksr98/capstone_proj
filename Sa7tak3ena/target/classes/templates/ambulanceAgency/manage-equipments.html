@@ -61,8 +61,6 @@
         <thead class="thead-light">
         <tr>
             <th >SN</th>
-            <th ></th>
-
             <th>Equipment Name</th>
             <th >Price $</th>
             <th > time</th>
@@ -74,7 +72,7 @@
             <td th:text="${sectionIndex.index + 1}"></td>
             <td th:text="${equipment.getName()}"></td>
             <td th:text="${equipment.getPrice()}"></td>
-            <td th:text="${equipment.getCreatedAt().hour+':'+ equipment.getCreatedAt().minute}"></td>
+            <td th:text="${equipment.getCreatedAt().dayOfMonth+'_'+equipment.getCreatedAt().month+'/'+ equipment.getCreatedAt().hour+'h:'+ equipment.getCreatedAt().minute+'m'}"></td>
 
             <td>
                 <a class="btn btn-danger" th:href="@{/delete-equipments/{id}(id=${equipment.getId()})}">

@@ -31,9 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 
 @Controller
@@ -94,7 +92,7 @@ public class RequestController {
         return "account/Requests";
     }
 
-    //sending (for user)
+    //sending (for patient)
     @GetMapping("/request-form2")
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     public String showRequestForm2(@RequestParam("lat") double latitude, @RequestParam("lon") double longitude, Model model) {
@@ -103,13 +101,27 @@ public class RequestController {
         address.setLongitude(longitude);
         address.setLatitude(latitude);
         addressService.save(address);
-        List<Hospital> sortedHospitals = addressService.sortHospitalsByDistance(address, hospitalService.getAllEnabledHospitals());
-        model.addAttribute("availablehospitals", sortedHospitals);
+
         model.addAttribute("fromhospitals", hospitalService.getAllHospitals());
         model.addAttribute("availableagencies", ambulanceAgencyService.getAllAgencies());
         model.addAttribute("grequest", new GRequest());
         model.addAttribute("user", userService.getCurrentUser());
 
+        List<Hospital> sortedHospitals = addressService.sortHospitalsByDistance(address, hospitalService.getAllEnabledHospitals());
+        model.addAttribute("availablehospitals", sortedHospitals);
+        // Create a map to store hospital details including bed counts for each category
+        Map<Hospital, Map<String, Integer>> hospitalDetailsMap = new HashMap<>();
+        for (Hospital hospital : sortedHospitals) {
+            Map<String, Integer> bedCountMap = new HashMap<>();
+            bedCountMap.put("NICU", hospitalService.getBedCountForCategoryinHospital(hospital.id, "neonatal intensive CU العناية المركزة لحديثي الولادة"));
+            bedCountMap.put("ICU", hospitalService.getBedCountForCategoryinHospital(hospital.id, "ICU وحدة العناية المركزة"));
+            bedCountMap.put("Emergency", hospitalService.getBedCountForCategoryinHospital(hospital.id, "طوارئ"));
+
+            hospitalDetailsMap.put(hospital, bedCountMap);
+        }
+
+        // Add the map containing hospital details to the model
+        model.addAttribute("hospitalDetailsMap", hospitalDetailsMap);
 //        when initially no requests and when there is requests and one of the requests is confirmed
         List<Request> requestsLength = requestService.getAllRequestsForUser(userService.getCurrentUser().id);
         List<Request> requests = requestService.findAllRequestsForUserByStatus(userService.getCurrentUser().id, ReservationStatus.CONFIRMED);

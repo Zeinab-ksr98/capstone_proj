@@ -70,9 +70,14 @@ public class HospitalService {
         }
         return null;
     }
-    public List<Hospital> findHospitalsWithAvailableEmergencyBeds(String categoryName) {
-        return hospitalRepository.findHospitalsWithAvailableEmergencyBeds(categoryName);
+    public List<Hospital> findHospitalsWithAvailableBedCategory(String categoryName) {
+        return hospitalRepository.findHospitalsWithAvailableCategoryBeds(categoryName);
     }
+    public int getBedCountForCategoryinHospital(UUID hospitalId, String categoryName) {
+        Integer bedCount = hospitalRepository.getBedCountForCategoryinHospital(hospitalId, categoryName);
+        return bedCount != null ? bedCount : 0;
+    }
+
 
     public List<Patient> findPatientsByHospital(){
             return hospitalRepository.findPatientsByHospital(userService.getCurrentUser().id);

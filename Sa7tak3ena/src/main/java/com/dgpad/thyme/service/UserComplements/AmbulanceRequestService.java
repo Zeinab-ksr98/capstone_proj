@@ -198,7 +198,6 @@ public class AmbulanceRequestService {
 
     @Scheduled(fixedRate = 600000)//every 10 min delete pending requests
     public void updateOldPendingRequests() {
-        System.out.println("mhmad");
         try {
             LocalDateTime tenMinutesAgo = LocalDateTime.now().minus(10, ChronoUnit.MINUTES);
             List<AmbulanceRequest> pendingRequests = requestRepository.findPendingCreatedAtBefore(tenMinutesAgo);

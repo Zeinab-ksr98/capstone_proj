@@ -54,6 +54,7 @@ public class PatientService {
         if(!code.equals(verificationCode.getCode()))
             throw new Exception("Failed to verify the number the code is incorrect");
         user.setVerifiedPhone(true);
+        user.setEnabled(true);
         user = patientRepository.save(user);
         return true;
     }
@@ -124,7 +125,10 @@ public class PatientService {
             verificationCodeRepository.delete(verificationCode);
             throw new Exception("Failed to send the verification code!");
         }
-        return save(newUser);
+        newUser.setEnabled(false);
+        Patient patient = save(newUser);
+
+        return patient;
     }
 
     public Patient getPatientById(UUID id){

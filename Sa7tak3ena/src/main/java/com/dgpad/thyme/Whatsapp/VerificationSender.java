@@ -1,7 +1,6 @@
 package com.dgpad.thyme.Whatsapp;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
+import com.squareup.okhttp.*;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,18 +12,23 @@ public class VerificationSender {
     }
     public boolean sendVerificationCode(String number, String message){
         try {
-            String url = String.format("http://localhost:3000/send-message?number=%s&message=%s", number, message);
+            MediaType mediaType = MediaType.parse("application/json");
+            JSONObject object = new JSONObject();
+            object.put("session","default");
+            object.put("text",message);
+            object.put("chatId","961"+number+"@c.us");
+
+            RequestBody body = RequestBody.create(mediaType, object.toString());
 
             Request request = new Request.Builder()
-                    .url(url)
-                    .method("GET", null)
+                    .url("http://localhost:3000/api/sendText")
+                    .method("POST", body)
+                    .addHeader("Content-Type", "application/json")
                     .build();
-
             Response response = client.newCall(request).execute();
 
             if (response.isSuccessful()) {
-                String responseBody = response.body().string();
-                return responseBody.contains("Message sent successfully");
+              return true;
             }
             return false;
         } catch (Exception e) {

@@ -21,6 +21,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -62,14 +63,20 @@ public class UserController {
     }
     @PostMapping(value = "/create")
     public String createUser(@ModelAttribute("newuser") Patient user, BindingResult bindingResult, Model model){
-        Patient p = (Patient) userService.findUserByPhone(user.getPhone()).get();
-//        if the he phone already exist and varified--> is being used by a user-->error
-        if(p.getVerifiedPhone()){
+        Optional<User> p = userService.findUserByPhone(user.getPhone());
+        if(p.isPresent()){
             model.addAttribute("user",user);
+            Patient patient =(Patient) p.get();
+            if(!patient.getVerifiedPhone()){
+//                modify details of the existing one then send a welcoming sms
+                model.addAttribute("user",p);
+                return "account/RestoreMyaccount";
+            }
             bindingResult.rejectValue("Phone", "error.user", "Phone already exists");
-            return "account/ReplaceMyaccount";
-        }
 
+            return "account/ReplaceMyaccount";
+
+        }
 
         if(userService.userNameExists(user.getUsername())){
             model.addAttribute("user",user);
@@ -84,21 +91,24 @@ public class UserController {
         }
         try {
             //        if the phone already exist and not varified--> created but not varified -->restore it by modifing User details
-
-            if(!p.getVerifiedPhone()){
-//                modify details of the existing one then send a welcoming sms
-                model.addAttribute("user",p);
-                return "account/RestoreMyaccount";
-            }
-            else {
                 user.setRole(Role.PATIENT);
                 patientService.createUser(user);
-                model.addAttribute("num",user.getPhone());
-                return "account/CodeVerification";
-            }
+            model.addAttribute("num",user.getPhone());
+            VerifyUserRequest request= new VerifyUserRequest();
+            request.setNumber(user.getPhone());
+            model.addAttribute("verifyRequest",request);
+            return "account/CodeVerification";
         } catch (Exception e) {
             return "account/SignIn";
         }
+    }
+    @GetMapping("/verify")
+    public String Verify(@RequestParam(value = "number") String number, Model model) {
+        model.addAttribute("num",number);
+        VerifyUserRequest request= new VerifyUserRequest();
+        request.setNumber(number);
+        model.addAttribute("verifyRequest",request);
+        return "account/CodeVerification";
     }
 
     @GetMapping(value = "/",  produces = MediaType.APPLICATION_JSON_VALUE)

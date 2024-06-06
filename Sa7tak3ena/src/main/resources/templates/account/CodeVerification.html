@@ -32,12 +32,12 @@
                     <p>
                         Please enter the code in the field below.
                     </p>
-                    <form method="post" action="/verify-user">
+                    <form method="get" th:action="@{/verify-user}" th:object="${verifyRequest}">
                         <!-- Hidden input field for the phone number -->
-                        <input type="hidden" name="number" th:value="${num}">
+                        <input type="hidden" name="number"  th:field="${verifyRequest.number}">
                         <div class="row mt-4 pt-2">
                             <div class="col">
-                                <input type="text" class="form-control form-control-lg text-center py-4" maxlength="8" name="code"  title="Please enter 8 digits" autofocus required>
+                                <input type="text" class="form-control form-control-lg text-center py-4" maxlength="8" name="code" th:field="${verifyRequest.code}" title="Please enter 8 digits" autofocus required>
                             </div>
                         </div>
                         <button type="submit" class="btn btn-info btn-lg w-100 hover-lift-light mt-4">

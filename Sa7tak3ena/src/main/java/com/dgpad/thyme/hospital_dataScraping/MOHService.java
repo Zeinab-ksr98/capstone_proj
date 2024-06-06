@@ -92,7 +92,6 @@ public class MOHService {
 
         // Extract information from HTML elements and set them in the Hospital object
         hospital.setPhone(information.get(PHONE));
-        hospital.setFax(information.getOrDefault(FAX,null));
         hospital.setEmail(information.getOrDefault(EMAIL,"_"));
         hospital.setManagerName(information.getOrDefault(DIRECTOR,null));
         hospital.setSupervisingPhysicianName(information.getOrDefault(CONTROLLING_DOCTOR, null));

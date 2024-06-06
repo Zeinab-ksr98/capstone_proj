@@ -243,7 +243,7 @@ public class AmbulanceController {
         model.addAttribute("newrequest",new AmbulanceRequest());
         model.addAttribute("stafflist",cu.getParamedicList() );
         model.addAttribute("requests", ambulanceRequestService.findRequestsWithin24Hours(userService.getCurrentUser().getId()));
-        List<Hospital> hospitals = hospitalService.findHospitalsWithAvailableEmergencyBeds("طوارئ");
+        List<Hospital> hospitals = hospitalService.findHospitalsWithAvailableBedCategory("طوارئ");
         model.addAttribute("hospitals", hospitals);
         model.addAttribute("user",cu );
 
@@ -257,7 +257,7 @@ public class AmbulanceController {
         model.addAttribute("newrequest",new AmbulanceRequest());
         model.addAttribute("stafflist",cu.getParamedicList() );
         model.addAttribute("requests", ambulanceRequestService.getAllAmbulanceRequestsForUserOutside24hs(userService.getCurrentUser().getId()));
-        List<Hospital> hospitals = hospitalService.findHospitalsWithAvailableEmergencyBeds("طوارئ");
+        List<Hospital> hospitals = hospitalService.findHospitalsWithAvailableBedCategory("طوارئ");
         model.addAttribute("hospitals", hospitals);
         model.addAttribute("user",cu );
 
@@ -271,7 +271,7 @@ public class AmbulanceController {
         model.addAttribute("newrequest",new AmbulanceRequest());
         model.addAttribute("stafflist",cu.getParamedicList() );
         model.addAttribute("requests", ambulanceRequestService.getAllRequestsForUser(userService.getCurrentUser().getId()));
-        List<Hospital> hospitals = hospitalService.findHospitalsWithAvailableEmergencyBeds("طوارئ");
+        List<Hospital> hospitals = hospitalService.findHospitalsWithAvailableBedCategory("طوارئ");
         model.addAttribute("hospitals", hospitals);
         model.addAttribute("user",cu );
 

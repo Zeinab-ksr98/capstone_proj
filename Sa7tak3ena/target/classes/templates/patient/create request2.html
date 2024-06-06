@@ -117,6 +117,20 @@
                                 </select>
                                 <br>
                             </div>
+
+
+                            <div id="hospitals">
+                                <label>Select Hospital:</label><br>
+                                <div th:each="entry : ${hospitalDetailsMap}">
+                                    <input type="checkbox" th:id="'hospital_' + ${entry.key.id}" th:name="'hospital.ID'" th:value="${entry.key.id}"
+                                           th:data-nicu="${entry.value['NICU']}" th:data-icu="${entry.value['ICU']}" th:data-emergency="${entry.value['Emergency']}">
+                                    <label th:for="'hospital_' + ${entry.key.id}">
+                                        <span th:text="${entry.key.publicName}"></span>
+                                        <span>(Neonatal ICU: <span th:text="${entry.value['NICU']}"></span>, ICU: <span th:text="${entry.value['ICU']}"></span>, Emergency: <span th:text="${entry.value['Emergency']}"></span>)</span>
+                                    </label>
+                                    <br>
+                                </div>
+                            </div>
                             <div id="fromhospitals" style="display: none;">
                                 <label>transfer from:</label><br>
                                 <div th:each="hospital : ${fromhospitals}">
@@ -126,15 +140,7 @@
                                            th:text="${hospital.publicName}"></label><br>
                                 </div>
                             </div>
-                            <div id="hospitals">
-                                <label for="hospital">Select Hospital:</label><br>
-                                <select id="hospital" multiple name="hospital.ID"
-                                        th:field="${grequest.preferedhospitals}">
-                                    <option th:each="hospital : ${availablehospitals}" th:text="${hospital.publicName}"
-                                            th:value="${hospital.id}"></option>
-                                </select>
-                                <br>
-                            </div>
+
                             <div class="form-group mt-3">
                                 <label for="medicalRecord">detailed Location:</label>
                                 <input class="form-control" name="location" placeholder="detailed address" required="required"
@@ -167,12 +173,15 @@
                 ambulanceAgencies.style.display = this.checked ? "block" : "none";
             });
 
-            // Function to show/hide transfer from hospital section based on selected reservation type
             function toggleTransferFromHospital() {
-                var reservationType = document.querySelector('input[name="request.reservationType"]:checked').value;
-                var fromHospitals = document.getElementById("fromhospitals");
-                fromHospitals.style.display = reservationType === "HOSPITAL_TO_HOSPITAL_TRANSFER" ? "block" : "none";
+                var selectedReservationType = document.querySelector('input[name="request.reservationType"]:checked');
+                if (selectedReservationType) {
+                    var reservationType = selectedReservationType.value;
+                    var fromHospitals = document.getElementById("fromhospitals");
+                    fromHospitals.style.display = reservationType === "HOSPITAL_TO_HOSPITAL_TRANSFER" ? "block" : "none";
+                }
             }
+
 
             // Add event listeners to reservation type radio buttons to update visibility of transfer from hospital section
             var reservationTypeRadios = document.querySelectorAll('input[name="request.reservationType"]');
@@ -182,6 +191,76 @@
 
             // Call the function initially to set initial visibility of transfer from hospital section
             toggleTransferFromHospital();
+
+            // function showHospitalsByBedType() {
+            //     var selectedBedType = document.querySelector('input[name="request.reservationType"]:checked').value;
+            //     var hospitals = document.querySelectorAll('#hospitals input[type="checkbox"]');
+            //     hospitals.forEach(function(hospital) {
+            //         var nicuBeds = parseInt(hospital.getAttribute('data-nicu'));
+            //         var icuBeds = parseInt(hospital.getAttribute('data-icu'));
+            //         var emergencyBeds = parseInt(hospital.getAttribute('data-emergency'));
+            //
+            //         if (selectedBedType === "NEONATAL_ICU" && nicuBeds > 0) {
+            //             hospital.parentElement.style.display = 'block';
+            //         } else if (selectedBedType === "ICU" && icuBeds > 0) {
+            //             hospital.parentElement.style.display = 'block';
+            //         } else if (selectedBedType === "EMERGENCY" && emergencyBeds > 0) {
+            //             hospital.parentElement.style.display = 'block';
+            //         } else if (selectedBedType === "HOSPITAL_TO_HOSPITAL_TRANSFER") {
+            //             hospital.parentElement.style.display = 'block';
+            //         } else {
+            //             hospital.parentElement.style.display = 'none';
+            //         }
+            //     });
+            // }
+            //
+            // document.querySelectorAll('input[name="request.reservationType"]').forEach(function(radio) {
+            //     radio.addEventListener('change', showHospitalsByBedType);
+            // });
+            //
+            // // Call the function once initially to apply the filter on page load
+            // showHospitalsByBedType();
+            // Function to show/hide hospitals based on availability of beds for a specific type
+            function showHospitalsByBedType() {
+                var selectedBedType = document.querySelector('input[name="request.reservationType"]:checked');
+                if (selectedBedType) {
+                    selectedBedType = selectedBedType.value;
+                    var hospitals = document.querySelectorAll('#hospitals input[type="checkbox"]');
+                    hospitals.forEach(function(hospital) {
+                        var nicuBeds = parseInt(hospital.getAttribute('data-nicu'));
+                        var icuBeds = parseInt(hospital.getAttribute('data-icu'));
+                        var emergencyBeds = parseInt(hospital.getAttribute('data-emergency'));
+
+                        if (selectedBedType === "NEONATAL_ICU" && nicuBeds > 0) {
+                            hospital.parentElement.style.display = 'block';
+                        } else if (selectedBedType === "ICU" && icuBeds > 0) {
+                            hospital.parentElement.style.display = 'block';
+                        } else if (selectedBedType === "EMERGENCY" && emergencyBeds > 0) {
+                            hospital.parentElement.style.display = 'block';
+                        } else if (selectedBedType === "HOSPITAL_TO_HOSPITAL_TRANSFER") {
+                            hospital.parentElement.style.display = 'block';
+                        } else {
+                            hospital.parentElement.style.display = 'none';
+                        }
+                    });
+                } else {
+                    // If no bed type is selected, hide all hospitals
+                    var hospitals = document.querySelectorAll('#hospitals input[type="checkbox"]');
+                    hospitals.forEach(function(hospital) {
+                        hospital.parentElement.style.display = 'none';
+                    });
+                }
+            }
+
+            document.querySelectorAll('input[name="request.reservationType"]').forEach(function(radio) {
+                radio.addEventListener('change', showHospitalsByBedType);
+            });
+
+            // Call the function initially to apply the filter on page load
+            showHospitalsByBedType();
+
+
+
         </script>
         <script>
             // Get user's current location

@@ -1,13 +1,11 @@
 package com.dgpad.thyme.model.users;
 
 import com.dgpad.thyme.model.Reservation;
-import com.dgpad.thyme.model.enums.Gender;
 import com.dgpad.thyme.model.enums.Role;
 import com.dgpad.thyme.model.requests.AmbulanceRequest;
 import com.dgpad.thyme.model.requests.Request;
 import com.dgpad.thyme.model.usercomplements.Address;
 import com.dgpad.thyme.model.usercomplements.Beds;
-import com.dgpad.thyme.model.usercomplements.Block;
 import com.dgpad.thyme.model.usercomplements.HSections;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -27,8 +25,6 @@ public class Hospital extends User {
     @ManyToOne
     private Address address;
     private String publicName;
-    private String Fax;
-
     @OneToMany(mappedBy = "hospital")
     private List<HSections> hospitalSections;
 
@@ -37,8 +33,6 @@ public class Hospital extends User {
     private String SupervisingPhysicianName;
     private String SupervisingPhysicianPhone;
     private String CONSTRUCTION_AUTH_NB; //Construction Authorization Nb
-    @OneToOne
-    private Block block;
     @OneToMany
     public List<AmbulanceRequest> ambulanceRequest;
 
@@ -71,14 +65,12 @@ public class Hospital extends User {
                 "address=" + address +
                 "Phone="+getPhone()+
                 ", publicName='" + publicName + '\'' +
-                ", Fax='" + Fax + '\'' +
                 ", hospitalSections=" + hospitalSections +
                 ", managerName='" + managerName + '\'' +
                 ", managerPhone='" + managerPhone + '\'' +
                 ", SupervisingPhysicianName='" + SupervisingPhysicianName + '\'' +
                 ", SupervisingPhysicianPhone='" + SupervisingPhysicianPhone + '\'' +
                 ", CONSTRUCTION_AUTH_NB='" + CONSTRUCTION_AUTH_NB + '\'' +
-                ", block=" + block +
                 ", ambulanceRequest=" + ambulanceRequest +
                 ", reservations=" + reservations +
                 ", requests=" + requests +
