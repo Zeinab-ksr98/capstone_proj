@@ -1,6 +1,7 @@
 package com.dgpad.thyme.controller;
 
 import com.dgpad.thyme.Stripe.StripeRequest;
+import com.dgpad.thyme.Whatsapp.VerificationSender;
 import com.dgpad.thyme.model.enums.AmbulanceRequestStatus;
 import com.dgpad.thyme.model.enums.Ambulanceservice;
 import com.dgpad.thyme.model.enums.Distracts;
@@ -45,6 +46,9 @@ public class PatientController {
     @Autowired
     private AddressService addressService;
 
+    @Autowired
+    private VerificationSender verificationSender;
+
     // request from patient dispach
     @GetMapping("/ambulance_request")
     @PreAuthorize("hasAnyAuthority('PATIENT')")
@@ -54,6 +58,9 @@ public class PatientController {
         address.setLatitude(latitude);
         address = addressService.save(address);
         ambulanceRequestService.dispatchToAvailableNearest(address, null);
+        verificationSender.sendVerificationCode(userService.getCurrentUser().getPhone(),
+                "Your ambulance request has been successfully submitted and is now being processed. We will notify you with updates shortly. Wishing you a swift and smooth recovery."
+        );
         model.addAttribute("alertMessage", "Request sent successfully!");
         return "redirect:/home";
     }
@@ -66,12 +73,6 @@ public class PatientController {
         return "patient/donate";
     }
 
-    @GetMapping("/todo")
-    @PreAuthorize("hasAnyAuthority('PATIENT')")
-    public String todo() {
-        return "patient/todo";
-
-    }
 
 
     @Value("${stripe.api.publicKey}")
@@ -112,6 +113,9 @@ public class PatientController {
         address.setName(location);
         address= addressService.save(address);
         ambulanceRequestService.dispatchToAvailableNearest(address,description);
+        verificationSender.sendVerificationCode(userService.getCurrentUser().getPhone(),
+                "Your ambulance request has been successfully submitted and is now being processed. We will notify you with updates shortly. Wishing you a swift and smooth recovery."
+        );
         model.addAttribute("alertMessage", "Request sent successfully!");
         return "redirect:/home";
     }

@@ -20,6 +20,9 @@ public interface HospitalRepository extends JpaRepository<Hospital, UUID> {
     List<Hospital> getAllEnabledHospitals();
     @Query("SELECT h FROM Hospital h JOIN FETCH h.reservations r WHERE h.enabled = true AND h.address.latitude IS NOT NULL AND h.address.longitude IS NOT NULL ORDER BY SIZE(h.reservations) DESC")
     List<Hospital> getAllHospitalsSortedByReservationSize();
+    @Query("SELECT h FROM Hospital h ORDER BY h.enabled DESC ")
+    List<Hospital> getAllHospitalsOrderByEnabled();
+
     @Query("SELECT DISTINCT r.patient FROM Hospital h JOIN h.reservations r WHERE h.id = :hospital")
     List<Patient> findPatientsByHospital(@Param("hospital") UUID hospital);
     @Query("SELECT bc FROM BedCategory bc " +
@@ -27,4 +30,6 @@ public interface HospitalRepository extends JpaRepository<Hospital, UUID> {
             "(SELECT b.category.id FROM Hospital h JOIN h.availableBeds b WHERE h.id = :hospitalId)")
     List<BedCategory> findBedCategoriesNotInHospital(@Param("hospitalId") UUID hospitalId);
 
+    @Query("SELECT h FROM Hospital h WHERE h.address.REGION = :region")
+    List<Hospital> findByAddressRegion(@Param("region") String region);
 }

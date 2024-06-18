@@ -105,6 +105,10 @@
                 <td th:text="${request.service}"></td>
                 <td th:text="${request.getSender().username}"></td>
                 <td th:text="${request.getSender().phone}"></td>
+                <td >  <a th:href="'https://www.google.com/maps?q=' + ${request.pickupaddress.latitude} + ',' + ${request.pickupaddress.longitude}" target="_blank">
+                    View on Map
+                </a></td>
+
 
                 <td>
                     <th:block th:if="${request.to != null and request.to.latitude != null and request.to.longitude != null and request.to.REGION != null}">

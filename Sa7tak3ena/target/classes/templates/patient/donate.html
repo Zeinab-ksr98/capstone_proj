@@ -12,21 +12,19 @@
 
     <link rel="stylesheet" th:href="@{css/test.css}">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
 </head>
 
 <body>
 <div class="container-fluid">
     <div class="d-flex">
         <div th:replace="fragments/Pheader :: header"></div>
-            <div class="container-fluid m-5">
-                <div class="card p-0" style="background: transparent">
-                    <div class="card-body p-0" >
-                        <img th:src="@{/assits/Artboard.png}" alt="">
-                        <h6 > donate today to help equip ambulances<br> and streamline saving lifes
-                        </h6>
-                        <a th:href="@{/donate}" class="btn " style="background-color: #ffba69; color: #fdfefe">Donate Now</a>
-                    </div>
+            <div class="container-fluid m-5 p-5 w-100">
+                <div class="card-body p-0" style="background: transparent" >
+                        <img th:src="@{/assits/charity.png}" alt="" width="90%" >
+<!--                        <h6 > donate today to help equip ambulances<br> and streamline saving lifes-->
+<!--                        </h6>-->
+                    <br>
+                        <a th:href="@{/donate}" class="btn " style="background-color: #ffba69; color: #fdfefe; width: 90%">Donate Now</a>
                 </div>
             </div>
 
@@ -37,7 +35,6 @@
         window.location.href = '/home';
         /*]]>*/
     </script>
-<!--    <script th:src="@{/webjars/bootstrap/5.3.1/js/bootstrap.bundle.min.js}"></script>-->
 </div>
         </div>
 </body>

@@ -64,17 +64,18 @@ public class UserController {
     @PostMapping(value = "/create")
     public String createUser(@ModelAttribute("newuser") Patient user, BindingResult bindingResult, Model model){
         Optional<User> p = userService.findUserByPhone(user.getPhone());
+        //if already exist
         if(p.isPresent()){
             model.addAttribute("user",user);
-            Patient patient =(Patient) p.get();
-            if(!patient.getVerifiedPhone()){
-//                modify details of the existing one then send a welcoming sms
-                model.addAttribute("user",p);
-                return "account/RestoreMyaccount";
-            }
+//            Patient patient =(Patient) p.get();
+//            if(!patient.getVerifiedPhone()){
+////                modify details of the existing one then send a welcoming sms
+//                model.addAttribute("user",p);
+//                return "account/RestoreMyaccount";
+//            }
             bindingResult.rejectValue("Phone", "error.user", "Phone already exists");
 
-            return "account/ReplaceMyaccount";
+            return "account/SignIn";
 
         }
 

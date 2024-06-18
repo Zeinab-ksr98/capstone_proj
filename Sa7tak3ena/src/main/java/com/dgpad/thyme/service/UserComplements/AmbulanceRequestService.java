@@ -196,7 +196,7 @@ public class AmbulanceRequestService {
     //    ambulance shull accept within 10min
     private static final Logger logger = LoggerFactory.getLogger(AmbulanceRequestService.class);
 
-    @Scheduled(fixedRate = 600000)//every 10 min delete pending requests
+    @Scheduled(cron = "0 */10 * * * *")//every 10 min delete pending requests
     public void updateOldPendingRequests() {
         try {
             LocalDateTime tenMinutesAgo = LocalDateTime.now().minus(10, ChronoUnit.MINUTES);

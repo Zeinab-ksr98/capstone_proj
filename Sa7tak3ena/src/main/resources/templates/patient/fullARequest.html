@@ -24,7 +24,7 @@
                     <div clas s="card-body">
                         <form class="form" th:action="@{/ambulance_detailrequest}" method="post">
                             <div class="row">
-                                <h5 class="text-center text-danger"> You are about to request a home service Ambulance</h5>
+                                <h5 class="text-center pl-4 text-danger"> You are about to request a home service Ambulance</h5>
 
                                 <div class="form-group col-md-12">
                                     <input type="text" name="location" class="form-control" placeholder="detailed address" required="required">
@@ -37,7 +37,7 @@
                                 <!-- Hidden input fields to store latitude and longitude -->
                                 <input type="hidden" name="lat" id="latitude">
                                 <input type="hidden" name="lon" id="longitude">
-                                <div class="col-md-12 text-center">
+                                <div class="col-md-12 mb-3 text-center">
                                     <button type="submit" value="Send message" name="submit" id="submitButton" class="btn btn-danger" >Send Message</button>
                                 </div>
                             </div>

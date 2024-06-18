@@ -30,6 +30,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 public class accountController {
@@ -134,8 +135,7 @@ public class accountController {
             analytics.add(cu.getReservations().size());
             analytics.add(cu.getHospitalSections().size());
             analytics.add(hospitalService.getTotalBeds(cu.getAvailableBeds()));
-//            model.addAttribute("AmbulanceRequests",hospitalService.getAllForCustomerWithin24hs(cu.id ) );
-
+            model.addAttribute("AmbulanceRequests",ambulancerequestService.getAllRequestsForUserWith24hours(userService.getCurrentUser().id) );
             model.addAttribute("analytics",analytics);
             model.addAttribute("patientlist", hospitalService.findPatientsByHospital());
 
@@ -302,10 +302,33 @@ public class accountController {
     public String hospitals(Model model) {
         User user = userService.getCurrentUser();
         model.addAttribute("user", user);
-        model.addAttribute("hospitalList",hospitalService.getAllHospitals() );
+        model.addAttribute("hospitalList",hospitalService.getAllHospitalsOrderbyactive() );
         model.addAttribute("hospitalSections",hSectionsService.getAllHSections() );
         return "patient/display hospitals";
     }
+    @GetMapping("/filterHospitals")
+    public ResponseEntity<List<Hospital>> filterHospitals(@RequestParam(required = false) String district, @RequestParam(required = false) String name) {
+        List<Hospital> filteredHospitals;
+
+        if (district != null && !district.isEmpty()) {
+            // Filter hospitals by district
+            filteredHospitals = hospitalService.filterByDistrict(district);
+        } else {
+            // If no district selected, return all hospitals
+            filteredHospitals = hospitalService.getAllHospitals();
+        }
+
+        if (name != null && !name.isEmpty()) {
+            // Filter hospitals by name
+            filteredHospitals = filteredHospitals.stream()
+                    .filter(h -> h.getPublicName().toLowerCase().contains(name.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+
+        return ResponseEntity.ok(filteredHospitals);
+    }
+
+
     @PostMapping("/gps_location")
     public String receiveLocation(@RequestParam("latitude") double latitude, @RequestParam("longitude") double longitude) {
         if (userService.getCurrentUser().getRole() ==Role.HOSPITAL){

@@ -103,7 +103,9 @@ public class EmailService {
             Response response = sg.api(request);
         }
         catch (IOException ex)
-        { throw ex;
+        {
+            System.out.println("error");
+            throw ex;
         }
         return "an email has been sent please check your inbox";
 

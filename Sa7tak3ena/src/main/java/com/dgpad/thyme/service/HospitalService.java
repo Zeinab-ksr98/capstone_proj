@@ -41,6 +41,9 @@ public class HospitalService {
     public List<Hospital> getAllHospitals(){
         return hospitalRepository.findAll();
     }
+    public List<Hospital> getAllHospitalsOrderbyactive(){
+        return hospitalRepository.getAllHospitalsOrderByEnabled();
+    }
     public List<Hospital> getAllEnabledHospitals(){
         return hospitalRepository.getAllEnabledHospitals();
     }
@@ -138,4 +141,7 @@ public class HospitalService {
         return save(currentuser);
     }
 
+    public List<Hospital> filterByDistrict(String district) {
+        return hospitalRepository.findByAddressRegion(district);
+    }
 }

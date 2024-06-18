@@ -13,10 +13,10 @@ body {
     min-height: 600px;
     position: relative;
     /*#155FA9*/
-    background: rgb(177, 177, 177);
+    background: rgba(17, 29, 54, 0.24);
 
     /*background: linear-gradient(to bottom,rgb(177, 177, 177),#155FA9 );*/
-    box-shadow: 0 12px 15px 0 rgba(0, 5, 110, 0.24), 0 17px 50px 0 rgba(10, 18, 110, 0.19);
+    box-shadow: 0 12px 15px 0 rgba(196, 196, 199, 0.24), 0 17px 50px 0 rgba(10, 18, 110, 0.19);
 }
 
 .login-snip {

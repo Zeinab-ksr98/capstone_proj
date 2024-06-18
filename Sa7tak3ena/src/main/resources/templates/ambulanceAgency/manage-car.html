@@ -71,8 +71,8 @@
             <tbody>
             <tr th:each="car, carIndex : ${cars}">
                 <td th:text="${carIndex.index + 1}"></td>
-                <td th:text="${car.status}"></td>
                 <td th:text="${car.type}"></td>
+                <td th:text="${car.status}"></td>
                 <td>
                     <a class="btn btn-danger" th:href="@{/delete/{id}(id=${car.id})}">
                         Delete

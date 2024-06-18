@@ -62,27 +62,27 @@
                                 <div class="group">
                                     <label for="newuser" class="label">Username</label>
                                     <input id="newuser" th:field="*{username}" type="text" class="input"
-                                           placeholder="Username" required>
+                                            required>
                                 </div>
                                 <div class="group">
                                     <label for="email" class="label">Email Address</label>
                                     <input id="email" th:field="*{email}" type="email" class="input"
-                                           placeholder="Email " required>
+                                           required>
                                 </div>
                                 <div class="group">
-                                    <label for="Phone" class="label">Phone number</label>
-                                    <input  class="input" type="tel" name="phone" id="phone" maxlength="8"  th:field="*{phone}" placeholder="+961" autocomplete="off">
+                                    <label for="Phone" class="label">Phone number <small>(lebanese only)</small></label>
+                                    <input  class="input" type="tel" name="phone" id="phone" maxlength="8"  th:field="*{phone}" autocomplete="off">
                                 </div>
 
                                 <div class="group">
                                     <label for="passward" class="label">Password</label>
                                     <input id="passward" th:field="*{password}" type="password" class="input"
-                                           data-type="password" placeholder="password" required>
+                                           data-type="password" required>
                                 </div>
                                 <div class="group">
                                     <label for="re-passward" class="label">Repeat Password</label>
                                     <input id="re-passward" type="password" class="input" data-type="password"
-                                           placeholder="Repeat password" required oninput="validatePassword()">
+                                            required oninput="validatePassword()">
                                 </div>
 
                                 <div class="group mb-4">

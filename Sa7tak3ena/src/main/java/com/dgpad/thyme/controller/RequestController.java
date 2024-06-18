@@ -1,6 +1,7 @@
 package com.dgpad.thyme.controller;
 
 import com.dgpad.thyme.Email.EmailService;
+import com.dgpad.thyme.Whatsapp.VerificationSender;
 import com.dgpad.thyme.model.Image;
 import com.dgpad.thyme.model.Reservation;
 import com.dgpad.thyme.model.enums.*;
@@ -40,7 +41,8 @@ public class RequestController {
     private UserService userService;
     @Autowired
     private EmailService emailService;
-
+    @Autowired
+    private VerificationSender verificationSender;
     @Autowired
     private HospitalService hospitalService;
     @Autowired
@@ -190,6 +192,10 @@ public class RequestController {
         }
         patientService.save(patient);
         model.addAttribute("alertMessage", "Request sent successfully!");
+        verificationSender.sendVerificationCode(patient.getPhone(),
+                "Your hospital bed request has been successfully submitted and is now being processed. We will notify you with updates shortly. Wishing you a swift and smooth recovery."
+        );
+
         return "redirect:/home";
     }
 
@@ -210,6 +216,9 @@ public class RequestController {
     public String acceptRequest(@RequestParam Long id, @RequestParam Ambulancetypes type) {
         requestService.acceptRequest(id, type);
         patientService.acceptRequest(id, requestService.getRequestById(id).getPatient().id, type);
+        verificationSender.sendVerificationCode(requestService.getRequestById(id).getPatient().getPhone(),
+                "Your hospital bed request has been accepted. Please confirm within the next 30 minutes. Wishing you a swift and smooth recovery."
+        );
         return "redirect:/get-all-requests";
     }
 
@@ -233,6 +242,9 @@ public class RequestController {
 
                 filteredAmbulance = addressService.sortAndFilterAmbulancesByDistance(request.getPickupAddress(), filteredAmbulance, 80); // Filter by 80 km
 //                filteredAmbulance = addressService.sortAmbulancesByDistance(request.getPickupAddress(), filteredAmbulance);
+                verificationSender.sendVerificationCode(request.getPatient().getPhone(),
+                        "Your hospital bed reservation has been confirmed. We look forward to providing you with the care you need."
+                );
 
                 for (int i = 0; i < filteredAmbulance.size(); i++) {
                     Ambulance ambulance = filteredAmbulance.get(i);
@@ -253,6 +265,9 @@ public class RequestController {
                     ambulanceRequest = ambulanceRequestService.save(ambulanceRequest);
                     reservation.getAmbulanceRequests().add(ambulanceRequest);
                     emailService.senddetailsEmail(ambulance.email, 3);
+                    verificationSender.sendVerificationCode(request.getPatient().getPhone(),
+                            "Ambulance requests are sent to insure safe swift.updates will be recieved soon "
+                    );
 
                 }
 
@@ -289,7 +304,6 @@ public class RequestController {
 
         return "redirect:/home";
     }
-
     @PostMapping("/update-reservation")
     @PreAuthorize("hasAnyAuthority('HOSPITAL')")
     public String updateReservation(@RequestParam("id") Long id, @RequestParam("bed") String bed, @RequestParam("floor") int floor) {

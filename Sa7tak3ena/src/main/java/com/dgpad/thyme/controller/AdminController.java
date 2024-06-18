@@ -213,7 +213,9 @@ public class AdminController {
         List<Integer> analytics = new ArrayList<>();
         analytics.add(reservationService.getAllReservations().size());
         analytics.add(ambulanceRequestService.findAllRequestbystatus(AmbulanceRequestStatus.ACCEPTED).size());
-//        analytics.add(cu.getHospitalSections().size());
+        analytics.add(userService.getAllUsers().size());
+        analytics.add(ambulanceAgencyService.getAllAgencies().size());
+
         model.addAttribute("analytics",analytics);
 
         model.addAttribute("requestedaccounts",accountRequestService.getAllRequest());

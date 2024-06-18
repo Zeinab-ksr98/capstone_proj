@@ -1,5 +1,6 @@
 package com.dgpad.thyme.Stripe;
 
+import com.dgpad.thyme.Whatsapp.VerificationSender;
 import com.dgpad.thyme.service.UserService;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
@@ -11,7 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class PaymentController {
-
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private VerificationSender verificationSender;
     @PostMapping("/create-payment-intent")
 
     public StripeResponse createPaymentIntent(@RequestBody StripeRequest request)
@@ -24,6 +28,9 @@ public class PaymentController {
                         .build();
 
         PaymentIntent intent = PaymentIntent.create(params);
+        verificationSender.sendVerificationCode(userService.getCurrentUser().getPhone(),
+                "Thank you for your generous donation to support our ambulance services. Your contribution helps us provide critical care to those in need. Wishing you a swift and smooth recovery."
+        );
 
         return new StripeResponse(intent.getId(), intent.getClientSecret());
 

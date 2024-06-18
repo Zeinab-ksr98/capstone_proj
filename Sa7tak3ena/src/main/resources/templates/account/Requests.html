@@ -27,7 +27,6 @@
     <table class="table table-light mb-0" >
         <thead class="small text-uppercase bg-body text-muted">
         <tr>
-            <th >ID</th>
             <th>Reservation Type</th>
             <th>Patient Name</th>
             <th >Medical Record</th>
@@ -39,7 +38,7 @@
         </thead>
         <tbody>
         <tr class="align-middle" th:each="request : ${requests}"  th:if="${request.status != request.status.RESERVED }" th:unless="${request.status == request.status.Deleted}">
-            <td th:text="${request.id}" ></td>
+<!--            <td th:text="${request.id}" ></td>-->
             <td th:text="${request.reservationType}"></td>
             <td th:text="${request.patient.username}" ></td>
             <td>

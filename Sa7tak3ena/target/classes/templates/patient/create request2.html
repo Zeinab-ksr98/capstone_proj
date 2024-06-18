@@ -122,7 +122,7 @@
                             <div id="hospitals">
                                 <label>Select Hospital:</label><br>
                                 <div th:each="entry : ${hospitalDetailsMap}">
-                                    <input type="checkbox" th:id="'hospital_' + ${entry.key.id}" th:name="'hospital.ID'" th:value="${entry.key.id}"
+                                    <input type="checkbox" th:id="'hospital_' + ${entry.key.id}" th:name="'hospital.ID'" th:value="${entry.key.id}" th:field="${grequest.preferedhospitals}"
                                            th:data-nicu="${entry.value['NICU']}" th:data-icu="${entry.value['ICU']}" th:data-emergency="${entry.value['Emergency']}">
                                     <label th:for="'hospital_' + ${entry.key.id}">
                                         <span th:text="${entry.key.publicName}"></span>
@@ -192,34 +192,6 @@
             // Call the function initially to set initial visibility of transfer from hospital section
             toggleTransferFromHospital();
 
-            // function showHospitalsByBedType() {
-            //     var selectedBedType = document.querySelector('input[name="request.reservationType"]:checked').value;
-            //     var hospitals = document.querySelectorAll('#hospitals input[type="checkbox"]');
-            //     hospitals.forEach(function(hospital) {
-            //         var nicuBeds = parseInt(hospital.getAttribute('data-nicu'));
-            //         var icuBeds = parseInt(hospital.getAttribute('data-icu'));
-            //         var emergencyBeds = parseInt(hospital.getAttribute('data-emergency'));
-            //
-            //         if (selectedBedType === "NEONATAL_ICU" && nicuBeds > 0) {
-            //             hospital.parentElement.style.display = 'block';
-            //         } else if (selectedBedType === "ICU" && icuBeds > 0) {
-            //             hospital.parentElement.style.display = 'block';
-            //         } else if (selectedBedType === "EMERGENCY" && emergencyBeds > 0) {
-            //             hospital.parentElement.style.display = 'block';
-            //         } else if (selectedBedType === "HOSPITAL_TO_HOSPITAL_TRANSFER") {
-            //             hospital.parentElement.style.display = 'block';
-            //         } else {
-            //             hospital.parentElement.style.display = 'none';
-            //         }
-            //     });
-            // }
-            //
-            // document.querySelectorAll('input[name="request.reservationType"]').forEach(function(radio) {
-            //     radio.addEventListener('change', showHospitalsByBedType);
-            // });
-            //
-            // // Call the function once initially to apply the filter on page load
-            // showHospitalsByBedType();
             // Function to show/hide hospitals based on availability of beds for a specific type
             function showHospitalsByBedType() {
                 var selectedBedType = document.querySelector('input[name="request.reservationType"]:checked');

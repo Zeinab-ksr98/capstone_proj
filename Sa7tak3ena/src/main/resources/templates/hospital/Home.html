@@ -133,9 +133,12 @@
                     </tr>
                     </tbody>
                 </table>
-                <div th:replace="account/Requests :: requests"  ></div>
-                <table class="table table-light table-responsive text-muted mb-0" th:if="${(AmbulanceRequests != null and not #lists.isEmpty(AmbulanceRequests))}">
-                    <thead class="small text-uppercase bg-body text-info">
+            </div>
+<!--                <div th:replace="account/Requests :: requests"  ></div>-->
+                <div class=" mt-1 row row-cols-1 row-cols-md-1 row-cols-xl-1 mr-1">
+
+                    <table class="table table-light table-responsive text-muted">
+                        <thead class="small text-uppercase bg-body text-info">
                     <tr>
 
                     <th >Ambulance Name</th>
@@ -156,6 +159,7 @@
                     </tbody>
                 </table>
             </div>
+
             <div class="row row-cols-1 row-cols-md-1 row-cols-xl-2">
                 <div class="col"  style="background: white">
                     <canvas id="genderDistributionChart" width="250" height="150" ></canvas>

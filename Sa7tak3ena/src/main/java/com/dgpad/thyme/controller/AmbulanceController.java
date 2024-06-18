@@ -1,6 +1,7 @@
 package com.dgpad.thyme.controller;
 
 import com.dgpad.thyme.Email.EmailService;
+import com.dgpad.thyme.Whatsapp.VerificationSender;
 import com.dgpad.thyme.model.Image;
 import com.dgpad.thyme.model.enums.*;
 import com.dgpad.thyme.model.requests.AmbulanceRequest;
@@ -36,6 +37,8 @@ public class AmbulanceController {
     private UserService userService;
     @Autowired
     private AmbulanceService ambulanceService;
+    @Autowired
+    private VerificationSender verificationSender;
 
     @Autowired
     private HospitalService hospitalService;
@@ -224,8 +227,13 @@ public class AmbulanceController {
             if (AR !=r) {
                 AR.setStatus(AmbulanceRequestStatus.Deleted);
                 ambulanceRequestService.save(AR);
+                verificationSender.sendVerificationCode(AR.getSender().getPhone(),
+                        "Your ambulance request has been accepted and it is on its way to you. Please stay safe and await its arrival."
+                );
+
             }
         }
+
         return "redirect:/home";
     }
     @GetMapping("/rejectRequest")
