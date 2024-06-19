@@ -79,20 +79,10 @@ public class RequestService {
         r.setCarType( type);
         save(r);
     }
-//    //    hospitals shull accept within 10min
-//    @Scheduled(cron = "0 */10 * * * *") // Executes every 10 minutes
-//    public void updateOldPendingRequests() {
-//        LocalDateTime tenMinutesAgo = LocalDateTime.now().minus(10, ChronoUnit.MINUTES);
-//        List<Request> pendingRequests = requestRepository.findPendingAndCreatedAtBefore(tenMinutesAgo);
-//
-//        for (Request request : pendingRequests) {
-//            request.setStatus(ReservationStatus.Deleted);
-//            requestRepository.save(request);
-//        }
-//    }
-    //    patient shall confirm within 30 min ( after  about 40 min of creation)
+//    hospitals shull accept within 10min ( no pending for mor than 10 min)
+    //    patient shall confirm within 30 min ( after  about 40 min of creation) (no aaccepted for more than 40 min)
 // Scheduled task to delete accepted requests older than 40 minutes
-    @Scheduled(fixedRate = 600000) // Executes every 10 minutes
+    @Scheduled(cron = "0 */10 * * * *") // Executes every 10 minutes
     public void deleteOldAcceptedRequests() {
         LocalDateTime fortyMinutesAgo = LocalDateTime.now().minus(40, ChronoUnit.MINUTES);
         List<Request> acceptedRequests = requestRepository.findAcceptedAndCreatedAtBefore( fortyMinutesAgo);
