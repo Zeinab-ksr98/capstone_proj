@@ -101,7 +101,7 @@ public class AmbulanceController {
 
     @GetMapping("/swichactive-staff/{id}")
     @PreAuthorize("hasAnyAuthority('AMBULANCE')")
-    public String deleteStaff(@PathVariable Long id) {
+    public String switchActveStaff(@PathVariable Long id) {
         aStaffService.swichactiveStaff(id);
         return "redirect:/manage-staff";
     }

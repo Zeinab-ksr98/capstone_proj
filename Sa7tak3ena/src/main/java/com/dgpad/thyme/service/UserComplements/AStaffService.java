@@ -30,7 +30,7 @@ public class AStaffService {
             paramedic.setInactive(false);
         else
             paramedic.setInactive(true);
-        staffRepository.save(getStaffById(id));
+        staffRepository.save(paramedic);
     }
 }
 
