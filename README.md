@@ -10,8 +10,17 @@ Our system would allow patients needing intensive care  to request bed reservati
 By achieving that, we can optimize the healthcare system's responsiveness during emergencies, manage hospital and ambulance work, allocate and benefit from resources (ICU, NICU) more effectively, reduce crowded emergency sections, and ultimately enhance patient care and outcomes.
 
 # Used Technologies:
-A combination of technologies was used to create a functional and responsive website that maintains the user’s needs. Starting with the backend part, we used the Spring boot framework to integrate a functional core for the application. Java language was used in Spring Boot, and MySQL was used to implement the database. On top of these core tools, Jsoup scrapes data from the MOHP site, docker sends WhatsApp SMS to patients, Twilio Send Grid sends emails, and Stripe facilitates the donation feature. 
-To achieve a user-friendly site we intended to use HTML, CSS, and Bootstrap to wrap it up in a proper attractive way. As well as, charts.js to represent some analytics for some users. Obtaining an accessible website is a must, so we deploy the website using Google Cloud
+A combination of technologies was used to create a functional and responsive website that maintains the user’s needs. 
+ - Spring boot framework to integrate a functional core for the application.
+ - Java language was used in Spring Boot
+ - MySQL was used to implement the database.
+ - Jsoup scrapes data from the MOHP site
+ - docker sends WhatsApp SMS to patients
+ - Twilio Send Grid sends emails
+ - Stripe facilitates the donation feature
+ - HTML, CSS, and Bootstrap
+ - charts.js to represent some analytics for some users.
+Obtaining an accessible website is a must, so we deploy the website using Google Cloud
 # Capstone Requirements:
 - Hospital, patient, ambulance, and Admin shall be able to log in by username or email, and password
 - Hospital, patient, ambulance, and Admin shall be able to log out 
