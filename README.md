@@ -1,107 +1,134 @@
-# Over View:
-The Lebanese healthcare system faces challenges due to limited resources, particularly in meeting the increasing demand for intensive and neonatal care units. This lack of resources presents significant challenges for patients in locating vacant beds nearby and for ambulance workflow. As The population grows, providing specialized care, especially during cases demanding intensive medical intervention becomes inaptitude. The current random call approach for finding vacant hospitals further complicates the situation.
-Sa7tak3ena seeks to revolutionize the healthcare system via hospital-patient connections, enhance transparency concerning hospital resources, and introduce automated procedures to minimize time spent on locating beds in emergency cases. This system aims to facilitate inter-hospital transfers, and the process of localization and reservation of the Intensive Care Unit (ICU), Neonatal Intensive Care Unit (NICU), and emergency beds by providing real-time hospital capacity information and an online reservation system.
+# Sa7tak3ena
+## Overview
+The Lebanese healthcare system faces challenges due to limited resources, particularly in meeting the increasing demand for intensive and neonatal care units. This lack of resources presents significant challenges for patients in locating vacant beds nearby and for ambulance workflow. As the population grows, providing specialized care, especially during cases demanding intensive medical intervention, becomes inadequate. The current random call approach for finding vacant hospitals further complicates the situation.
+
+🚑 **Sa7tak3ena** seeks to revolutionize the healthcare system via hospital-patient connections, enhance transparency concerning hospital resources, and introduce automated procedures to minimize time spent on locating beds in emergency cases. This system aims to facilitate inter-hospital transfers, and the process of localization and reservation of the Intensive Care Unit (ICU), Neonatal Intensive Care Unit (NICU), and emergency beds by providing real-time hospital capacity information and an online reservation system.
+
 Our proposed solution involves grouping all different Lebanese ambulance agencies and hospitals in a centralized system to manage and ease their work, providing real-time information on ambulance vehicles and hospital bed availability near the patient's location. This system allows hospitals to manage their bed vacancies, sections, and contact information, while ambulances can manage paramedics and cars. It reduces crowded emergencies and ensures optimal use of resources, replacing an ambulance random call approach.
+
 The system would allow patients to request bed reservations according to their needs, make their hospital-to-hospital transfer process easier, and allow ambulance services to be converted to hospital transfers if required. This would optimize the healthcare system's responsiveness during emergencies, manage hospital and ambulance work more effectively, and enhance patient care and outcomes.
-# Project Goal:
-Finding the Nearest vacant ambulance, the Ambulance's random transfer strategy, the struggle to access real-time hospital vacancy data, and the constant demand for emergency, ICU, and NICU beds complicate Lebanese healthcare services and threaten patients’ lives. Despite these challenges, developing a site where ambulances, hospitals, and patients can communicate makes healthcare more efficient, reduces patient wait times, and cuts ambulance diversion time. 
-A centralized system that manages and facilitates hospital and ambulance work and provides real-time information on ambulance vehicles and hospital bed availability near the patient's location. A system in which hospitals can manage their bed vacancies, sections, and contact info while ambulances can manage paramedics and cars, as well as manage their reservations and streamline the connection between them by hospital benefiting from ambulance transfer service to transfer their patients safely from and to their hospital. Ambulances make informed decisions when transferring a patient and directly reserve a bed in an emergency section at the most suitable hospital.
-Our system would allow patients needing intensive care  to request bed reservations according to their needs (NICU, ICU, or emergency) and make their hospital-to-hospital transfer process easier. It also allows the patient to request an ambulance service which the process begins as a home service and can be then converted to hospital transfer if the case needs it. This can be easily done by ambulance paramedics after examining the patient. 
-By achieving that, we can optimize the healthcare system's responsiveness during emergencies, manage hospital and ambulance work, allocate and benefit from resources (ICU, NICU) more effectively, reduce crowded emergency sections, and ultimately enhance patient care and outcomes.
 
-# Used Technologies:
-A combination of technologies was used to create a functional and responsive website that maintains the user’s needs. 
- - Spring boot framework to integrate a functional core for the application.
- - Java language was used in Spring Boot
- - MySQL was used to implement the database.
- - Jsoup scrapes data from the MOHP site
- - docker sends WhatsApp SMS to patients
- - Twilio Send Grid sends emails
- - Stripe facilitates the donation feature
- - HTML, CSS, and Bootstrap
- - charts.js to represent some analytics for some users.
-Obtaining an accessible website is a must, so we deploy the website using Google Cloud
-# Capstone Requirements:
-- Hospital, patient, ambulance, and Admin shall be able to log in by username or email, and password
-- Hospital, patient, ambulance, and Admin shall be able to log out 
-- Hospital, patient, ambulance, and Admin shall be able to reset their passwords
-- Hospital, patient, ambulance, and Admin shall be able to modify their passwords through forgot password
-- The patient shall verify his account by filling in his first name, last name, gender, age, and nationality, and uploading a national ID or passport.
--  The patient and ambulances shall be able to view all hospital name
-- The patients and ambulance shall be able to filter hospitals by district and sections 
-- Patients and ambulance shall be able to view hospital contact information (phone number, location, manager name, manager phone, Supervising Physician Name, and Supervising Physician Phone)
-- The patient and ambulance shall be able to view the hospital's sections available
-- Patients and ambulance shall be able to view hospital beds and their vacancies (type and amount)
-- Patients and hospitals can view their  history of bed reservations
-- Patients shall be able to send a request to either transfer to another hospital, or emergency, reserve an ICU or NICU bed for all hospitals they select
-- Patient shall upload doctor report instead of medical description when requesting NICU orICU bed reservation 
-- The patient shall be notified with the request update (accepted, rejected) using WhatsApp sms
-- Patient  shall be able to view their hospital bed reservations
-- Patient can request a home ambulance service  by entering medical description and location 
-- The patient can request an ambulance service using the emergency call button 
-- The patient shall confirm the request within 30 minutes of hospital acceptance
-- Patients and hospitals can view the contact information of the ambulance 
-- Patient shall be able to donate money to ambulances through stripe
-- The patient shall verify his phone number using the WhatsApp verification code while creating the account
-- The hospital shall be able to view the requests sent for him
-- The hospital shall be able to reject a patient’s request
-- The hospital shall be able to accept a patient's request 
-- The hospital shall be able to provide ambulance type if needed while accepting patients' request
-- Hospitals and ambulances shall be able to edit their address by GPS location(longitude and latitude ) extraction
-- The hospital shall be able to edit his profile by modifying/adding a user name, email, phone number, address, public name, manager name, manager phone, Supervising Physician Name, and Supervising Physician Phone
-- The hospital shall be able to update reservation details by adding the bed and floor number
-- Hospital shall be able to view his section
-- Hospitals shall be able to edit his sections by modifying its name 
-- Hospital shall be able to delete a section 
-- Hospital shall be able to view his available beds
-- Hospital shall be able to request new bed category to be created by admin
-- hospital shall be able to create beds with categories by entering the category and number of beds 
-- hospital shall be able to update vacancy of a bed category by modifying the number of beds available
-- Hospitals shall be able to view their patient's list
-- hospital shall be able to delete a bed category 
-- Hospital can request transfer ambulance service to transfer by specifying patient's phone number, name, and address, from or to it,ambulance type needed ,and recommendations
-- The administrative ambulance shall be able to create a sub-branch account with the same agency name 
-- Administrative ambulances shall be able to view the branch account’s details, total reservations, paramedics, cars, and status.
-- Administrative ambulance shall be able to manage branch accounts by deactivating and activating them
-- The ambulance shall be able to accept a request
-- The ambulance shall be able to reject a request
-- Ambulance shall be able to modify his profile by modifying his user name, phone, and public name.
-- Ambulances shall be able to manage their cars by adding a car, editing its status, deleting it 
-- An ambulance request is sent after bed reservation if the patient needs one
-- Ambulance shall be able to view his paramedics
-- Ambulance shall be able to create a paramedic by adding his name,phone, image.
-- Ambulance shall be able to modify paramedic's name and phone
-- ambulance shall be able to delete a paramedic
-- Ambulance shall be able to archive their non-append requests and indoor services by creating an ambulance request 
-- Ambulance shall be able to modify request details by modifying service type, paramedic, description, equipment and reserving a car.
-- Ambulance shall be able to reserve an emergency bed for each patient's requests
-- Ambulance shall be able to view, edit, and delete monthly equipment audits
-- Guests shall be able to request to have a hospital or ambulance account
-- Admin shall be able to view the requested account and bed category 
-- Admin shall be able to manage bed categories by viewing them and adding new ones (by providing their names)
-- Admin shall be able to create hospital, admin and ambulance accounts
-- Admin shall be able to edit user’s details by modifying username, email,phone
-- Admin shall be able to send a customized email to a hospital or ambulance
-- Admin can block, enable, and disable hospital, ambulance, and patient account
-- The admin shall be able to view hospitals created upon scraping the MOPH site within users to check the authenticity of the hospital’s account request  
-- Hospitals can view their rank among other active hospitals
-- Hospitals can view other hospital total reservations and sections
-- Admin, patient, and ambulance shall be able to view analytics
-# Constrains
-- A Request becomes a reservation when the patient confirms the accepted request
-- The patient can cancel a bed request of reservation before ambulance acceptance by the hospital
-- The patient shall confirm the accepted request within 30 minutes to secure the reserved
-- GPS is extracted when submitting ambulance and hospital requests by the patient
-- Ambulance Transfer service request made by a hospital  is dispatched according to the car type needed and availability as well as according to the “from region”(hospital region in case of from and patient region in case of to hospital) 
-- Transfer requests become region_based only when the provided ambulance type doesn't exist
-- The patient can send a request only after verifying their account.
-- Ambulance requests and hospital reservations after 24 hours are archived in history 
-- Ambulances and hospitals shall confirm requests within 10 minutes; otherwise, they will be automatically canceled
-- An automatic email is sent to the ambulance and hospital upon receiving a new request
-- An automatic email is sent upon activating and deactivating their account by admin 
-- An automatic WhatsApp SMS is sent to the patient number upon accepting a request
-- The system uses MySQL as a database management system
+## 🎯Project Goal
+
+Finding the nearest vacant ambulance, the ambulance's random transfer strategy, the struggle to access real-time hospital vacancy data, and the constant demand for emergency, ICU, and NICU beds complicate Lebanese healthcare services and threaten patients’ lives. Developing a site where ambulances, hospitals, and patients can communicate makes healthcare more efficient, reduces patient wait times, and cuts ambulance diversion time.
+
+A centralized system manages and facilitates hospital and ambulance work, providing real-time information on ambulance vehicles and hospital bed availability near the patient's location. Hospitals manage their bed vacancies, sections, and contact info, while ambulances manage paramedics, cars, and reservations. This optimizes the healthcare system's responsiveness during emergencies, manages hospital and ambulance work effectively, and enhances patient care and outcomes.
+
+## 💻Used Technologies
+
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-%236DB33F.svg?style=flat&logo=spring&logoColor=white)
+![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=flat&logo=openjdk&logoColor=white)
+![MySQL](https://img.shields.io/badge/mysql-4479A1.svg?style=flat&logo=mysql&logoColor=white)
+![Jsoup](https://img.shields.io/badge/Jsoup-%23363636.svg?style=flat&logo=jsoup&logoColor=white)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white)
+![Twilio](https://img.shields.io/badge/Twilio-F22F46.svg?style=flat&logo=Twilio&logoColor=white)
+![Stripe](https://img.shields.io/badge/Stripe-%23222F3E.svg?style=flat&logo=stripe&logoColor=white)
+![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=flat&logo=html5&logoColor=white)
+![Bootstrap](https://img.shields.io/badge/bootstrap-%238511FA.svg?style=flat&logo=bootstrap&logoColor=white)
+![Chart.js](https://img.shields.io/badge/chart.js-F5788D.svg?style=flat&logo=chart.js&logoColor=white)
+![Google Cloud](https://img.shields.io/badge/google%20cloud-%234285F4.svg?style=flat&logo=google-cloud&logoColor=white)
 
 
+## 📝 Capstone Requirements
 
+### User Authentication and Management
+- **Login/Logout**: 
+  - Users (Hospital, Patient, Ambulance, Admin) can log in and out using username/email and password.
+- **Password Management**: 
+  - Users can reset, modify, and recover their passwords.
+- **Account Verification**: 
+  - Patients must verify their phone number using WhatsApp.
+  - Patients must provide personal details (first name, last name, gender, age, nationality) and upload ID/passport.
 
+### Patient Features
+- **Hospital Interaction**: 
+  - View all hospital names.
+  - Filter hospitals by district and sections.
+  - View hospital contact information (phone number, location, manager name, manager phone, Supervising Physician Name, Supervising Physician Phone).
+  - View hospital sections and bed availability (type and amount).
+- **Requests**: 
+  - Make transfer requests to another hospital, request emergency services, or reserve ICU/NICU beds. Upload a doctor report for NICU/ICU bed reservations.
+  - Confirm requests within 30 minutes of hospital acceptance.
+  - Request home ambulance service by entering medical description and location.
+  - Use emergency call button for immediate ambulance service.
+- **Notifications**: 
+  - Receive updates via WhatsApp SMS for request status (accepted, rejected).
+- **Donations**: 
+  - Donate money to ambulances through Stripe.
+- **History**: 
+  - View reservation history and current bed reservations.
+
+### Hospital Features
+- **Request Management**: 
+  - View, accept, and reject patient requests.
+  - Provide ambulance type if needed while accepting patient requests.
+- **Profile Management**: 
+  - Edit profile details (user name, email, phone number, address, public name, manager name, manager phone, Supervising Physician Name, Supervising Physician Phone).
+- **Bed Management**: 
+  - View available beds.
+  - Request new bed categories from admin.
+  - Create beds with categories by entering category and number of beds.
+  - Update vacancy of bed categories.
+  - Delete bed categories.
+- **Section Management**: 
+  - View and edit sections (modify name, delete sections).
+- **Transfer Service**: 
+  - Request transfer ambulance service by specifying patient's details, ambulance type needed, and recommendations.
+- **Analytics**: 
+  - View rankings among other active hospitals.
+  - View total reservations and sections of other hospitals.
+
+### Ambulance Features
+- **Request Management**: 
+  - Accept or reject requests.
+  - Archive non-append requests and indoor services by creating an ambulance request.
+  - Reserve emergency beds for patient requests.
+- **Profile Management**: 
+  - Edit profile details (user name, phone, public name).
+- **Car Management**: 
+  - Manage cars (add, edit status, delete).
+- **Paramedic Management**: 
+  - Create, modify, and delete paramedics.
+- **Request Details**: 
+  - Modify request details (service type, paramedic, description, equipment, reserve a car).
+- **Equipment Management**: 
+  - View, edit, and delete monthly equipment audits.
+
+### Admin Features
+- **Account Management**: 
+  - View and manage requested hospital and ambulance accounts.
+  - Create, edit, and block accounts.
+  - Manage account status (activate/deactivate).
+- **Bed Management**: 
+  - Manage bed categories (view, add, create).
+- **Notifications**: 
+  - Send customized emails to hospitals and ambulances.
+  - Automatic emails for account activation/deactivation.
+- **Verification**: 
+  - Scrape MOPH site to verify hospital authenticity.
+- **Analytics**: 
+  - View analytics for hospitals and ambulances.
+  - Create sub-branch accounts for ambulances.
+  - View and manage branch details (total reservations, paramedics, cars, status).
+
+## Constraints
+- **Request to Reservation**: 
+  - A request becomes a reservation upon patient confirmation.
+  - Requests can be canceled before hospital acceptance.
+  - Requests must be confirmed within 30 minutes to secure the reservation.
+- **Automatic Notifications**: 
+  - Automatic emails and WhatsApp messages are sent upon receiving new requests, activating/deactivating accounts, and request updates.
+- **GPS Extraction**: 
+  - Extract GPS location when submitting ambulance and hospital requests.
+- **Archiving**: 
+  - Requests and services are archived after 24 hours.
+- **Regional Transfer Service**: 
+  - Transfer service requests are dispatched based on car type and availability, and regional constraints.
+
+## Notes
+- **Constraints**: 
+  - Ambulance Transfer service requests are dispatched according to car type availability and region-based requirements.
+  - The patient can only send requests after verifying their account.
+  - Requests and services not acted upon within given time frames will be automatically canceled or archived.
+
+---
